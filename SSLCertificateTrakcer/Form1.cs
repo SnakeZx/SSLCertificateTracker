@@ -2,6 +2,10 @@ namespace SSLCertificateTrakcer
 {
     public partial class Form1 : Form
     {
+        public int Port = 443;
+        public string serverName = "https://www.judicatewest.com";
+
+
         public Form1()
         {
             InitializeComponent();
@@ -22,9 +26,12 @@ namespace SSLCertificateTrakcer
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-
+            try
+            {
+                
+            }
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
