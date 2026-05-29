@@ -1,6 +1,6 @@
 ﻿namespace SSLCertificateTrakcer
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -13,6 +13,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if(disposing && (certificateResult != null))
+            {
+                certificateResult.Dispose();
+            }
+
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -30,7 +35,7 @@
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             addSiteBtn = new Button();
             sslDataGrid = new DataGridView();
             websiteAddress = new DataGridViewTextBoxColumn();
@@ -67,6 +72,7 @@
             addSiteBtn.TabIndex = 0;
             addSiteBtn.Text = "+ Add Site";
             addSiteBtn.UseVisualStyleBackColor = false;
+            addSiteBtn.Click += this.addSiteBtn_Click;
             // 
             // sslDataGrid
             // 
@@ -259,7 +265,7 @@
             remSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
             remSelectedBtn.UseVisualStyleBackColor = false;
             // 
-            // Form1
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
@@ -273,7 +279,7 @@
             Controls.Add(addSiteBtn);
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             MinimumSize = new Size(1000, 700);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "SSL Certificate Tracker";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).EndInit();
