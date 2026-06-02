@@ -13,10 +13,6 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing && (certificateResult != null))
-            {
-                certificateResult.Dispose();
-            }
 
             if (disposing && (components != null))
             {
@@ -35,11 +31,16 @@
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             addSiteBtn = new Button();
             sslDataGrid = new DataGridView();
+            websiteAddressDesign = new DataGridViewTextBoxColumn();
+            certIssuerDesign = new DataGridViewTextBoxColumn();
+            expiryDateCol = new DataGridViewTextBoxColumn();
+            daysLeftDesign = new DataGridViewTextBoxColumn();
+            certStatusDesign = new DataGridViewTextBoxColumn();
             statusBar = new StatusStrip();
             sitesTrackedLbl = new ToolStripStatusLabel();
             lblSep1 = new ToolStripStatusLabel();
@@ -51,11 +52,6 @@
             rfshAllBtn = new Button();
             rfshSelectedBtn = new Button();
             remSelectedBtn = new Button();
-            websiteAddressDesign = new DataGridViewTextBoxColumn();
-            certIssuerDesign = new DataGridViewTextBoxColumn();
-            expiryDateCol = new DataGridViewTextBoxColumn();
-            daysLeftDesign = new DataGridViewTextBoxColumn();
-            certStatusDesign = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).BeginInit();
             statusBar.SuspendLayout();
             SuspendLayout();
@@ -115,6 +111,55 @@
             sslDataGrid.Size = new Size(1110, 576);
             sslDataGrid.TabIndex = 1;
             sslDataGrid.CellContentClick += sslDataGrid_CellContentClick;
+            sslDataGrid.SelectionChanged += sslDataGrid_SelectionChanged;
+            sslDataGrid.MouseClick += sslDataGrid_MouseClick;
+            // 
+            // websiteAddressDesign
+            // 
+            websiteAddressDesign.DataPropertyName = "websiteAddress";
+            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle2.NullValue = null;
+            websiteAddressDesign.DefaultCellStyle = dataGridViewCellStyle2;
+            websiteAddressDesign.HeaderText = "Website";
+            websiteAddressDesign.Name = "websiteAddressDesign";
+            websiteAddressDesign.ReadOnly = true;
+            // 
+            // certIssuerDesign
+            // 
+            certIssuerDesign.DataPropertyName = "Issuer";
+            certIssuerDesign.HeaderText = "Issuer";
+            certIssuerDesign.Name = "certIssuerDesign";
+            certIssuerDesign.ReadOnly = true;
+            // 
+            // expiryDateCol
+            // 
+            expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            expiryDateCol.DataPropertyName = "ExpiryDate";
+            dataGridViewCellStyle3.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle3.NullValue = null;
+            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle3;
+            expiryDateCol.FillWeight = 55F;
+            expiryDateCol.HeaderText = "Expiry Date";
+            expiryDateCol.Name = "expiryDateCol";
+            expiryDateCol.ReadOnly = true;
+            // 
+            // daysLeftDesign
+            // 
+            daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
+            daysLeftDesign.DataPropertyName = "daysLeft";
+            daysLeftDesign.HeaderText = "Days Left";
+            daysLeftDesign.Name = "daysLeftDesign";
+            daysLeftDesign.ReadOnly = true;
+            daysLeftDesign.Width = 94;
+            // 
+            // certStatusDesign
+            // 
+            certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            certStatusDesign.DataPropertyName = "certStatus";
+            certStatusDesign.FillWeight = 75F;
+            certStatusDesign.HeaderText = "Status";
+            certStatusDesign.Name = "certStatusDesign";
+            certStatusDesign.ReadOnly = true;
             // 
             // statusBar
             // 
@@ -126,7 +171,7 @@
             statusBar.Size = new Size(1134, 22);
             statusBar.SizingGrip = false;
             statusBar.TabIndex = 1;
-            statusBar.ItemClicked += statusBar_ItemClicked;
+            statusBar.MouseClick += statusBar_MouseClick;
             // 
             // sitesTrackedLbl
             // 
@@ -232,53 +277,6 @@
             remSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
             remSelectedBtn.UseVisualStyleBackColor = false;
             // 
-            // websiteAddressDesign
-            // 
-            websiteAddressDesign.DataPropertyName = "websiteAddress";
-            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle2.NullValue = null;
-            websiteAddressDesign.DefaultCellStyle = dataGridViewCellStyle2;
-            websiteAddressDesign.HeaderText = "Website";
-            websiteAddressDesign.Name = "websiteAddressDesign";
-            websiteAddressDesign.ReadOnly = true;
-            // 
-            // certIssuerDesign
-            // 
-            certIssuerDesign.DataPropertyName = "Issuer";
-            certIssuerDesign.HeaderText = "Issuer";
-            certIssuerDesign.Name = "certIssuerDesign";
-            certIssuerDesign.ReadOnly = true;
-            // 
-            // expiryDateCol
-            // 
-            expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            expiryDateCol.DataPropertyName = "ExpiryDate";
-            dataGridViewCellStyle3.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle3.NullValue = null;
-            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle3;
-            expiryDateCol.FillWeight = 55F;
-            expiryDateCol.HeaderText = "Expiry Date";
-            expiryDateCol.Name = "expiryDateCol";
-            expiryDateCol.ReadOnly = true;
-            // 
-            // daysLeftDesign
-            // 
-            daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
-            daysLeftDesign.DataPropertyName = "daysLeft";
-            daysLeftDesign.HeaderText = "Days Left";
-            daysLeftDesign.Name = "daysLeftDesign";
-            daysLeftDesign.ReadOnly = true;
-            daysLeftDesign.Width = 94;
-            // 
-            // certStatusDesign
-            // 
-            certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            certStatusDesign.DataPropertyName = "certStatus";
-            certStatusDesign.FillWeight = 75F;
-            certStatusDesign.HeaderText = "Status";
-            certStatusDesign.Name = "certStatusDesign";
-            certStatusDesign.ReadOnly = true;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -296,6 +294,7 @@
             Name = "MainForm";
             Text = "SSL Certificate Tracker";
             Load += Form1_Load;
+            MouseClick += MainForm_MouseClick;
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).EndInit();
             statusBar.ResumeLayout(false);
             statusBar.PerformLayout();

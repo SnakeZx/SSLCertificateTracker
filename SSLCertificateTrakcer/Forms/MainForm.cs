@@ -7,14 +7,12 @@ namespace SSLCertificateTrakcer
     public partial class MainForm : Form
     {
         ////Creates a new object for my created class that can be called from here when actions are preformed.
-        private CertificateService certificateService = new CertificateService();
-        private X509Certificate2 certificateResult;
         List<CertificateView> CertificateList;
         BindingSource bs;
 
         ////Hardcoded Port and string for the TcpClient Connection.
         public int port = 443;
-        public string serverName = "Judicatewest.com";
+        public string serverName = "judicateWest.com";
 
         public MainForm()
         {
@@ -31,33 +29,15 @@ namespace SSLCertificateTrakcer
             sslDataGrid.ReadOnly = true;
             sslDataGrid.AutoGenerateColumns = false;
             sslDataGrid.MultiSelect = false;
+
+            remSelectedBtn.Enabled = false;
         }
 
         private async void addSiteBtn_Click(Object sender, EventArgs e)
         {
-            //AddSiteForm addStireForm = new AddSiteForm();
+            AddSiteForm addStireForm = new AddSiteForm();
 
-            //addStireForm.ShowDialog();
-
-            try
-            {
-                Debug.WriteLine("Connecting ....");
-
-                certificateResult = await certificateService.ConnectAsync(serverName, port);
-
-                Debug.WriteLine("Connected To: " + serverName + " - On Port: " + port);
-
-                Debug.WriteLine(certificateResult.NotAfter);
-                Debug.WriteLine(certificateResult.Issuer);
-
-                LoadCertificate(certificateResult);
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Exception Error: {0}", ex);
-                return;
-            }
+            addStireForm.ShowDialog();
         }
 
         private void statusBar_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -77,7 +57,7 @@ namespace SSLCertificateTrakcer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -87,10 +67,48 @@ namespace SSLCertificateTrakcer
 
         }
 
-        public void LoadCertificate( X509Certificate2 cert)
+        private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
         {
 
-            CertificateList.Add(new CertificateView { websiteAddress = serverName, Issuer = cert.GetNameInfo(X509NameType.SimpleName, true), ExpiryDate = cert.NotAfter.Date});
+            if (sslDataGrid.SelectedRows.Count > 0)
+            {
+                remSelectedBtn.Enabled = true;
+            }
+            else
+            {
+                remSelectedBtn.Enabled = false;
+            }
+
+        }
+
+
+        private void MainForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            sslDataGrid.ClearSelection();
+        }
+
+        private void sslDataGrid_MouseClick(object sender, MouseEventArgs e)
+        {
+            var hit = sslDataGrid.HitTest(e.X, e.Y);
+
+            if (hit.Type == DataGridViewHitTestType.None)
+            {
+                sslDataGrid.ClearSelection();
+            }
+        }
+
+        private void statusBar_MouseClick(object sender, MouseEventArgs e)
+        {
+            sslDataGrid.ClearSelection();
+        }
+
+
+        public void LoadCertificate(X509Certificate2 cert, string website)
+        {
+
+            var data = new CertificateView(cert, website);
+
+            CertificateList.Add(data);
 
             bs.ResetBindings(false);
         }

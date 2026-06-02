@@ -13,6 +13,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing && (certificateResult != null))
+            {
+                certificateResult.Dispose();
+            }
+
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -30,6 +35,8 @@
         {
             addSiteBtn_Form2 = new Button();
             cancelBtn_Form2 = new Button();
+            WebAddressInput = new TextBox();
+            EnterWebAddressLbl = new Label();
             SuspendLayout();
             // 
             // addSiteBtn_Form2
@@ -64,6 +71,26 @@
             cancelBtn_Form2.TextImageRelation = TextImageRelation.ImageBeforeText;
             cancelBtn_Form2.UseVisualStyleBackColor = false;
             // 
+            // WebAddressInput
+            // 
+            WebAddressInput.Location = new Point(97, 80);
+            WebAddressInput.Multiline = true;
+            WebAddressInput.Name = "WebAddressInput";
+            WebAddressInput.PlaceholderText = "(e.g. example.com, https://example.com)";
+            WebAddressInput.Size = new Size(273, 23);
+            WebAddressInput.TabIndex = 4;
+            // 
+            // EnterWebAddressLbl
+            // 
+            EnterWebAddressLbl.AutoSize = true;
+            EnterWebAddressLbl.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            EnterWebAddressLbl.Location = new Point(153, 33);
+            EnterWebAddressLbl.Name = "EnterWebAddressLbl";
+            EnterWebAddressLbl.Size = new Size(143, 19);
+            EnterWebAddressLbl.TabIndex = 5;
+            EnterWebAddressLbl.Text = "Enter Web Address:";
+            EnterWebAddressLbl.Click += label1_Click;
+            // 
             // AddSiteForm
             // 
             AcceptButton = addSiteBtn_Form2;
@@ -73,13 +100,17 @@
             CancelButton = cancelBtn_Form2;
             ClientSize = new Size(454, 211);
             ControlBox = false;
+            Controls.Add(EnterWebAddressLbl);
+            Controls.Add(WebAddressInput);
             Controls.Add(cancelBtn_Form2);
             Controls.Add(addSiteBtn_Form2);
             Font = new Font("Calibri", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = SystemColors.ControlText;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Margin = new Padding(3, 4, 3, 4);
+            MaximizeBox = false;
             MaximumSize = new Size(470, 250);
+            MinimizeBox = false;
             MinimumSize = new Size(470, 250);
             Name = "AddSiteForm";
             ShowIcon = false;
@@ -95,5 +126,7 @@
 
         private Button addSiteBtn_Form2;
         private Button cancelBtn_Form2;
+        private TextBox WebAddressInput;
+        private Label EnterWebAddressLbl;
     }
 }

@@ -10,7 +10,7 @@ namespace SSLCertificateTrakcer
         //Declare Objects that I am using to intatiate a connections to the server.
 
 
-        public async Task<X509Certificate2> ConnectAsync(string server, int Port)
+        public async Task<X509Certificate2> WebConnectAsync(string server, int Port)
         {
 
                 RemoteCertificateValidationCallback certCallBack = (_, _, _, _) => true;
