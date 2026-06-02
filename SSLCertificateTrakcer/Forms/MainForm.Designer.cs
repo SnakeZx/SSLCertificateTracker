@@ -116,6 +116,8 @@
             sslDataGrid.Size = new Size(1110, 576);
             sslDataGrid.TabIndex = 1;
             sslDataGrid.CellContentClick += sslDataGrid_CellContentClick;
+            sslDataGrid.RowsAdded += sslDataGrid_RowsAdded;
+            sslDataGrid.RowsRemoved += sslDataGrid_RowsRemoved;
             sslDataGrid.SelectionChanged += sslDataGrid_SelectionChanged;
             sslDataGrid.MouseClick += sslDataGrid_MouseClick;
             // 
@@ -264,6 +266,7 @@
             rfshSelectedBtn.Text = "Refresh Selected";
             rfshSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
             rfshSelectedBtn.UseVisualStyleBackColor = false;
+            rfshSelectedBtn.Click += rfshSelectedBtn_Click;
             // 
             // remSelectedBtn
             // 
@@ -281,6 +284,7 @@
             remSelectedBtn.Text = "Remove Selected";
             remSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
             remSelectedBtn.UseVisualStyleBackColor = false;
+            remSelectedBtn.Click += remSelectedBtn_Click;
             // 
             // MainForm
             // 

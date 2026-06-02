@@ -21,14 +21,14 @@ namespace SSLCertificateTrakcer
         public AddSiteForm()
         {
             InitializeComponent();
-            Debug.WriteLine($"AddSiteForm constructor at {DateTime.Now:HH:mm:ss.fff}");
         }
 
 
         public void addSiteBtn_Form2_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine($"submitBtn_Click entered at {DateTime.Now:HH:mm:ss.fff}");
-            UserInput = WebAddressInput.Text.Trim();
+            try
+            {
+                UserInput = WebAddressInput.Text.Trim();
 
                 var builder = new UriBuilder("https", UserInput);
 
@@ -37,6 +37,11 @@ namespace SSLCertificateTrakcer
 
                 DialogResult = DialogResult.OK;
                 Close();
+            }
+            catch (UriFormatException ex) 
+            {
+                MessageBox.Show("An Error Occured:\n\nWeb Address entered is incorrectly formatted or has illegal charctaers. Hostname could not be parsed from Web Address", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void label1_Click(object sender, EventArgs e)

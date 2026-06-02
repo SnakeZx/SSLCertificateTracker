@@ -1,4 +1,5 @@
 using SSLCertificateTrakcer.Model;
+using System.Data;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -43,7 +44,6 @@ namespace SSLCertificateTrakcer
 
         private async void addSiteBtn_Click(Object sender, EventArgs e)
         {
-            Debug.WriteLine($"addSiteBtn_Click entered at {DateTime.Now:HH:mm:ss.fff}");
             using AddSiteForm addSiteForm = new AddSiteForm();
             if (addSiteForm.ShowDialog(this) != DialogResult.OK)
             {
@@ -52,24 +52,16 @@ namespace SSLCertificateTrakcer
             try
             {
 
-                Debug.WriteLine("Connecting ....");
-
-                Debug.WriteLine(addSiteForm.finalUri.Host);
-
+                //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
                 certificateResult = await certificateService.WebConnectAsync(addSiteForm.finalUri.Host, port);
 
-                Debug.WriteLine("Connected To: " + addSiteForm.UserInput + " - On Port: " + port);
-
-                LoadCertificate(certificateResult,addSiteForm.finalUri.Host);
+                //call to LoadCertificate Method/
+                LoadCertificate(certificateResult, addSiteForm.finalUri.Host);
             }
-            catch (Exception ex) 
+            catch (SocketException ex)
             {
-                Debug.WriteLine("Exception: {0}", ex);
+                MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
-
-
-            addSiteForm.ShowDialog();
         }
 
         private void statusBar_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -144,5 +136,33 @@ namespace SSLCertificateTrakcer
 
             bs.ResetBindings(false);
         }
+
+        private void sslDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+
+        }
+
+        private void sslDataGrid_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+
+        }
+
+        private void UpdateRowcount()
+        {
+            //sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + "sites tracked";
+        }
+
+        private void remSelectedBtn_Click(object sender, EventArgs e)
+        {
+            sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
+        }
+
+        private async void rfshSelectedBtn_Click(object sender, EventArgs e)
+        {
+            //certificateResult = await certificateService.WebConnectAsync(sslDataGrid.SelectedRows[0].Cells[0].Value.ToString(), port);
+
+            //UpdateRow(certificateResult, sslDataGrid.SelectedRows[0].Cells[0].Value.ToString());
+        }
+
     }
 }
