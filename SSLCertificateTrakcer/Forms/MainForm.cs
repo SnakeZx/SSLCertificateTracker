@@ -1,3 +1,4 @@
+using SSLCertificateTrakcer.Model;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -6,11 +7,18 @@ namespace SSLCertificateTrakcer
 {
     public partial class MainForm : Form
     {
-        ////Creates a new object for my created class that can be called from here when actions are preformed.
+
+
+        //Creates a new object for my created class that can be called from here when actions are preformed.
+        private CertificateService certificateService = new CertificateService();
+        private X509Certificate2 certificateResult;
+
+
+        //Creates a new object for my created class that can be called from here when actions are preformed.
         List<CertificateView> CertificateList;
         BindingSource bs;
 
-        ////Hardcoded Port and string for the TcpClient Connection.
+        //Hardcoded Port and string for the TcpClient Connection.
         public int port = 443;
         public string serverName = "judicateWest.com";
 
@@ -35,9 +43,33 @@ namespace SSLCertificateTrakcer
 
         private async void addSiteBtn_Click(Object sender, EventArgs e)
         {
-            AddSiteForm addStireForm = new AddSiteForm();
+            Debug.WriteLine($"addSiteBtn_Click entered at {DateTime.Now:HH:mm:ss.fff}");
+            using AddSiteForm addSiteForm = new AddSiteForm();
+            if (addSiteForm.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+            try
+            {
 
-            addStireForm.ShowDialog();
+                Debug.WriteLine("Connecting ....");
+
+                Debug.WriteLine(addSiteForm.finalUri.Host);
+
+                certificateResult = await certificateService.WebConnectAsync(addSiteForm.finalUri.Host, port);
+
+                Debug.WriteLine("Connected To: " + addSiteForm.UserInput + " - On Port: " + port);
+
+                LoadCertificate(certificateResult,addSiteForm.finalUri.Host);
+            }
+            catch (Exception ex) 
+            {
+                Debug.WriteLine("Exception: {0}", ex);
+            }
+
+
+
+            addSiteForm.ShowDialog();
         }
 
         private void statusBar_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

@@ -13,10 +13,6 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (certificateResult != null))
-            {
-                certificateResult.Dispose();
-            }
 
             if (disposing && (components != null))
             {
@@ -70,6 +66,7 @@
             cancelBtn_Form2.Text = "Cancel";
             cancelBtn_Form2.TextImageRelation = TextImageRelation.ImageBeforeText;
             cancelBtn_Form2.UseVisualStyleBackColor = false;
+            cancelBtn_Form2.Click += cancelBtn_Form2_Click;
             // 
             // WebAddressInput
             // 

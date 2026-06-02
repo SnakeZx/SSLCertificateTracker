@@ -14,6 +14,11 @@
         protected override void Dispose(bool disposing)
         {
 
+            if (disposing && (certificateResult != null))
+            {
+                certificateResult.Dispose();
+            }
+
             if (disposing && (components != null))
             {
                 components.Dispose();
