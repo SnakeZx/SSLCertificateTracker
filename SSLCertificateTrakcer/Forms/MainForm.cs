@@ -3,6 +3,10 @@ using System.Data;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace SSLCertificateTrakcer
 {
@@ -42,7 +46,7 @@ namespace SSLCertificateTrakcer
             remSelectedBtn.Enabled = false;
         }
 
-        private async void addSiteBtn_Click(Object sender, EventArgs e)
+        private async void addSiteBtn_Click(object sender, EventArgs e)
         {
             using AddSiteForm addSiteForm = new AddSiteForm();
             if (addSiteForm.ShowDialog(this) != DialogResult.OK)
@@ -53,14 +57,40 @@ namespace SSLCertificateTrakcer
             {
 
                 //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
-                certificateResult = await certificateService.WebConnectAsync(addSiteForm.finalUri.Host, port);
+                certificateResult = await certificateService.WebConnectAsync(addSiteForm.FinalUri.Host, port);
 
-                //call to LoadCertificate Method/
-                LoadCertificate(certificateResult, addSiteForm.finalUri.Host);
+                ////call to LoadCertificate Method/
+                //LoadCertificate(certificateResult, addSiteForm.finalUri.Host);
+
+                if (sslDataGrid.Rows.Count != 0)
+                {
+                    for (int i = 0; i < sslDataGrid.Rows.Count; i++)
+                    {
+                        if (string.Equals(sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new InvalidOperationException($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?");
+
+                        }
+                        else
+                        {
+                            LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
+
+                        }
+                    }
+                }
+                else
+                {
+                    LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
+
+                }
             }
             catch (SocketException ex)
             {
                 MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show($"InvalidOperationException: {ex.Message}", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -132,7 +162,14 @@ namespace SSLCertificateTrakcer
 
             var data = new CertificateView(cert, website);
 
+            var options = new JsonSerializerOptions { WriteIndented = true };
+
+
             CertificateList.Add(data);
+                
+            var json = JsonSerializer.Serialize(data, options);
+            
+            Debug.WriteLine(json);
 
             bs.ResetBindings(false);
         }
@@ -149,19 +186,43 @@ namespace SSLCertificateTrakcer
 
         private void UpdateRowcount()
         {
-            //sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + "sites tracked";
+            sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + "sites tracked";
         }
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
         {
-            sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
+            var mBoxResult = MessageBox.Show($"Stop tracking {sslDataGrid.SelectedRows[0].Cells["websiteAddressDesign"].Value.ToString()}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (mBoxResult == DialogResult.Yes)
+            {
+                sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
+            }
         }
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-            //certificateResult = await certificateService.WebConnectAsync(sslDataGrid.SelectedRows[0].Cells[0].Value.ToString(), port);
+            //var Website = sslDataGrid.SelectedRows[0].Cells["websiteAddressDesign"].Value.ToString();
 
-            //UpdateRow(certificateResult, sslDataGrid.SelectedRows[0].Cells[0].Value.ToString());
+            //certificateResult = await certificateService.WebConnectAsync(Website, port);
+
+            ////call to LoadCertificate Method
+            //UpdateCertificate(certificateResult, Website);
+
+        }
+
+        public void UpdateCertificate(X509Certificate2 cert, string website)
+        {
+
+            //var data = new CertificateView(cert, website);
+
+            //var options = new JsonSerializerOptions { WriteIndented = true };
+
+            //var json = JsonSerializer.Serialize(data, options);
+
+            //Debug.WriteLine(json);
+
+            //CertificateList.
+
+            //bs.ResetBindings(false);
         }
 
     }
