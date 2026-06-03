@@ -25,7 +25,6 @@ namespace SSLCertificateTrakcer
 
         //Hardcoded Port and string for the TcpClient Connection.
         public int port = 443;
-        public string serverName = "judicateWest.com";
 
         public MainForm()
         {
@@ -59,38 +58,36 @@ namespace SSLCertificateTrakcer
                 //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
                 certificateResult = await certificateService.WebConnectAsync(addSiteForm.FinalUri.Host, port);
 
-                ////call to LoadCertificate Method/
-                //LoadCertificate(certificateResult, addSiteForm.finalUri.Host);
+                bool alreadytracked = false;
 
-                if (sslDataGrid.Rows.Count != 0)
-                {
-                    for (int i = 0; i < sslDataGrid.Rows.Count; i++)
+                    //loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
+                    for (int i = 0; i < sslDataGrid.RowCount; i++)
                     {
-                        if (string.Equals(sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
+                    Debug.WriteLine(i);
+                    if (string.Equals(sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
                         {
-                            throw new InvalidOperationException($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?");
-
-                        }
-                        else
-                        {
-                            LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
-
+                            alreadytracked = true;
+                            break;
                         }
                     }
+
+                if (alreadytracked)
+                {
+                   
+                    var response = MessageBox.Show($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    //if(response == DialogResult.Yes)
+                    //{
+
+                    //}
                 }
                 else
                 {
                     LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
-
                 }
             }
             catch (SocketException ex)
             {
                 MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (InvalidOperationException ex)
-            {
-                MessageBox.Show($"InvalidOperationException: {ex.Message}", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             }
         }
 
