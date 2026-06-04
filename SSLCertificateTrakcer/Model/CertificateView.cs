@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace SSLCertificateTrakcer.Model
 {
     public class CertificateView
     {
-        public string websiteAddress {  get; set; }
+        public string websiteAddress { get; set; } = string.Empty;
 
-        public string Issuer {  get; set; }
+        public string Issuer {  get; set; } = string.Empty;
         public DateTime ExpiryDate { get; set; }
 
         public int DaysLeft => (ExpiryDate.Date - DateTime.Today).Days;
+
+        public string Status { get; set; } = string.Empty;
 
         public CertificateView(X509Certificate2 cert, string website)
         {
@@ -19,6 +22,8 @@ namespace SSLCertificateTrakcer.Model
             websiteAddress = website;
 
             Issuer = ExtractIssuer(cert.IssuerName);
+
+            Status = "\u26A0 Warning";
         }
 
         private static string ExtractIssuer(X500DistinguishedName IssuerName)

@@ -14,8 +14,8 @@ namespace SSLCertificateTrakcer
     public partial class AddSiteForm : Form
     {
 
-        public Uri FinalUri {  get; private set; }
-        public string UserInput { get; private set; }
+        public Uri FinalUri { get; private set; } = new Uri("about:blank");
+        public string UserInput { get; private set; } = string.Empty;
 
 
         public AddSiteForm()

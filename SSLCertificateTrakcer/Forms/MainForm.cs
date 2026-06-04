@@ -16,7 +16,7 @@ namespace SSLCertificateTrakcer
 
         //Creates a new object for my created class that can be called from here when actions are preformed.
         private CertificateService certificateService = new CertificateService();
-        private X509Certificate2 certificateResult;
+        private X509Certificate2? certificateResult;
 
 
         //Creates a new object for my created class that can be called from here when actions are preformed.
@@ -63,8 +63,9 @@ namespace SSLCertificateTrakcer
                     //loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
                     for (int i = 0; i < sslDataGrid.RowCount; i++)
                     {
-                    Debug.WriteLine(i);
-                    if (string.Equals(sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
+                    string CellData = sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value.ToString();
+
+                    if (string.Equals(CellData, addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
                         {
                             alreadytracked = true;
                             break;
@@ -91,24 +92,14 @@ namespace SSLCertificateTrakcer
             }
         }
 
-        private void statusBar_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStripContainer1_ContentPanel_Load(object sender, EventArgs e)
         {
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            UpdateRowcount();
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -161,7 +152,6 @@ namespace SSLCertificateTrakcer
 
             var options = new JsonSerializerOptions { WriteIndented = true };
 
-
             CertificateList.Add(data);
                 
             var json = JsonSerializer.Serialize(data, options);
@@ -169,6 +159,8 @@ namespace SSLCertificateTrakcer
             Debug.WriteLine(json);
 
             bs.ResetBindings(false);
+
+            UpdateRowcount();
         }
 
         private void sslDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -183,7 +175,7 @@ namespace SSLCertificateTrakcer
 
         private void UpdateRowcount()
         {
-            sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + "sites tracked";
+            sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + " sites tracked";
         }
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
@@ -192,6 +184,7 @@ namespace SSLCertificateTrakcer
             if (mBoxResult == DialogResult.Yes)
             {
                 sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
+                UpdateRowcount();
             }
         }
 
