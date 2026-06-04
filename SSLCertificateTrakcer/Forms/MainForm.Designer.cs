@@ -242,7 +242,7 @@
             // 
             // websiteAddressDesign
             // 
-            websiteAddressDesign.DataPropertyName = "websiteAddress";
+            websiteAddressDesign.DataPropertyName = "HostName";
             dataGridViewCellStyle2.Format = "yyyy-MM-dd";
             dataGridViewCellStyle2.NullValue = null;
             websiteAddressDesign.DefaultCellStyle = dataGridViewCellStyle2;
@@ -252,7 +252,7 @@
             // 
             // certIssuerDesign
             // 
-            certIssuerDesign.DataPropertyName = "Issuer";
+            certIssuerDesign.DataPropertyName = "LastIssuer";
             certIssuerDesign.HeaderText = "Issuer";
             certIssuerDesign.Name = "certIssuerDesign";
             certIssuerDesign.ReadOnly = true;
@@ -260,7 +260,7 @@
             // expiryDateCol
             // 
             expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            expiryDateCol.DataPropertyName = "ExpiryDate";
+            expiryDateCol.DataPropertyName = "LastExpiryUtc";
             dataGridViewCellStyle3.Format = "yyyy-MM-dd";
             dataGridViewCellStyle3.NullValue = null;
             expiryDateCol.DefaultCellStyle = dataGridViewCellStyle3;
@@ -305,6 +305,7 @@
             MinimumSize = new Size(1000, 700);
             Name = "MainForm";
             Text = "SSL Certificate Tracker";
+            FormClosing += MainForm_FormClosing;
             Load += Form1_Load;
             MouseClick += MainForm_MouseClick;
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).EndInit();
