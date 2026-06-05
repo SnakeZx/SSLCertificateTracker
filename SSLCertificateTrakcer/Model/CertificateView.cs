@@ -13,11 +13,31 @@ namespace SSLCertificateTrakcer.Model
         public string LastIssuer {  get; set; } = string.Empty;
         [JsonInclude]
         public DateTime LastExpiryUtc { get; set; }
+        [JsonIgnore]
         public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
-        
+        [JsonIgnore]
         public string Status { get; set; } = string.Empty;
-
+        [JsonIgnore]
         DateTime LastCheckedUtc = DateTime.UtcNow;
+
+        [JsonConstructor]
+        public CertificateView()
+        {
+
+        }
+
+
+        public CertificateView(CertificateView json)
+        {
+            LastExpiryUtc = json.LastExpiryUtc;
+
+            HostName = json.HostName;
+
+            LastIssuer = json.LastIssuer;
+
+            Status = "\u26A0 Warning";
+        }
+
 
         public CertificateView(X509Certificate2 cert, string website)
         {
