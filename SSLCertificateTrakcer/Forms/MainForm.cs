@@ -2,6 +2,7 @@ using SSLCertificateTrakcer.Model;
 using System.Data;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,8 +13,7 @@ namespace SSLCertificateTrakcer
 {
     public partial class MainForm : Form
     {
-        string FolderPath = @"%APPDATA%\SSLCertTracker";
-        string FilePath = @"%APPDATA%\SSLCertTracker\sites.json";
+        string FolderPath = @"%APPDATA%\SSLCertTracker\";
 
 
         //Creates a new object for my created class that can be called from here when actions are preformed.
@@ -23,7 +23,7 @@ namespace SSLCertificateTrakcer
 
         //Creates a new object for my created class that can be called from here when actions are preformed.
         List<CertificateView> CertificateList;
-        BindingSource bs;
+        BindingSource? bs;
 
         //Hardcoded Port and string for the TcpClient Connection.
         public int port = 443;
@@ -32,42 +32,6 @@ namespace SSLCertificateTrakcer
         {
             InitializeComponent();
 
-            string expandedFilepath = Environment.ExpandEnvironmentVariables(FilePath);
-            string expandedFolderpath = Environment.ExpandEnvironmentVariables(FolderPath);
-
-            if (!Directory.Exists(expandedFolderpath))
-            {
-                Directory.CreateDirectory(expandedFolderpath);
-            }
-
-            //Binding Data to the Grid before form is created.
-
-            if (File.Exists(expandedFilepath))
-            {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                string ExistingJson = File.ReadAllText(expandedFilepath);
-                CertificateList = JsonSerializer.Deserialize<List<CertificateView>>(ExistingJson)!;
-                Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {expandedFilepath}");
-
-            }
-            else
-            {
-                CertificateList = new List<CertificateView>();
-                Debug.WriteLine("No File Found - New list made");
-            }
-
-
-            bs = new BindingSource();
-
-            bs.DataSource = CertificateList;
-            sslDataGrid.DataSource = bs;
-
-            //DataGrid Settings
-            sslDataGrid.ReadOnly = true;
-            sslDataGrid.AutoGenerateColumns = false;
-            sslDataGrid.MultiSelect = false;
-
-            remSelectedBtn.Enabled = false;
         }
 
         private void addSiteBtn_Click(object sender, EventArgs e)
@@ -83,9 +47,9 @@ namespace SSLCertificateTrakcer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitializeDataAsync();
+
             UpdateRowcount();
-            
-            string expandedpath = Environment.ExpandEnvironmentVariables(FilePath);
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -136,13 +100,7 @@ namespace SSLCertificateTrakcer
 
             var data = new CertificateView(cert, website);
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
-
             CertificateList.Add(data);
-
-            var json = JsonSerializer.Serialize(data, options);
-
-            Debug.WriteLine(json);
 
             bs.ResetBindings(false);
 
@@ -247,18 +205,64 @@ namespace SSLCertificateTrakcer
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+
+        public async void InitializeDataAsync()
         {
-            string expandedpath = Environment.ExpandEnvironmentVariables(FilePath);
-            if (sslDataGrid.RowCount > 0)
+            string expandedFolderpath = Environment.ExpandEnvironmentVariables(FolderPath);
+            string Filepath = Environment.ExpandEnvironmentVariables(Path.Combine(FolderPath, "sites.json"));
+
+            JsonSerializerOptions options = new () { PropertyNameCaseInsensitive = true, IncludeFields = true };
+
+            if (!Directory.Exists(expandedFolderpath))
             {
-                string updatedJson = JsonSerializer.Serialize(CertificateList, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(expandedpath, updatedJson);
-                Debug.WriteLine($"JSON File Created at: {expandedpath}");
+                Directory.CreateDirectory(expandedFolderpath);
+                Debug.WriteLine($"Application folder not found in directory.\nNew Folder Path created for application data:\nFile Path: {expandedFolderpath}");
+            }
+
+            //Binding Data to the Grid before form is created.
+            if (File.Exists(Filepath))
+            {
+                string ExistingJson = await File.ReadAllTextAsync(Filepath);
+                CertificateList = JsonSerializer.Deserialize<List<CertificateView>>(ExistingJson, options)!;
+                Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {Filepath}");
+
             }
             else
             {
-                Debug.WriteLine($"NO ROWS FOUND! FILE NOT CREATED!");
+                CertificateList = new List<CertificateView>();
+                Debug.WriteLine("No File Found - New list made");
+            }
+
+
+            bs = new BindingSource();
+
+            bs.DataSource = CertificateList;
+            sslDataGrid.DataSource = bs;
+
+            //DataGrid Settings
+            sslDataGrid.ReadOnly = true;
+            sslDataGrid.AutoGenerateColumns = false;
+            sslDataGrid.MultiSelect = false;
+
+            remSelectedBtn.Enabled = false;
+        }
+
+
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string FilePath = Environment.ExpandEnvironmentVariables(Path.Combine(FolderPath, "sites.json"));
+
+
+            if (sslDataGrid.RowCount > 0)
+            {
+                string updatedJson = JsonSerializer.Serialize(CertificateList, new JsonSerializerOptions { WriteIndented = true, PropertyNameCaseInsensitive = true});
+                File.WriteAllText(FilePath, updatedJson);
+                Debug.WriteLine($"JSON File Created in directory\nFile Path: {FilePath}");
+            }
+            else
+            {
+                Debug.WriteLine("No rows in datagrid. No json file will be created.");
             }
         }
     }

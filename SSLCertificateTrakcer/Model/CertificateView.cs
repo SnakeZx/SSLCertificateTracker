@@ -7,18 +7,15 @@ namespace SSLCertificateTrakcer.Model
 {
     public class CertificateView
     {
-
+        [JsonInclude]
         public string HostName { get; set; } = string.Empty;
-
+        [JsonInclude]
         public string LastIssuer {  get; set; } = string.Empty;
-
+        [JsonInclude]
         public DateTime LastExpiryUtc { get; set; }
-        [JsonIgnore()]
         public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
         
-        [JsonIgnore()]
         public string Status { get; set; } = string.Empty;
-
 
         DateTime LastCheckedUtc = DateTime.UtcNow;
 
@@ -28,17 +25,18 @@ namespace SSLCertificateTrakcer.Model
 
             HostName = website;
 
-            LastIssuer = ExtractIssuer(cert.IssuerName);
+            LastIssuer = ExtractIssuer(cert.Issuer.ToString());
 
             Status = "\u26A0 Warning";
         }
 
-        private static string ExtractIssuer(X500DistinguishedName IssuerName)
+
+        private static string ExtractIssuer(string IssuerName)
         {
 
             string defaultVal = "Issuer Could not be found in X5902 Data";
 
-            string[] parsedName = IssuerName.Name.Split(',');
+            string[] parsedName = IssuerName.Split(',');
 
             for (int i = 0; i < parsedName.Length; i++) {
                 if (parsedName[i].Contains("O=")){
