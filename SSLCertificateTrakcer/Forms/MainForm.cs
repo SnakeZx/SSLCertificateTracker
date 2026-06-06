@@ -32,6 +32,13 @@ namespace SSLCertificateTrakcer
         {
             InitializeComponent();
 
+            //DataGrid Settings
+            sslDataGrid.ReadOnly = true;
+            sslDataGrid.AutoGenerateColumns = false;
+            sslDataGrid.MultiSelect = false;
+
+            remSelectedBtn.Enabled = false;
+
         }
 
         private void addSiteBtn_Click(object sender, EventArgs e)
@@ -168,8 +175,6 @@ namespace SSLCertificateTrakcer
             try
             {
 
-                //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
-                certificateResult = await certificateService.WebConnectAsync(addSiteForm.FinalUri.Host, port);
 
                 bool alreadytracked = false;
 
@@ -177,7 +182,7 @@ namespace SSLCertificateTrakcer
                 for (int i = 0; i < sslDataGrid.RowCount; i++)
                 {
 
-                    if (string.Equals(sslDataGrid.Rows[i].Cells["websiteAddressDesign"].Value!.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(sslDataGrid.Rows[i].Cells["WebsiteColumn"].Value!.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
                     {
                         alreadytracked = true;
                         break;
@@ -195,6 +200,9 @@ namespace SSLCertificateTrakcer
                 }
                 else
                 {
+                    //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
+                    certificateResult = await certificateService.WebConnectAsync(addSiteForm.FinalUri.Host, port);
+
                     LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
                 }
             }
@@ -204,7 +212,7 @@ namespace SSLCertificateTrakcer
             }
         }
 
-
+        //Converts JSON into C# List<> object and binds that datato the list. 
         public async void InitializeDataAsync()
         {
             string expandedFolderpath = Environment.ExpandEnvironmentVariables(FolderPath);
@@ -226,26 +234,19 @@ namespace SSLCertificateTrakcer
                 using Stream ExistingJson =  File.OpenRead(Filepath);
                 CertificateList = await JsonSerializer.DeserializeAsync<List<CertificateView>>(ExistingJson, options);
                     Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {Filepath}");
-                bs.DataSource = CertificateList;
 
             }
             else
             {
                 CertificateList = new List<CertificateView>();
                 Debug.WriteLine("No File Found - New list made");
-                bs.DataSource = CertificateList;
             }
 
+            bs.DataSource = CertificateList;
             sslDataGrid.DataSource = bs;
+            
+            UpdateRowcount();
 
-
-
-            //DataGrid Settings
-            sslDataGrid.ReadOnly = true;
-            sslDataGrid.AutoGenerateColumns = false;
-            sslDataGrid.MultiSelect = false;
-
-            remSelectedBtn.Enabled = false;
         }
 
 
