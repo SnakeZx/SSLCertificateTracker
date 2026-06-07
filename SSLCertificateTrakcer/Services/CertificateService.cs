@@ -3,12 +3,11 @@ using System.Diagnostics;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
-namespace SSLCertificateTrakcer
+namespace SSLCertificateTracker.Services
 {
     internal class CertificateService
     {
         //Declare Objects that I am using to intatiate a connections to the server.
-
 
         public async Task<X509Certificate2> WebConnectAsync(string server, int Port)
         {

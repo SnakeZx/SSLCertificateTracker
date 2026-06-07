@@ -1,4 +1,4 @@
-namespace SSLCertificateTrakcer
+namespace SSLCertificateTracker
 {
     internal static class Program
     {

@@ -1,4 +1,4 @@
-﻿namespace SSLCertificateTrakcer
+﻿namespace SSLCertificateTracker
 {
     partial class AddSiteForm
     {
@@ -29,27 +29,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            addSiteBtn_Form2 = new Button();
+            AddSiteConfirm = new Button();
             cancelBtn_Form2 = new Button();
             WebAddressInput = new TextBox();
             EnterWebAddressLbl = new Label();
             SuspendLayout();
             // 
-            // addSiteBtn_Form2
+            // AddSiteConfirm
             // 
-            addSiteBtn_Form2.AutoSize = true;
-            addSiteBtn_Form2.BackColor = Color.FromArgb(35, 122, 254);
-            addSiteBtn_Form2.FlatAppearance.BorderSize = 0;
-            addSiteBtn_Form2.FlatStyle = FlatStyle.Flat;
-            addSiteBtn_Form2.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            addSiteBtn_Form2.ForeColor = Color.White;
-            addSiteBtn_Form2.Location = new Point(97, 160);
-            addSiteBtn_Form2.Name = "addSiteBtn_Form2";
-            addSiteBtn_Form2.Size = new Size(115, 39);
-            addSiteBtn_Form2.TabIndex = 1;
-            addSiteBtn_Form2.Text = "+ Add Site";
-            addSiteBtn_Form2.UseVisualStyleBackColor = false;
-            addSiteBtn_Form2.Click += addSiteBtn_Form2_Click;
+            AddSiteConfirm.AutoSize = true;
+            AddSiteConfirm.BackColor = Color.FromArgb(35, 122, 254);
+            AddSiteConfirm.FlatAppearance.BorderSize = 0;
+            AddSiteConfirm.FlatStyle = FlatStyle.Flat;
+            AddSiteConfirm.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            AddSiteConfirm.ForeColor = Color.White;
+            AddSiteConfirm.Location = new Point(97, 160);
+            AddSiteConfirm.Name = "AddSiteConfirm";
+            AddSiteConfirm.Size = new Size(115, 39);
+            AddSiteConfirm.TabIndex = 1;
+            AddSiteConfirm.Text = "Confirm";
+            AddSiteConfirm.UseVisualStyleBackColor = false;
             // 
             // cancelBtn_Form2
             // 
@@ -90,7 +89,7 @@
             // 
             // AddSiteForm
             // 
-            AcceptButton = addSiteBtn_Form2;
+            AcceptButton = AddSiteConfirm;
             AutoScaleDimensions = new SizeF(8F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(213, 213, 213);
@@ -100,7 +99,7 @@
             Controls.Add(EnterWebAddressLbl);
             Controls.Add(WebAddressInput);
             Controls.Add(cancelBtn_Form2);
-            Controls.Add(addSiteBtn_Form2);
+            Controls.Add(AddSiteConfirm);
             Font = new Font("Calibri", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = SystemColors.ControlText;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -121,7 +120,7 @@
 
         #endregion
 
-        private Button addSiteBtn_Form2;
+        private Button AddSiteConfirm;
         private Button cancelBtn_Form2;
         private TextBox WebAddressInput;
         private Label EnterWebAddressLbl;
