@@ -49,6 +49,7 @@
             AddSiteConfirm.TabIndex = 1;
             AddSiteConfirm.Text = "Confirm";
             AddSiteConfirm.UseVisualStyleBackColor = false;
+            AddSiteConfirm.Click += AddSiteConfirmClick;
             // 
             // cancelBtn_Form2
             // 

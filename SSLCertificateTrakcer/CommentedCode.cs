@@ -134,6 +134,9 @@ namespace SSLCertificateTracker
         //    //    string updatedJson = JsonSerializer.Serialize(_dataGridList, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         //    //    File.WriteAllText(FilePath, updatedJson);
         //    //    
+
+
+
         //    //}
         //    //else 
         //    //{
@@ -168,6 +171,34 @@ namespace SSLCertificateTracker
         //    //Close();
         //}
 
+
+
+        //bool alreadytracked = false;
+
+        //// loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
+        //foreach(string item in _model)
+        //{
+
+        //    if (_model.HostName.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        alreadytracked = true;
+        //        break;
+        //    }
+        //}
+
+        //if (alreadytracked)
+        //{
+
+        //    var response = MessageBox.Show($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+        //    if (response == DialogResult.Yes)
+        //    {
+        //        AddNewSiteAsync();
+        //    }
+        //}
+        //else
+        //{
+        //    //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
+        //}
 
     }
 }

@@ -1,15 +1,5 @@
 using SSLCertificateTracker.Model;
-using SSLCertificateTracker.Services;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.Design.AxImporter;
 
 namespace SSLCertificateTracker
 {
@@ -32,11 +22,6 @@ namespace SSLCertificateTracker
             sslDataGrid.MultiSelect = false;
 
             remSelectedBtn.Enabled = false;
-
-            addSiteBtn.Click += addSiteBtnClick;
-
-
-
         }
 
         private void addSiteBtnClick(object? sender, EventArgs e)
@@ -115,12 +100,12 @@ namespace SSLCertificateTracker
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
         {
-            var mBoxResult = MessageBox.Show($"Stop tracking {sslDataGrid.SelectedRows[0].Cells["WebsiteColumn"].Value!.ToString()}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (mBoxResult == DialogResult.Yes)
-            {
-                sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
-                UpdateRowcount();
-            }
+            //var mBoxResult = MessageBox.Show($"Stop tracking {sslDataGrid.SelectedRows[0].Cells["WebsiteColumn"].Value!.ToString()}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //if (mBoxResult == DialogResult.Yes)
+            //{
+            //    sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
+            //    UpdateRowcount();
+            //}
         }
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
@@ -130,7 +115,7 @@ namespace SSLCertificateTracker
 
         //Converts JSON into C# List<> object and binds that datato the list. 
         public async void InitializeDataAsync()
-        { 
+        {
 
         }
 
@@ -145,5 +130,6 @@ namespace SSLCertificateTracker
         {
             sslDataGrid.DataSource = list;
         }
+
     }
 }

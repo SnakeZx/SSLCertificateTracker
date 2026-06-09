@@ -73,6 +73,7 @@
             addSiteBtn.TabIndex = 0;
             addSiteBtn.Text = "+ Add Site";
             addSiteBtn.UseVisualStyleBackColor = false;
+            addSiteBtn.Click += addSiteBtnClick;
             // 
             // sslDataGrid
             // 

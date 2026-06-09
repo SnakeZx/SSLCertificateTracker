@@ -1,3 +1,7 @@
+using SSLCertificateTracker.Controllers;
+using SSLCertificateTracker.Model;
+
+
 namespace SSLCertificateTracker
 {
     internal static class Program
@@ -11,7 +15,14 @@ namespace SSLCertificateTracker
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new MainForm());
+
+            MainForm view = new ();
+
+            CertificateModel model = new ();
+
+            Controller controller = new(view, model);
+
+            Application.Run(view);
         }
     }
 }

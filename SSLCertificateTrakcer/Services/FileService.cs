@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Text.Json;
 
 namespace SSLCertificateTracker.Services
@@ -18,6 +17,11 @@ namespace SSLCertificateTracker.Services
         public FileService()
         {
             _options = new JsonSerializerOptions{ IncludeFields = true, PropertyNameCaseInsensitive = true, WriteIndented = true };
+
+            if (!Directory.Exists(_folderPath))
+            {
+                Directory.CreateDirectory(_folderPath);
+            }
         }
 
         public async Task SaveAsync<T>(string filename, BindingList<CertificateModel> list)

@@ -24,15 +24,20 @@ namespace SSLCertificateTracker
         public AddSiteForm()
         {
             InitializeComponent();
-
-            AddSiteConfirm.Click += AddSiteConfirmClick;
-
+            
         }
 
 
         public void AddSiteConfirmClick(object? sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(WebAddressInput.Text))
+            {
+                return;
+            }
+            
             OnUserInputConfirm?.Invoke(WebAddressInput.Text);
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void label1_Click(object sender, EventArgs e)
