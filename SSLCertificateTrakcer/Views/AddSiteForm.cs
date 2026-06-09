@@ -32,30 +32,7 @@ namespace SSLCertificateTracker
 
         public void AddSiteConfirmClick(object? sender, EventArgs e)
         {
-            //Takes user input and builds a URI using the Uri Builder I defined so all links come out the same.
-
-            //if (!UserInput.Contains(":")) 
-            //{
-            //    UserInput = "https://" + UserInput;
-            //}
-
-            //if (Uri.IsWellFormedUriString(UserInput, UriKind.Absolute)) 
-            //{
-            //    FinalUri = new Uri(UserInput);
-            //}
-
-            //if (FinalUri.Scheme != "https")
-            //{
-            //    /*Catches Formating of the User input and prompts a MessageBox with an Ok button
-            //      this is to let the user know the address they entered is not formatted correctly or has illegal charachters that cannot be in a web address.*/
-            //    MessageBox.Show("An Error Occured:\n\nWeb Address entered is incorrectly formatted or has illegal charctaers. Hostname could not be parsed from Web Address", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //}
-
             OnUserInputConfirm?.Invoke(WebAddressInput.Text);
-            //OnConfirmSave?.Invoke();
-
-            //DialogResult = DialogResult.OK;
-            //Close();
         }
 
         private void label1_Click(object sender, EventArgs e)

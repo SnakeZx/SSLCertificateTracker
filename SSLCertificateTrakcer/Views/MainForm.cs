@@ -19,6 +19,8 @@ namespace SSLCertificateTracker
         public event Action? OnAddNewSiteClick;
         public event Action? OnMainFormClick;
 
+        public event Action<List<CertificateModel>>? OnLoadPopulateGridData;
+
 
         public MainForm()
         {
@@ -50,7 +52,6 @@ namespace SSLCertificateTracker
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitializeDataAsync();
 
             UpdateRowcount();
         }
@@ -97,17 +98,6 @@ namespace SSLCertificateTracker
             sslDataGrid.ClearSelection();
         }
 
-
-        //public void LoadCertificate(List<DataGrid> dataGridList)
-        //{
-
-        //    //_dataGridList.Add(dataGridList);
-
-        //    //bs!.ResetBindings(false);
-
-        //    //UpdateRowcount();
-        //}
-
         private void sslDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
 
@@ -135,108 +125,12 @@ namespace SSLCertificateTracker
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-            //var Website = sslDataGrid.SelectedRows[0].Cells["websiteAddressDesign"].Value.ToString();
-
-            //certificateResult = await certificateService.WebConnectAsync(Website, port);
-
-            ////call to LoadCertificate Method
-            //UpdateCertificate(certificateResult, Website);
 
         }
-
-        public void UpdateCertificate(X509Certificate2 cert, string website)
-        {
-
-            //var data = new CertificateView(cert, website);
-
-            //var options = new JsonSerializerOptions { WriteIndented = true };
-
-            //var json = JsonSerializer.Serialize(data, options);
-
-            //Debug.WriteLine(json);
-
-            //CertificateList.
-
-            //bs.ResetBindings(false);
-        }
-
-        //private async void AddNewSiteAsync()
-        //{
-        //    using AddSiteForm addSiteForm = new AddSiteForm();
-        //    if (addSiteForm.ShowDialog(this) != DialogResult.OK)
-        //    {
-        //        return;
-        //    }
-        //    try
-        //    {
-
-
-        //        bool alreadytracked = false;
-
-        //        //loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
-        //        for (int i = 0; i < sslDataGrid.RowCount; i++)
-        //        {
-
-        //            if (string.Equals(sslDataGrid.Rows[i].Cells["WebsiteColumn"].Value!.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
-        //            {
-        //                alreadytracked = true;
-        //                break;
-        //            }
-        //        }
-
-        //        if (alreadytracked)
-        //        {
-
-        //            var response = MessageBox.Show($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-        //            if (response == DialogResult.Yes)
-        //            {
-        //                AddNewSiteAsync();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
-        //            certificateResult = await certificateService.WebConnectAsync(addSiteForm.FinalUri.Host, port);
-
-        //            LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
-        //        }
-        //    }
-        //    catch (SocketException ex)
-        //    {
-        //        MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //    }
-        //}
 
         //Converts JSON into C# List<> object and binds that datato the list. 
         public async void InitializeDataAsync()
-        {
-            //string expandedFolderpath = Environment.ExpandEnvironmentVariables(FolderPath);
-            //string Filepath = Environment.ExpandEnvironmentVariables(Path.Combine(FolderPath, "sites.json"));
-
-
-            //JsonSerializerOptions options = new () { PropertyNameCaseInsensitive = true, IncludeFields = true };
-
-            //if (!Directory.Exists(expandedFolderpath))
-            //{
-            //    Directory.CreateDirectory(expandedFolderpath);
-            //    Debug.WriteLine($"Application folder not found in directory.\nNew Folder Path created for application data:\nFile Path: {expandedFolderpath}");
-            //}
-
-            ////Binding Data to the Grid before form is created.
-            //if (File.Exists(Filepath))
-            //{
-            //    using Stream ExistingJson =  File.OpenRead(Filepath);
-            //    _dataGridList = await JsonSerializer.DeserializeAsync<List<CertificateModel>>(ExistingJson, options);
-            //        Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {Filepath}");
-
-            //}
-            //else
-            //{
-            //    _dataGridList = new List<CertificateModel>();
-            //    Debug.WriteLine("No File Found - New list made");
-            //}
-            
-            //UpdateRowcount();
+        { 
 
         }
 
@@ -244,20 +138,7 @@ namespace SSLCertificateTracker
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //string FilePath = Environment.ExpandEnvironmentVariables(Path.Combine(FolderPath, "sites.json"));
 
-
-            //if (sslDataGrid.RowCount > 0)
-            //{
-            //    string updatedJson = JsonSerializer.Serialize(_dataGridList, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            //    File.WriteAllText(FilePath, updatedJson);
-            //    
-            //}
-            //else 
-            //{
-
-            //    Debug.WriteLine("No rows in datagrid. No json file will be created.");
-            //}
         }
 
         internal void SetDataSource(BindingList<CertificateModel> list)

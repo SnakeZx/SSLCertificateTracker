@@ -1,6 +1,7 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace SSLCertificateTracker.Controller
 {
@@ -44,50 +45,41 @@ namespace SSLCertificateTracker.Controller
             }
         }
 
-
         private async void GetCertificateData(string userInput)
         {
+            try
+            {
 
 
-            //try
-            //{
+                bool alreadytracked = false;
 
+                // loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
+                foreach(string item in _model)
+                {
 
-            //    bool alreadytracked = false;
+                    if (_model.HostName.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                    {
+                        alreadytracked = true;
+                        break;
+                    }
+                }
 
-            //    //loops through each and returns already tracked as true if userinput matches what was a website that is already added to the sslDataGridView
-            //    //for (int i = 0; i < _view.sslDataGrid.RowCount; i++)
-            //    //{
+                if (alreadytracked)
+                {
 
-            //    //    if (string.Equals(sslDataGrid.Rows[i].Cells["WebsiteColumn"].Value!.ToString(), addSiteForm.FinalUri.Host, StringComparison.OrdinalIgnoreCase))
-            //    //    {
-            //    //        alreadytracked = true;
-            //    //        break;
-            //    //    }
-            //    //}
-
-            //    if (alreadytracked)
-            //    {
-
-            //        var response = MessageBox.Show($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-            //        if (response == DialogResult.Yes)
-            //        {
-            //            AddNewSiteAsync();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
-            _model.Certificate = await _certificateService.WebConnectAsync(userInput, port);
-            string certificateDataString =  
-
-            //_view.LoadCertificate(certificateResult, addSiteForm.FinalUri.Host);
-            //    }
-            //}
-            //catch (SocketException ex)
-            //{
-            //    MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //}
+                    var response = MessageBox.Show($"{addSiteForm.FinalUri.Host} is already being tracked.\n\nWould you like enter a new site?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    if (response == DialogResult.Yes)
+                    {
+                        AddNewSiteAsync();
+                    }
+                }
+                else
+                {
+                    //Returns X509Certificart2 and Stores a copy after the TcpClient and SslStream are closed.
+                    _model.Certificate = await _certificateService.WebConnectAsync(userInput, port);
+                }
+            
+            }
         }
 
         private async void HandleSaveRequest()
