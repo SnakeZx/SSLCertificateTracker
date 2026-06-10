@@ -128,15 +128,37 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if(e.ColumnIndex == certStatusDesign.Index && e.Value.ToString().Contains("ok", StringComparison.OrdinalIgnoreCase) || e.Value.ToString().Contains("fetch", StringComparison.OrdinalIgnoreCase)) 
+            string? statusValue = e.Value!.ToString();
+
+            if (e.ColumnIndex == certStatusDesign.Index && statusValue!.Contains("ok", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("fetch", StringComparison.OrdinalIgnoreCase))
             {
+                e.CellStyle.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold);
                 e.CellStyle.ForeColor = Color.Green;
+                e.CellStyle.SelectionForeColor = Color.Green;
             }
-            else if(e.ColumnIndex == certStatusDesign.Index)
+            else if (e.ColumnIndex == certStatusDesign.Index)
             {
+                var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
+                style.BackColor = Color.FromArgb(128 ,255, 107, 107);
                 e.CellStyle.ForeColor = Color.Red;
                 e.CellStyle.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold);
+                e.CellStyle.SelectionForeColor = Color.Red;
+            }else if (e.ColumnIndex == daysLeftDesign.Index)
+            {
+                int.TryParse(e.Value.ToString(), out int result);
+                if (result < 30)
+                {
+                    e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);
+                    e.CellStyle.ForeColor = Color.Red;
+                    e.CellStyle.SelectionForeColor = Color.Red;
+                }
             }
+        }
+
+        private void sslDataGrid_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+
+
         }
     }
 }

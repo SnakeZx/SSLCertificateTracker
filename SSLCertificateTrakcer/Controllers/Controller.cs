@@ -91,7 +91,7 @@ namespace SSLCertificateTracker.Controllers
             catch (SocketException ex) 
             {
                 newResource.HostName = userInput;
-                newResource.Status = newResource.SetError(ex.Message);
+                newResource.Status = newResource.SetError(ex.);
                 _list.Add(newResource);
             }
         }

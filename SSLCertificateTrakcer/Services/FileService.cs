@@ -37,7 +37,7 @@ namespace SSLCertificateTracker.Services
 
                 Debug.WriteLine($"JSON File Created/Updated in directory\nFile Path: {_expandedFilePath}");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -59,7 +59,7 @@ namespace SSLCertificateTracker.Services
             {
                 using Stream ExistingJson = File.OpenRead(_expandedFilePath);
                 Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                return await JsonSerializer.DeserializeAsync<List<CertificateModel>>(ExistingJson, _options);
+                return await JsonSerializer.DeserializeAsync<List<CertificateModel>>(ExistingJson, _options) ?? new List<CertificateModel>();
             }
             else
             {
