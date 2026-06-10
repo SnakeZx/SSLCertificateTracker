@@ -1,6 +1,8 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using System.ComponentModel;
+using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SSLCertificateTracker.Controllers
@@ -9,7 +11,6 @@ namespace SSLCertificateTracker.Controllers
     {
 
         private readonly MainForm _view;
-        private readonly AddSiteForm? _UserInputView;
 
         private readonly CertificateModel _model;
 
@@ -19,8 +20,6 @@ namespace SSLCertificateTracker.Controllers
         private readonly BindingList<CertificateModel> _list;
 
         private readonly int port = 443;
-
-        private X509Certificate2 _RawCertData = new ();
 
 
         public Controller(MainForm view, CertificateModel model)
@@ -33,7 +32,12 @@ namespace SSLCertificateTracker.Controllers
 
             _view.SetDataSource(_list);
 
+            _view.OnMainFormLoad += LoadDataRequest;
+            _view.OnMainFormClose += SaveListToJson;
+
             _view.OnAddNewSiteClick += ShowAddNewSite;
+
+            _view.OnRemoveClick += RemoveSelectedItem;
 
         }
 
@@ -63,15 +67,20 @@ namespace SSLCertificateTracker.Controllers
 
                 bool success = newResource.TryBuildUri(userInput);
 
-                if (success && !HostNameExists(newResource.ComputedUri.Host))
+                bool exists = HostNameCheck(newResource.ComputedUri.Host);
+
+                if (success && !exists)
                 {
-                        _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
+                        var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
+
 
                         newResource.HostName = newResource.ComputedUri.Host;
                         newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
                         newResource.LastExpiryUtc = _RawCertData.NotAfter;
                         newResource.Status = newResource.GetStatus();
                         _list.Add(newResource);
+                        
+                        SaveListToJson();
                 }
                 else
                 {
@@ -79,14 +88,16 @@ namespace SSLCertificateTracker.Controllers
                 }
 
             }
-            catch (Exception ex) 
-            { 
-            
+            catch (SocketException ex) 
+            {
+                newResource.HostName = userInput;
+                newResource.Status = newResource.SetError(ex.Message);
+                _list.Add(newResource);
             }
         }
 
 
-        private bool HostNameExists(string hostname)
+        private bool HostNameCheck(string hostname)
         {
             bool exists = false;
 
@@ -103,11 +114,36 @@ namespace SSLCertificateTracker.Controllers
         }
 
 
-        private async void HandleSaveRequest()
+        private void RemoveSelectedItem(int index)
         {
-            await _fileService.SaveAsync<CertificateModel>("sites.json", _list);
+            _list.RemoveAt(index);
+            SaveListToJson();
         }
 
+
+        private async void SaveListToJson()
+        {
+            await _fileService.SaveAsync(_list);
+        }
+
+        private async void LoadDataRequest()
+        {
+          var temp = await _fileService.GetAllAsync();
+
+            _list.Clear();
+
+            foreach(var item in temp) 
+            {
+                item.Status = "Fetching....";
+                _list.Add(item);
+            }
+
+        }
+
+        private async void RefreshData()
+        {
+
+        }
 
 
     }

@@ -10,11 +10,11 @@ namespace SSLCertificateTracker.Model
         public string LastIssuer { get; set; } = string.Empty;
         [JsonInclude]
         public DateTime LastExpiryUtc { get; set; } = DateTime.Today;
-
+        [JsonIgnore]
         public Uri? ComputedUri { get; set; }
-
+        [JsonIgnore]
         public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
-
+        [JsonIgnore]
         public string Status { get; set; } = string.Empty;
 
         DateTime LastCheckedUtc = DateTime.UtcNow;
@@ -46,6 +46,7 @@ namespace SSLCertificateTracker.Model
             }else if(_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
             {
                 _rawInput = _rawInput.Substring(7);
+                _rawInput = "https://" + _rawInput;
 
             }
 
@@ -87,12 +88,17 @@ namespace SSLCertificateTracker.Model
             }
             else if (DaysLeft < 30 && DaysLeft > 0)
             {
-                return "Expiring Soon";
+                return "\U000026A0 Expiring Soon";
             }
             else
             {
-                return "Expired";
+                return "\u274C Expired";
             }
+        }
+
+        public string SetError(string error)
+        {
+            return $"\u274C Error: {error}";
         }
 
 

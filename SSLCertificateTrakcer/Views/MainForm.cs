@@ -5,11 +5,16 @@ namespace SSLCertificateTracker
 {
     public partial class MainForm : Form
     {
+        public event Action? OnMainFormLoad;
+        public event Action? OnMainFormClose;
 
         public event Action? OnAddNewSiteClick;
         public event Action? OnMainFormClick;
 
-        public event Action<List<CertificateModel>>? OnLoadPopulateGridData;
+
+        public event Action<int>? OnRemoveClick;
+
+        private BindingSource bs = new();
 
 
         public MainForm()
@@ -37,6 +42,7 @@ namespace SSLCertificateTracker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            OnMainFormLoad?.Invoke();
 
             UpdateRowcount();
         }
@@ -100,12 +106,7 @@ namespace SSLCertificateTracker
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
         {
-            //var mBoxResult = MessageBox.Show($"Stop tracking {sslDataGrid.SelectedRows[0].Cells["WebsiteColumn"].Value!.ToString()}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //if (mBoxResult == DialogResult.Yes)
-            //{
-            //    sslDataGrid.Rows.RemoveAt(sslDataGrid.SelectedRows[0].Index);
-            //    UpdateRowcount();
-            //}
+            OnRemoveClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
         }
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
@@ -113,23 +114,29 @@ namespace SSLCertificateTracker
 
         }
 
-        //Converts JSON into C# List<> object and binds that datato the list. 
-        public async void InitializeDataAsync()
-        {
-
-        }
-
-
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            OnMainFormClose?.Invoke();
 
         }
 
         internal void SetDataSource(BindingList<CertificateModel> list)
         {
-            sslDataGrid.DataSource = list;
+            bs.DataSource = list;
+            sslDataGrid.DataSource = bs;
         }
 
+        private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if(e.ColumnIndex == certStatusDesign.Index && e.Value.ToString().Contains("ok", StringComparison.OrdinalIgnoreCase) || e.Value.ToString().Contains("fetch", StringComparison.OrdinalIgnoreCase)) 
+            {
+                e.CellStyle.ForeColor = Color.Green;
+            }
+            else if(e.ColumnIndex == certStatusDesign.Index)
+            {
+                e.CellStyle.ForeColor = Color.Red;
+                e.CellStyle.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold);
+            }
+        }
     }
 }

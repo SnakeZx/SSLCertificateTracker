@@ -114,6 +114,7 @@
             sslDataGrid.Size = new Size(1110, 576);
             sslDataGrid.TabIndex = 1;
             sslDataGrid.CellContentClick += sslDataGrid_CellContentClick;
+            sslDataGrid.CellFormatting += sslDataGrid_CellFormatting;
             sslDataGrid.RowsAdded += sslDataGrid_RowsAdded;
             sslDataGrid.RowsRemoved += sslDataGrid_RowsRemoved;
             sslDataGrid.SelectionChanged += sslDataGrid_SelectionChanged;

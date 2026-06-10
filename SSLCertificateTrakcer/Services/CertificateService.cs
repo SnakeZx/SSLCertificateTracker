@@ -26,11 +26,12 @@ namespace SSLCertificateTracker.Services
 
                 Debug.WriteLine("Stream Established & Authenticated");
 
-                if(_stream.RemoteCertificate is X509Certificate2 remoteCert)
+                if (_stream.RemoteCertificate is X509Certificate2 remoteCert)
                 {
                     return new X509Certificate2(remoteCert);
                 }
-            throw new Exception("Error - Something Went Wrong and a Certificate Could not be found.");
+
+            return new X509Certificate2();
         }
     }
 }

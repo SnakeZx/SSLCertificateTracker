@@ -33,6 +33,7 @@
             cancelBtn_Form2 = new Button();
             WebAddressInput = new TextBox();
             EnterWebAddressLbl = new Label();
+            CharacterErrorLbl = new Label();
             SuspendLayout();
             // 
             // AddSiteConfirm
@@ -81,12 +82,25 @@
             // 
             EnterWebAddressLbl.AutoSize = true;
             EnterWebAddressLbl.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            EnterWebAddressLbl.Location = new Point(153, 33);
+            EnterWebAddressLbl.Location = new Point(158, 37);
             EnterWebAddressLbl.Name = "EnterWebAddressLbl";
             EnterWebAddressLbl.Size = new Size(143, 19);
             EnterWebAddressLbl.TabIndex = 5;
             EnterWebAddressLbl.Text = "Enter Web Address:";
             EnterWebAddressLbl.Click += label1_Click;
+            // 
+            // CharacterErrorLbl
+            // 
+            CharacterErrorLbl.AutoSize = true;
+            CharacterErrorLbl.BackColor = Color.Transparent;
+            CharacterErrorLbl.Font = new Font("Calibri", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            CharacterErrorLbl.ForeColor = Color.Red;
+            CharacterErrorLbl.Location = new Point(133, 123);
+            CharacterErrorLbl.Name = "CharacterErrorLbl";
+            CharacterErrorLbl.Size = new Size(0, 15);
+            CharacterErrorLbl.TabIndex = 6;
+            CharacterErrorLbl.TextAlign = ContentAlignment.MiddleCenter;
+            CharacterErrorLbl.Click += label1_Click_1;
             // 
             // AddSiteForm
             // 
@@ -97,6 +111,7 @@
             CancelButton = cancelBtn_Form2;
             ClientSize = new Size(454, 211);
             ControlBox = false;
+            Controls.Add(CharacterErrorLbl);
             Controls.Add(EnterWebAddressLbl);
             Controls.Add(WebAddressInput);
             Controls.Add(cancelBtn_Form2);
@@ -125,5 +140,6 @@
         private Button cancelBtn_Form2;
         private TextBox WebAddressInput;
         private Label EnterWebAddressLbl;
+        private Label CharacterErrorLbl;
     }
 }

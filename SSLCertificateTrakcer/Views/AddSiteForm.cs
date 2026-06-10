@@ -24,7 +24,7 @@ namespace SSLCertificateTracker
         public AddSiteForm()
         {
             InitializeComponent();
-            
+
         }
 
 
@@ -32,9 +32,10 @@ namespace SSLCertificateTracker
         {
             if (string.IsNullOrWhiteSpace(WebAddressInput.Text))
             {
+                CharacterErrorLbl.Text = "Empty line or spaces are not valid.";
                 return;
             }
-            
+
             OnUserInputConfirm?.Invoke(WebAddressInput.Text);
             DialogResult = DialogResult.OK;
             Close();
@@ -49,6 +50,11 @@ namespace SSLCertificateTracker
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
