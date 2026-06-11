@@ -132,25 +132,33 @@ namespace SSLCertificateTracker
 
             if (e.ColumnIndex == certStatusDesign.Index && statusValue!.Contains("ok", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("fetch", StringComparison.OrdinalIgnoreCase))
             {
-                e.CellStyle.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold);
+                e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
                 e.CellStyle.ForeColor = Color.Green;
                 e.CellStyle.SelectionForeColor = Color.Green;
             }
-            else if (e.ColumnIndex == certStatusDesign.Index)
+            else if (e.ColumnIndex == certStatusDesign.Index && (statusValue!.Contains("expired", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("error", StringComparison.OrdinalIgnoreCase)))
             {
-                var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
-                style.BackColor = Color.FromArgb(128 ,255, 107, 107);
                 e.CellStyle.ForeColor = Color.Red;
-                e.CellStyle.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold);
+                e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
                 e.CellStyle.SelectionForeColor = Color.Red;
+
             }else if (e.ColumnIndex == daysLeftDesign.Index)
             {
                 int.TryParse(e.Value.ToString(), out int result);
                 if (result < 30)
                 {
+                    var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
+                    style.BackColor = Color.FromArgb(255, 145, 145);
+                    style.SelectionBackColor = Color.FromArgb(255, 218, 237, 254);
+
+                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);
                     e.CellStyle.ForeColor = Color.Red;
                     e.CellStyle.SelectionForeColor = Color.Red;
+                }
+                else
+                {
+                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
             }
         }

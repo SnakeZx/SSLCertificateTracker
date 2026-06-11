@@ -250,6 +250,7 @@
             dataGridViewCellStyle2.Format = "yyyy-MM-dd";
             dataGridViewCellStyle2.NullValue = null;
             WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            WebsiteColumn.FillWeight = 32F;
             WebsiteColumn.HeaderText = "Website";
             WebsiteColumn.Name = "WebsiteColumn";
             WebsiteColumn.ReadOnly = true;
@@ -257,6 +258,7 @@
             // certIssuerDesign
             // 
             certIssuerDesign.DataPropertyName = "LastIssuer";
+            certIssuerDesign.FillWeight = 32F;
             certIssuerDesign.HeaderText = "Issuer";
             certIssuerDesign.Name = "certIssuerDesign";
             certIssuerDesign.ReadOnly = true;
@@ -268,7 +270,7 @@
             dataGridViewCellStyle3.Format = "yyyy-MM-dd";
             dataGridViewCellStyle3.NullValue = null;
             expiryDateCol.DefaultCellStyle = dataGridViewCellStyle3;
-            expiryDateCol.FillWeight = 55F;
+            expiryDateCol.FillWeight = 11F;
             expiryDateCol.HeaderText = "Expiry Date";
             expiryDateCol.Name = "expiryDateCol";
             expiryDateCol.ReadOnly = true;
@@ -279,7 +281,9 @@
             daysLeftDesign.DataPropertyName = "daysLeft";
             dataGridViewCellStyle4.Font = new Font("Calibri", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle4;
+            daysLeftDesign.FillWeight = 20.58242F;
             daysLeftDesign.HeaderText = "Days Left";
+            daysLeftDesign.MinimumWidth = 63;
             daysLeftDesign.Name = "daysLeftDesign";
             daysLeftDesign.ReadOnly = true;
             daysLeftDesign.Width = 94;
@@ -290,7 +294,7 @@
             certStatusDesign.DataPropertyName = "Status";
             dataGridViewCellStyle5.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             certStatusDesign.DefaultCellStyle = dataGridViewCellStyle5;
-            certStatusDesign.FillWeight = 75F;
+            certStatusDesign.FillWeight = 25F;
             certStatusDesign.HeaderText = "Status";
             certStatusDesign.Name = "certStatusDesign";
             certStatusDesign.ReadOnly = true;
