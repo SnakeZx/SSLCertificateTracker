@@ -39,6 +39,8 @@ namespace SSLCertificateTracker.Controllers
 
             _view.OnRemoveClick += RemoveSelectedItem;
 
+            _view.OnRefreshClick += UpdateCertificateData;
+
         }
 
         private void ShowAddNewSite()
@@ -88,7 +90,7 @@ namespace SSLCertificateTracker.Controllers
                 }
 
             }
-            catch (SocketException ex) 
+            catch (Exception ex) 
             {
                 newResource.HostName = userInput;
                 newResource.Status = newResource.SetError(ex.Message);
@@ -96,7 +98,42 @@ namespace SSLCertificateTracker.Controllers
             }
         }
 
+        private async void UpdateCertificateData(int index)
+        {
+            string savedHost = _list[index].HostName;
 
+            CertificateModel newResource = new CertificateModel();
+
+            try
+            {
+
+                var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
+
+
+                newResource.HostName = savedHost;
+                newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
+                newResource.LastExpiryUtc = _RawCertData.NotAfter;
+                newResource.Status = newResource.GetStatus();
+
+                _list.RemoveAt(index);
+
+                _list.Insert(index, newResource);
+
+                SaveListToJson();
+                     
+                    
+
+            }
+            catch (Exception ex)
+            {
+                newResource.HostName = savedHost;
+                newResource.Status = newResource.SetError(ex.Message);
+                _list.RemoveAt(index);
+                _list.Insert(index, newResource);
+            }
+        }
+
+        //Checks if the userinput hostname is already in the list. returns true if its found in the list.;
         private bool HostNameCheck(string hostname)
         {
             bool exists = false;
@@ -113,7 +150,7 @@ namespace SSLCertificateTracker.Controllers
             return exists;
         }
 
-
+        //Removes Selected Row from the list.
         private void RemoveSelectedItem(int index)
         {
             _list.RemoveAt(index);
@@ -138,12 +175,17 @@ namespace SSLCertificateTracker.Controllers
                 _list.Add(item);
             }
 
-        }
 
-        private async void RefreshData()
-        {
 
         }
+
+        //private async void RefreshSelectedData(int index)
+        //{
+        //    if(index > -1)
+        //    {
+        //        await UpdateCertificateData(index, _list[index].HostName);
+        //    }
+        //}
 
 
     }

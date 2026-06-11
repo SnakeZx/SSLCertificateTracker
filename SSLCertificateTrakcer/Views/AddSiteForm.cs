@@ -15,7 +15,6 @@ namespace SSLCertificateTracker
     {
         public event Action<string>? OnUserInputConfirm;
 
-        public event Action? OnConfirmSave;
         //Trims the web address the user input to get rid of spaces/whitespace before and after the user input.
         //public Uri FinalUri { get; private set; } = new Uri("about:blank");
         //public string UserInput { get; private set; } = string.Empty;

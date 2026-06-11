@@ -9,8 +9,7 @@ namespace SSLCertificateTracker
         public event Action? OnMainFormClose;
 
         public event Action? OnAddNewSiteClick;
-        public event Action? OnMainFormClick;
-
+        public event Action<int>? OnRefreshClick;
 
         public event Action<int>? OnRemoveClick;
 
@@ -43,7 +42,6 @@ namespace SSLCertificateTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             OnMainFormLoad?.Invoke();
-
             UpdateRowcount();
         }
 
@@ -111,7 +109,10 @@ namespace SSLCertificateTracker
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-
+            if(sslDataGrid.SelectedRows.Count > 0)
+            {
+                OnRefreshClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -148,8 +149,8 @@ namespace SSLCertificateTracker
                 if (result < 30)
                 {
                     var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
-                    style.BackColor = Color.FromArgb(255, 145, 145);
-                    style.SelectionBackColor = Color.FromArgb(255, 218, 237, 254);
+                    style.BackColor = Color.FromArgb(245, 211, 211);
+                    style.SelectionBackColor = Color.FromArgb(218, 237, 254);
 
                     e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);

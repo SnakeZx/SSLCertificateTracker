@@ -9,9 +9,10 @@ namespace SSLCertificateTracker.Services
     {
         //Declare Objects that I am using to intatiate a connections to the server.
 
-        public async Task<X509Certificate2> WebConnectAsync(string server, int Port)
+        public async Task<X509Certificate2?> WebConnectAsync(string server, int Port)
         {
-
+            try
+            {
                 RemoteCertificateValidationCallback certCallBack = (_, _, _, _) => true;
 
                 //creates the TCP connection to the given server and port.
@@ -22,6 +23,9 @@ namespace SSLCertificateTracker.Services
                 //Opens a SslStream and gets the networkstream from the _client object.
                 using SslStream _stream = new SslStream(_client.GetStream(), false, certCallBack, null);
 
+                _stream.ReadTimeout = 10000;
+                _stream.WriteTimeout = 10000;
+
                 await _stream.AuthenticateAsClientAsync(server);
 
                 Debug.WriteLine("Stream Established & Authenticated");
@@ -30,8 +34,12 @@ namespace SSLCertificateTracker.Services
                 {
                     return new X509Certificate2(remoteCert);
                 }
-
-            return new X509Certificate2();
+            }
+            catch (Exception) 
+            {  
+                throw; 
+            }
+            return null;
         }
     }
 }
