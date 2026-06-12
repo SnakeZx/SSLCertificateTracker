@@ -43,7 +43,7 @@ namespace SSLCertificateTracker.Services
             }
         }
 
-        public async Task<List<CertificateModel>> GetAllAsync()
+        public async Task<BindingList<CertificateModel>> GetAllAsync()
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
             string _expandedFilePath = Path.Combine(_expandedFolderPath, "sites.json");
@@ -59,12 +59,12 @@ namespace SSLCertificateTracker.Services
             {
                 using Stream ExistingJson = File.OpenRead(_expandedFilePath);
                 Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                return await JsonSerializer.DeserializeAsync<List<CertificateModel>>(ExistingJson, _options) ?? new List<CertificateModel>();
+                return await JsonSerializer.DeserializeAsync<BindingList<CertificateModel>>(ExistingJson, _options) ?? new BindingList<CertificateModel>();
             }
             else
             {
                 Debug.WriteLine("No File Found - New list made");
-                return new List<CertificateModel>();
+                return new BindingList<CertificateModel>();
             }
         }
 

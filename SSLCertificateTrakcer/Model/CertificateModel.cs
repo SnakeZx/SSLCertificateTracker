@@ -32,25 +32,24 @@ namespace SSLCertificateTracker.Model
         {
             _rawInput = rawinput.Trim();
 
-
             if (string.IsNullOrWhiteSpace(rawinput))
             {
-
                 return false;
             }
 
-            if(!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+            if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
             {
                 _rawInput = "https://" + _rawInput;
-            }else if(_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            }
+            else if (_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
             {
                 _rawInput = _rawInput.Substring(7);
                 _rawInput = "https://" + _rawInput;
 
             }
 
-            if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri)) 
+            if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri))
             {
                 ComputedUri = validuri;
                 return true;
@@ -59,12 +58,9 @@ namespace SSLCertificateTracker.Model
             {
                 return false;
             }
-
-
-
         }
 
- 
+
         public string ExtractIssuer(string Issuer)
             {
                 string[] ExtractedName = Issuer.Split(',');
@@ -88,7 +84,7 @@ namespace SSLCertificateTracker.Model
             }
             else if (DaysLeft < 30 && DaysLeft > 0)
             {
-                return "\U000026A0 Expiring Soon";
+                return "\U000026A0\U0000FE0F Expiring Soon";
             }
             else
             {
@@ -96,9 +92,9 @@ namespace SSLCertificateTracker.Model
             }
         }
 
-        public string SetError(string error)
+        public string SetError()
         {
-            return $"\u274C Error: {error}";
+            return $"\u274C Error";
         }
 
 

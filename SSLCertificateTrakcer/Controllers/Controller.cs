@@ -36,10 +36,10 @@ namespace SSLCertificateTracker.Controllers
             _view.OnMainFormClose += SaveListToJson;
 
             _view.OnAddNewSiteClick += ShowAddNewSite;
-
             _view.OnRemoveClick += RemoveSelectedItem;
 
-            _view.OnRefreshClick += UpdateCertificateData;
+            _view.OnRefreshSelectedClick += UpdateCertificateData;
+            _view.OnRefreshAllClick += UpdateAllData;
 
         }
 
@@ -73,16 +73,17 @@ namespace SSLCertificateTracker.Controllers
 
                 if (success && !exists)
                 {
-                        var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
+                    var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
 
 
-                        newResource.HostName = newResource.ComputedUri.Host;
-                        newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
-                        newResource.LastExpiryUtc = _RawCertData.NotAfter;
-                        newResource.Status = newResource.GetStatus();
-                        _list.Add(newResource);
-                        
-                        SaveListToJson();
+                    newResource.HostName = newResource.ComputedUri.Host;
+                    newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
+                    newResource.LastExpiryUtc = _RawCertData.NotAfter;
+                    newResource.Status = newResource.GetStatus();
+                    _list.Add(newResource);
+
+                    SaveListToJson();
+                    _view.UpdateRowcount(_list.Count);
                 }
                 else
                 {
@@ -90,12 +91,24 @@ namespace SSLCertificateTracker.Controllers
                 }
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 newResource.HostName = userInput;
-                newResource.Status = newResource.SetError(ex.Message);
+                newResource.Status = newResource.SetError();
                 _list.Add(newResource);
+                _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
+                _view.UpdateRowcount(_list.Count);
             }
+        }
+
+
+        private async void UpdateAllData()
+        {
+            foreach (var item in _list)
+            {
+                UpdateCertificateData(_list.IndexOf(item));
+            }
+            _view.UpdateRowcount(_list.Count);
         }
 
         private async void UpdateCertificateData(int index)
@@ -106,6 +119,8 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
+
+                _list[index].Status = "Fetching....";
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
 
@@ -120,16 +135,16 @@ namespace SSLCertificateTracker.Controllers
                 _list.Insert(index, newResource);
 
                 SaveListToJson();
-                     
-                    
-
+                
+                _view.UpdateRowcount(_list.Count);
             }
             catch (Exception ex)
             {
                 newResource.HostName = savedHost;
-                newResource.Status = newResource.SetError(ex.Message);
+                newResource.Status = newResource.SetError();
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
+                _view.SetErrorToolTip(index, ex.Message);
             }
         }
 
@@ -138,9 +153,9 @@ namespace SSLCertificateTracker.Controllers
         {
             bool exists = false;
 
-            foreach (CertificateModel modelList in _list) 
-            { 
-                if(string.Equals(modelList.HostName, hostname, StringComparison.OrdinalIgnoreCase))
+            foreach (CertificateModel modelList in _list)
+            {
+                if (string.Equals(modelList.HostName, hostname, StringComparison.OrdinalIgnoreCase))
                 {
                     exists = true;
                     break;
@@ -154,6 +169,7 @@ namespace SSLCertificateTracker.Controllers
         private void RemoveSelectedItem(int index)
         {
             _list.RemoveAt(index);
+            _view.UpdateRowcount(_list.Count);
             SaveListToJson();
         }
 
@@ -173,20 +189,11 @@ namespace SSLCertificateTracker.Controllers
             {
                 item.Status = "Fetching....";
                 _list.Add(item);
+                UpdateCertificateData(_list.IndexOf(item));
             }
-
-
+            _view.UpdateRowcount(_list.Count);
 
         }
-
-        //private async void RefreshSelectedData(int index)
-        //{
-        //    if(index > -1)
-        //    {
-        //        await UpdateCertificateData(index, _list[index].HostName);
-        //    }
-        //}
-
 
     }
 }

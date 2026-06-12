@@ -9,8 +9,8 @@ namespace SSLCertificateTracker
         public event Action? OnMainFormClose;
 
         public event Action? OnAddNewSiteClick;
-        public event Action<int>? OnRefreshClick;
-
+        public event Action? OnRefreshAllClick;
+        public event Action<int>? OnRefreshSelectedClick;
         public event Action<int>? OnRemoveClick;
 
         private BindingSource bs = new();
@@ -42,7 +42,6 @@ namespace SSLCertificateTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             OnMainFormLoad?.Invoke();
-            UpdateRowcount();
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -97,9 +96,9 @@ namespace SSLCertificateTracker
 
         }
 
-        private void UpdateRowcount()
+        public void UpdateRowcount(int count)
         {
-            sitesTrackedLbl.Text = sslDataGrid.Rows.Count.ToString() + " sites tracked";
+            sitesTrackedLbl.Text = count + " sites tracked";
         }
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
@@ -109,9 +108,9 @@ namespace SSLCertificateTracker
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-            if(sslDataGrid.SelectedRows.Count > 0)
+            if (sslDataGrid.SelectedRows.Count > 0)
             {
-                OnRefreshClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+                OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
             }
         }
 
@@ -124,7 +123,9 @@ namespace SSLCertificateTracker
         internal void SetDataSource(BindingList<CertificateModel> list)
         {
             bs.DataSource = list;
+
             sslDataGrid.DataSource = bs;
+
         }
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -137,13 +138,14 @@ namespace SSLCertificateTracker
                 e.CellStyle.ForeColor = Color.Green;
                 e.CellStyle.SelectionForeColor = Color.Green;
             }
-            else if (e.ColumnIndex == certStatusDesign.Index && (statusValue!.Contains("expired", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("error", StringComparison.OrdinalIgnoreCase)))
+            else if (e.ColumnIndex == certStatusDesign.Index && statusValue.Contains("exp", StringComparison.OrdinalIgnoreCase) || statusValue.Contains("error", StringComparison.OrdinalIgnoreCase))
             {
                 e.CellStyle.ForeColor = Color.Red;
                 e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
                 e.CellStyle.SelectionForeColor = Color.Red;
 
-            }else if (e.ColumnIndex == daysLeftDesign.Index)
+            }
+            else if (e.ColumnIndex == daysLeftDesign.Index)
             {
                 int.TryParse(e.Value.ToString(), out int result);
                 if (result < 30)
@@ -164,10 +166,28 @@ namespace SSLCertificateTracker
             }
         }
 
+        internal void SetErrorToolTip(int index, string message)
+        {
+            var cell = sslDataGrid.Rows[index].Cells[certStatusDesign.Index];
+
+            if (cell.Value.ToString().Contains("error", StringComparison.OrdinalIgnoreCase))
+            {
+                cell.ToolTipText = message;
+            }
+        }
+
         private void sslDataGrid_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
 
 
+        }
+
+        private void rfshAllBtn_Click(object sender, EventArgs e)
+        {
+            if (sslDataGrid.RowCount > 0)
+            {
+                OnRefreshAllClick?.Invoke();
+            }
         }
     }
 }
