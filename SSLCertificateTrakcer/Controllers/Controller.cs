@@ -81,6 +81,7 @@ namespace SSLCertificateTracker.Controllers
                     newResource.LastExpiryUtc = _RawCertData.NotAfter;
                     newResource.Status = newResource.GetStatus();
                     _list.Add(newResource);
+                    _view.FormatRows(_list.IndexOf(newResource));
 
                     SaveListToJson();
                     _view.UpdateRowcount(_list.Count);
@@ -96,6 +97,7 @@ namespace SSLCertificateTracker.Controllers
                 newResource.HostName = userInput;
                 newResource.Status = newResource.SetError();
                 _list.Add(newResource);
+                _view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
                 _view.UpdateRowcount(_list.Count);
             }
@@ -131,10 +133,10 @@ namespace SSLCertificateTracker.Controllers
                 newResource.Status = newResource.GetStatus();
 
                 _list.RemoveAt(index);
-
                 _list.Insert(index, newResource);
-
+                
                 SaveListToJson();
+                _view.FormatRows(_list.IndexOf(newResource));
                 
                 _view.UpdateRowcount(_list.Count);
             }
@@ -144,6 +146,7 @@ namespace SSLCertificateTracker.Controllers
                 newResource.Status = newResource.SetError();
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
+                _view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(index, ex.Message);
             }
         }

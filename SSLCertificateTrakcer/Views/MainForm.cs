@@ -42,6 +42,8 @@ namespace SSLCertificateTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             OnMainFormLoad?.Invoke();
+
+            
         }
 
         private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -130,41 +132,92 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            string? statusValue = e.Value!.ToString();
+            //string? statusValue = e.Value!.ToString();
 
-            if (e.ColumnIndex == certStatusDesign.Index && statusValue!.Contains("ok", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("fetch", StringComparison.OrdinalIgnoreCase))
-            {
-                e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-                e.CellStyle.ForeColor = Color.Green;
-                e.CellStyle.SelectionForeColor = Color.Green;
-            }
-            else if (e.ColumnIndex == certStatusDesign.Index && statusValue.Contains("exp", StringComparison.OrdinalIgnoreCase) || statusValue.Contains("error", StringComparison.OrdinalIgnoreCase))
-            {
-                e.CellStyle.ForeColor = Color.Red;
-                e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-                e.CellStyle.SelectionForeColor = Color.Red;
+            //if (e.ColumnIndex == certStatusDesign.Index && statusValue!.Contains("ok", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("fetch", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+            //    e.CellStyle.ForeColor = Color.Green;
+            //    e.CellStyle.SelectionForeColor = Color.Green;
+            //}
+            //else if (e.ColumnIndex == certStatusDesign.Index && statusValue.Contains("exp", StringComparison.OrdinalIgnoreCase) || statusValue.Contains("error", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    e.CellStyle.ForeColor = Color.Red;
+            //    e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+            //    e.CellStyle.SelectionForeColor = Color.Red;
 
-            }
-            else if (e.ColumnIndex == daysLeftDesign.Index)
-            {
-                int.TryParse(e.Value.ToString(), out int result);
-                if (result < 30)
-                {
-                    var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
-                    style.BackColor = Color.FromArgb(245, 211, 211);
-                    style.SelectionBackColor = Color.FromArgb(218, 237, 254);
+            //}
+            //else if (e.ColumnIndex == daysLeftDesign.Index)
+            //{
+            //    int.TryParse(e.Value.ToString(), out int result);
+            //    if (result < 30)
+            //    {
+            //        var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
+            //        style.BackColor = Color.FromArgb(245, 211, 211);
+            //        style.SelectionBackColor = Color.FromArgb(218, 237, 254);
 
-                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);
-                    e.CellStyle.ForeColor = Color.Red;
-                    e.CellStyle.SelectionForeColor = Color.Red;
-                }
-                else
-                {
-                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                }
-            }
+            //        e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            //        e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);
+            //        e.CellStyle.ForeColor = Color.Red;
+            //        e.CellStyle.SelectionForeColor = Color.Red;
+            //    }
+            //    else
+            //    {
+            //        e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            //    }
+            //}
         }
+
+
+        internal void FormatRows(int RowIndex)
+        {
+            sslDataGrid.Update();
+            sslDataGrid.Refresh();
+
+            var Row = sslDataGrid.Rows[RowIndex];
+            var StatusCell = sslDataGrid[certStatusDesign.Index, RowIndex];
+            var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, RowIndex];
+            var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, RowIndex];
+
+            int.TryParse(DaysLeftCell.ToString(), out int result);
+
+            if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase) 
+                || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
+                )
+            {
+                Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
+                Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
+
+                StatusCell.Style.ForeColor = Color.Red;
+                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+                StatusCell.Style.SelectionForeColor = Color.Red;
+
+                ExpiryDateCell.Style.ForeColor = Color.Red;
+                ExpiryDateCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
+                ExpiryDateCell.Style.SelectionForeColor = Color.Red;
+
+                DaysLeftCell.Style.ForeColor = Color.Red;
+                DaysLeftCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
+                DaysLeftCell.Style.SelectionForeColor = Color.Red;
+            }
+            else if(StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase) 
+                     || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+                StatusCell.Style.ForeColor = Color.Green;
+                StatusCell.Style.SelectionForeColor = Color.Green;
+            }else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusCell.Style.ForeColor = Color.Red;
+                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+                StatusCell.Style.SelectionForeColor = Color.Red;
+
+                Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
+                Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
+            }
+
+        }
+
 
         internal void SetErrorToolTip(int index, string message)
         {
