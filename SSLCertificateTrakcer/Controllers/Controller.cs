@@ -169,8 +169,12 @@ namespace SSLCertificateTracker.Controllers
         }
 
         //Removes Selected Row from the list.
-        private void RemoveSelectedItem(int index)
+        private async void RemoveSelectedItem(int index)
         {
+            var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.No) return;
+
             _list.RemoveAt(index);
             _view.UpdateRowcount(_list.Count);
             SaveListToJson();

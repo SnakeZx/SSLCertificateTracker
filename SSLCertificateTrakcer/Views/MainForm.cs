@@ -46,13 +46,6 @@ namespace SSLCertificateTracker
             
         }
 
-        private void sslDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-
-
-        }
-
         private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
         {
 
@@ -130,44 +123,6 @@ namespace SSLCertificateTracker
 
         }
 
-        private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            //string? statusValue = e.Value!.ToString();
-
-            //if (e.ColumnIndex == certStatusDesign.Index && statusValue!.Contains("ok", StringComparison.OrdinalIgnoreCase) || statusValue!.Contains("fetch", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-            //    e.CellStyle.ForeColor = Color.Green;
-            //    e.CellStyle.SelectionForeColor = Color.Green;
-            //}
-            //else if (e.ColumnIndex == certStatusDesign.Index && statusValue.Contains("exp", StringComparison.OrdinalIgnoreCase) || statusValue.Contains("error", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    e.CellStyle.ForeColor = Color.Red;
-            //    e.CellStyle.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-            //    e.CellStyle.SelectionForeColor = Color.Red;
-
-            //}
-            //else if (e.ColumnIndex == daysLeftDesign.Index)
-            //{
-            //    int.TryParse(e.Value.ToString(), out int result);
-            //    if (result < 30)
-            //    {
-            //        var style = sslDataGrid.Rows[e.RowIndex].DefaultCellStyle;
-            //        style.BackColor = Color.FromArgb(245, 211, 211);
-            //        style.SelectionBackColor = Color.FromArgb(218, 237, 254);
-
-            //        e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            //        e.CellStyle.Font = new Font("Calibri", 12F, FontStyle.Bold);
-            //        e.CellStyle.ForeColor = Color.Red;
-            //        e.CellStyle.SelectionForeColor = Color.Red;
-            //    }
-            //    else
-            //    {
-            //        e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            //    }
-            //}
-        }
-
 
         internal void FormatRows(int RowIndex)
         {
@@ -227,12 +182,6 @@ namespace SSLCertificateTracker
             {
                 cell.ToolTipText = message;
             }
-        }
-
-        private void sslDataGrid_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-
-
         }
 
         private void rfshAllBtn_Click(object sender, EventArgs e)

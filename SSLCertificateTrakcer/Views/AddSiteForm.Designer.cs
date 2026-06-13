@@ -72,6 +72,7 @@
             // WebAddressInput
             // 
             WebAddressInput.Location = new Point(97, 80);
+            WebAddressInput.MaxLength = 64;
             WebAddressInput.Multiline = true;
             WebAddressInput.Name = "WebAddressInput";
             WebAddressInput.PlaceholderText = "(e.g. example.com, https://example.com)";

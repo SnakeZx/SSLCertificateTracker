@@ -1,34 +1,18 @@
-﻿using SSLCertificateTracker;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Windows.Forms;
-
-namespace SSLCertificateTracker
+﻿namespace SSLCertificateTracker
 {
     public partial class AddSiteForm : Form
     {
         public event Action<string>? OnUserInputConfirm;
 
-        //Trims the web address the user input to get rid of spaces/whitespace before and after the user input.
-        //public Uri FinalUri { get; private set; } = new Uri("about:blank");
-        //public string UserInput { get; private set; } = string.Empty;
-
-
         public AddSiteForm()
         {
             InitializeComponent();
-
         }
 
 
-        public void AddSiteConfirmClick(object? sender, EventArgs e)
+        public async void AddSiteConfirmClick(object? sender, EventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(WebAddressInput.Text))
             {
                 CharacterErrorLbl.Text = "Empty line or spaces are not valid.";
