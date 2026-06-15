@@ -47,23 +47,30 @@ namespace SSLCertificateTracker.Services
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
             string _expandedFilePath = Path.Combine(_expandedFolderPath, "sites.json");
+            try
+            {
+                if (!Directory.Exists(_expandedFolderPath))
+                {
+                    Directory.CreateDirectory(_expandedFolderPath);
+                    Debug.WriteLine($"Application folder not found in directory.\nNew Folder Path created for application data:\nFile Path: {_expandedFolderPath}");
+                }
 
-            if (!Directory.Exists(_expandedFolderPath))
-            {
-                Directory.CreateDirectory(_expandedFolderPath);
-                Debug.WriteLine($"Application folder not found in directory.\nNew Folder Path created for application data:\nFile Path: {_expandedFolderPath}");
+                //Binding Data to the Grid before form is created.
+                if (File.Exists(_expandedFilePath))
+                {
+                    using Stream ExistingJson = File.OpenRead(_expandedFilePath);
+                    Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
+                    return await JsonSerializer.DeserializeAsync<BindingList<CertificateModel>>(ExistingJson, _options);
+                }
+                else
+                {
+                    Debug.WriteLine("No File Found - New list made");
+                    return new BindingList<CertificateModel>();
+                }
             }
-
-            //Binding Data to the Grid before form is created.
-            if (File.Exists(_expandedFilePath))
+            catch (JsonException) 
             {
-                using Stream ExistingJson = File.OpenRead(_expandedFilePath);
-                Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                return await JsonSerializer.DeserializeAsync<BindingList<CertificateModel>>(ExistingJson, _options) ?? new BindingList<CertificateModel>();
-            }
-            else
-            {
-                Debug.WriteLine("No File Found - New list made");
+                MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created and JSON file was created.","File Data",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return new BindingList<CertificateModel>();
             }
         }

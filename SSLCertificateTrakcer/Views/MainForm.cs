@@ -126,8 +126,6 @@ namespace SSLCertificateTracker
 
         internal void FormatRows(int RowIndex)
         {
-            sslDataGrid.Update();
-            sslDataGrid.Refresh();
 
             var Row = sslDataGrid.Rows[RowIndex];
             var StatusCell = sslDataGrid[certStatusDesign.Index, RowIndex];
@@ -190,6 +188,12 @@ namespace SSLCertificateTracker
             {
                 OnRefreshAllClick?.Invoke();
             }
+        }
+
+        public void UpdateLastRefresh(DateTime dt) 
+        {
+            
+            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using System.ComponentModel;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
 
 namespace SSLCertificateTracker.Controllers
 {
@@ -46,10 +44,8 @@ namespace SSLCertificateTracker.Controllers
         private void ShowAddNewSite()
         {
             using AddSiteForm _UserInputView = new ();
-            _UserInputView.OnUserInputConfirm += GetCertificateData;
-            
 
-            //_UserInputView.OnConfirmSave += HandleSaveRequest;
+            _UserInputView.OnUserInputConfirm += GetCertificateData;
 
             if (_UserInputView.ShowDialog(_view) != DialogResult.OK)
             {
@@ -82,21 +78,27 @@ namespace SSLCertificateTracker.Controllers
                     newResource.Status = newResource.GetStatus();
                     _list.Add(newResource);
                     _view.FormatRows(_list.IndexOf(newResource));
-
                     SaveListToJson();
+
                     _view.UpdateRowcount(_list.Count);
+                    _view.UpdateLastRefresh(newResource.LastCheckedUtc);
                 }
                 else
                 {
                     MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.", "Already Tracked", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ShowAddNewSite();
+                    return;
                 }
 
             }
             catch (Exception ex)
             {
                 newResource.HostName = userInput;
-                newResource.Status = newResource.SetError();
+                newResource.Status = newResource.SetErrorStatus();
+                newResource.LastErrorMessage = ex.Message;
+
                 _list.Add(newResource);
+
                 _view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
                 _view.UpdateRowcount(_list.Count);
@@ -113,37 +115,43 @@ namespace SSLCertificateTracker.Controllers
             _view.UpdateRowcount(_list.Count);
         }
 
+        //Updates certificate and skips the check for duplicate since we need to skip as we are removing and updating with new information.
         private async void UpdateCertificateData(int index)
         {
+            if(index == null || index < 0) {  return; }
             string savedHost = _list[index].HostName;
 
             CertificateModel newResource = new CertificateModel();
 
             try
             {
-
                 _list[index].Status = "Fetching....";
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
-
 
                 newResource.HostName = savedHost;
                 newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
                 newResource.LastExpiryUtc = _RawCertData.NotAfter;
                 newResource.Status = newResource.GetStatus();
 
+                if (index < 0) { return; }
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
                 
                 SaveListToJson();
-                _view.FormatRows(_list.IndexOf(newResource));
                 
+                _view.FormatRows(_list.IndexOf(newResource));
                 _view.UpdateRowcount(_list.Count);
+                _view.UpdateLastRefresh(newResource.LastCheckedUtc);
             }
             catch (Exception ex)
             {
+                if (index < 0) { return; }
+                Debug.WriteLine($"{ex.Message}");
                 newResource.HostName = savedHost;
-                newResource.Status = newResource.SetError();
+                newResource.Status = newResource.SetErrorStatus();
+                newResource.LastErrorMessage = ex.Message;
+
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
                 _view.FormatRows(_list.IndexOf(newResource));
@@ -151,7 +159,7 @@ namespace SSLCertificateTracker.Controllers
             }
         }
 
-        //Checks if the userinput hostname is already in the list. returns true if its found in the list.;
+        //Checks if the userinput hostname is already in the list. returns true if its found in the list;
         private bool HostNameCheck(string hostname)
         {
             bool exists = false;
@@ -177,7 +185,7 @@ namespace SSLCertificateTracker.Controllers
 
             _list.RemoveAt(index);
             _view.UpdateRowcount(_list.Count);
-            SaveListToJson();
+            SaveListToJson().Wait();
         }
 
 

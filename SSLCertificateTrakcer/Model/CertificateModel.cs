@@ -16,8 +16,10 @@ namespace SSLCertificateTracker.Model
         public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
         [JsonIgnore]
         public string Status { get; set; } = string.Empty;
-
-        DateTime LastCheckedUtc = DateTime.UtcNow;
+        [JsonInclude]
+        public DateTime LastCheckedUtc = DateTime.Now;
+        [JsonInclude]
+        public string? LastErrorMessage { get; set; } = null;
 
         private string _rawInput = string.Empty;
 
@@ -63,14 +65,14 @@ namespace SSLCertificateTracker.Model
 
         public string ExtractIssuer(string Issuer)
             {
-                string[] ExtractedName = Issuer.Split(',');
+                Issuer = Issuer.Replace('"', ' ');
+                string[] ExtractedNames = Issuer.Split(',');
 
-                for (int i = 0; i < ExtractedName.Length; i++)
+                for (int i = 0; i < ExtractedNames.Length; i++)
                 {
-                    if (ExtractedName[i].Contains("O="))
+                    if (ExtractedNames[i].Contains("O="))
                     {
-
-                        return ExtractedName[i].Split('=', StringSplitOptions.TrimEntries)[1];
+                        return ExtractedNames[i].Split('=', StringSplitOptions.TrimEntries)[1];
                     }
                 }
             return string.Empty;
@@ -88,11 +90,11 @@ namespace SSLCertificateTracker.Model
             }
             else
             {
-                return "\u274C Expired";
+                return "\U0001F6AB Expired";
             }
         }
 
-        public string SetError()
+        public string SetErrorStatus()
         {
             return $"\u274C Error";
         }
