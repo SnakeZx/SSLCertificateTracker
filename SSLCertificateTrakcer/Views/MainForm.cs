@@ -115,10 +115,9 @@ namespace SSLCertificateTracker
 
         }
 
-        internal void SetDataSource(BindingList<CertificateModel> list)
+        internal void SetDataSource(SortableBindingList<CertificateModel> list)
         {
             bs.DataSource = list;
-
             sslDataGrid.DataSource = bs;
 
         }

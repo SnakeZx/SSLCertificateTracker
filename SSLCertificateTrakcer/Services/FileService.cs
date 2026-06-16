@@ -18,7 +18,7 @@ namespace SSLCertificateTracker.Services
 
         }
 
-        public async Task SaveAsync(BindingList<CertificateModel> list)
+        public async Task SaveAsync(SortableBindingList<CertificateModel> list)
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
            
@@ -43,7 +43,7 @@ namespace SSLCertificateTracker.Services
             }
         }
 
-        public async Task<BindingList<CertificateModel>> GetAllAsync()
+        public async Task<SortableBindingList<CertificateModel>> GetAllAsync()
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
             string _expandedFilePath = Path.Combine(_expandedFolderPath, "sites.json");
@@ -60,18 +60,18 @@ namespace SSLCertificateTracker.Services
                 {
                     using Stream ExistingJson = File.OpenRead(_expandedFilePath);
                     Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                    return await JsonSerializer.DeserializeAsync<BindingList<CertificateModel>>(ExistingJson, _options);
+                    return await JsonSerializer.DeserializeAsync<SortableBindingList<CertificateModel>>(ExistingJson, _options);
                 }
                 else
                 {
                     Debug.WriteLine("No File Found - New list made");
-                    return new BindingList<CertificateModel>();
+                    return new SortableBindingList<CertificateModel>();
                 }
             }
             catch (JsonException) 
             {
                 MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created and JSON file was created.","File Data",MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return new BindingList<CertificateModel>();
+                return new SortableBindingList<CertificateModel>();
             }
         }
 

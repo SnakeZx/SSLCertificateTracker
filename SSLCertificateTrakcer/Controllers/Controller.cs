@@ -1,5 +1,6 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -15,7 +16,7 @@ namespace SSLCertificateTracker.Controllers
         private readonly CertificateService? _certificateService = new ();
         private readonly FileService _fileService = new ();
 
-        private readonly BindingList<CertificateModel> _list;
+        private readonly SortableBindingList<CertificateModel> _list;
 
         private readonly int port = 443;
 
@@ -26,7 +27,7 @@ namespace SSLCertificateTracker.Controllers
 
             _model = model;
 
-            _list = new BindingList<CertificateModel> ();
+            _list = new SortableBindingList<CertificateModel> ();
 
             _view.SetDataSource(_list);
 
@@ -61,8 +62,6 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
-
-
                 bool success = newResource.TryBuildUri(userInput);
 
                 bool exists = HostNameCheck(newResource.ComputedUri.Host);
@@ -164,9 +163,9 @@ namespace SSLCertificateTracker.Controllers
         {
             bool exists = false;
 
-            foreach (CertificateModel modelList in _list)
+            foreach (var item in _list)
             {
-                if (string.Equals(modelList.HostName, hostname, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(item.HostName, hostname, StringComparison.OrdinalIgnoreCase))
                 {
                     exists = true;
                     break;
@@ -185,7 +184,7 @@ namespace SSLCertificateTracker.Controllers
 
             _list.RemoveAt(index);
             _view.UpdateRowcount(_list.Count);
-            SaveListToJson().Wait();
+            SaveListToJson();
         }
 
 
