@@ -1,68 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace SSLCertificateTracker
 {
-    public class SortableBindingList<T> : BindingList<T> where T : class
+    public class SortableBindingList<CertiificateModel> : BindingList<CertiificateModel>
     {
-        private bool isSortedValue;
+        private bool isSorting;
+        private PropertyDescriptorCollection properties;
+        
         ListSortDirection sortDirectionValue;
         PropertyDescriptor sortPropertyValue;
 
-       public SortableBindingList() : base() { }
-
-        protected override void ApplySortCore(PropertyDescriptor prop, ListSortDirection direction)
+        public SortableBindingList() : base() 
         {
-            Type interfaceType = prop.PropertyType.GetInterface("IComparable");
-
-            if(interfaceType == null && prop.PropertyType.IsValueType)
-            {
-                Type underlyingType = Nullable.GetUnderlyingType(prop.PropertyType);
-                
-                if(underlyingType != null)
-                {
-                    interfaceType = underlyingType.GetInterface("IComparable");
-                }
-
-            }
-
-            if(interfaceType != null)
-            {
-                sortPropertyValue = prop;
-                sortDirectionValue = direction;
-
-                IEnumerable<T> query = base.Items;
-
-                if (direction == ListSortDirection.Ascending)
-                {
-                    query = query.OrderBy(i => prop.GetValue(i));
-                }
-                else
-                {
-                    query = query.OrderByDescending(i => prop.GetValue(i));
-                }
-
-                int newIndex = 0;
-
-                foreach (object item in query)
-                {
-                    this.Items[newIndex] = (T)item;
-                    newIndex++;
-                }
-
-                isSortedValue = true;
-                this.OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
-
-            }
-            else
-            {
-
-            }
+            properties = TypeDescriptor.GetProperties(typeof(CertiificateModel));
+            sortDirectionValue = ListSortDirection.Ascending;
+            sortPropertyValue = properties.Find("HostName", true);
         }
 
-        //Overrides default properties of a BindingList to allow me to add a working custom .sort functionality.
+        #region ListProperties
+        //Overrides default properties of a BindingList to allow me to make a BindingList Sortable.
+        private bool isSortedValue;
+        protected override bool IsSortedCore
+        {
+            get { return isSortedValue; }
+        }
         protected override PropertyDescriptor SortPropertyCore
         {
             get { return sortPropertyValue; }
@@ -78,9 +39,61 @@ namespace SSLCertificateTracker
             get { return true; }
         }
 
-        protected override bool IsSortedCore
+        #endregion
+
+        private void InternalSort()
         {
-            get { return isSortedValue; }
+            if (properties == null) return;
+
+            isSorting = true;
+
+            IEnumerable<CertiificateModel> query = base.Items;
+
+            query = query.OrderBy(i => sortPropertyValue.GetValue(i));
+
+            int newIndex = 0;
+
+            foreach (object item in query)
+            {
+                this.Items[newIndex] = (CertiificateModel)item;
+                newIndex++;
+            }
+
+            isSortedValue = true;
+            isSorting = false;
+            this.OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
+        }
+
+        protected override void RemoveSortCore()
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override void OnListChanged(ListChangedEventArgs e)
+        {
+            if (!isSorting)
+                base.OnListChanged(e);
+        }
+
+        protected override void SetItem(int index, CertiificateModel item)
+        {
+            base.SetItem(index, item);
+            if (!isSorting)
+                this.InternalSort();
+        }
+
+        protected override void InsertItem(int index, CertiificateModel item)
+        {
+            base.InsertItem(index, item);
+            if (!isSorting)
+                this.InternalSort();
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            base.RemoveItem(index);
+            if (!isSorting)
+                this.InternalSort();
         }
 
     }

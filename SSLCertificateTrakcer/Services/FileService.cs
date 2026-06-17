@@ -70,7 +70,7 @@ namespace SSLCertificateTracker.Services
             }
             catch (JsonException) 
             {
-                MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created and JSON file was created.","File Data",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list and JSON file were created.","File Unreadable!",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return new SortableBindingList<CertificateModel>();
             }
         }

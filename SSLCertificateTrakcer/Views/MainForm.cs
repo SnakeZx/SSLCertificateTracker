@@ -119,7 +119,6 @@ namespace SSLCertificateTracker
         {
             bs.DataSource = list;
             sslDataGrid.DataSource = bs;
-
         }
 
 
