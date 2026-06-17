@@ -32,14 +32,19 @@
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             addSiteBtn = new Button();
             sslDataGrid = new DataGridView();
+            WebsiteColumn = new DataGridViewTextBoxColumn();
+            certIssuerDesign = new DataGridViewTextBoxColumn();
+            expiryDateCol = new DataGridViewTextBoxColumn();
+            daysLeftDesign = new DataGridViewTextBoxColumn();
+            certStatusDesign = new DataGridViewTextBoxColumn();
             certificateViewBindingSource = new BindingSource(components);
             statusBar = new StatusStrip();
             sitesTrackedLbl = new ToolStripStatusLabel();
@@ -52,11 +57,6 @@
             rfshAllBtn = new Button();
             rfshSelectedBtn = new Button();
             remSelectedBtn = new Button();
-            WebsiteColumn = new DataGridViewTextBoxColumn();
-            certIssuerDesign = new DataGridViewTextBoxColumn();
-            expiryDateCol = new DataGridViewTextBoxColumn();
-            daysLeftDesign = new DataGridViewTextBoxColumn();
-            certStatusDesign = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)certificateViewBindingSource).BeginInit();
             statusBar.SuspendLayout();
@@ -101,7 +101,7 @@
             sslDataGrid.Columns.AddRange(new DataGridViewColumn[] { WebsiteColumn, certIssuerDesign, expiryDateCol, daysLeftDesign, certStatusDesign });
             dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle7.BackColor = Color.White;
-            dataGridViewCellStyle7.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle7.Font = new Font("Calibri", 10F);
             dataGridViewCellStyle7.ForeColor = SystemColors.ControlText;
             dataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText;
@@ -130,6 +130,71 @@
             sslDataGrid.RowsRemoved += sslDataGrid_RowsRemoved;
             sslDataGrid.SelectionChanged += sslDataGrid_SelectionChanged;
             sslDataGrid.MouseClick += sslDataGrid_MouseClick;
+            // 
+            // WebsiteColumn
+            // 
+            WebsiteColumn.DataPropertyName = "HostName";
+            dataGridViewCellStyle2.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle2.NullValue = null;
+            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            WebsiteColumn.FillWeight = 32F;
+            WebsiteColumn.HeaderText = "Website";
+            WebsiteColumn.Name = "WebsiteColumn";
+            WebsiteColumn.ReadOnly = true;
+            WebsiteColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // certIssuerDesign
+            // 
+            certIssuerDesign.DataPropertyName = "LastIssuer";
+            dataGridViewCellStyle3.Font = new Font("Arial", 10F);
+            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle3;
+            certIssuerDesign.FillWeight = 32F;
+            certIssuerDesign.HeaderText = "Issuer";
+            certIssuerDesign.Name = "certIssuerDesign";
+            certIssuerDesign.ReadOnly = true;
+            certIssuerDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // expiryDateCol
+            // 
+            expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            expiryDateCol.DataPropertyName = "LastExpiryUtc";
+            dataGridViewCellStyle4.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle4.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle4.NullValue = null;
+            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle4;
+            expiryDateCol.FillWeight = 11F;
+            expiryDateCol.HeaderText = "Expiry Date";
+            expiryDateCol.Name = "expiryDateCol";
+            expiryDateCol.ReadOnly = true;
+            expiryDateCol.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // daysLeftDesign
+            // 
+            daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
+            daysLeftDesign.DataPropertyName = "daysLeft";
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.Font = new Font("Arial", 10F);
+            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle5;
+            daysLeftDesign.FillWeight = 20.58242F;
+            daysLeftDesign.HeaderText = "Days Left";
+            daysLeftDesign.MinimumWidth = 63;
+            daysLeftDesign.Name = "daysLeftDesign";
+            daysLeftDesign.ReadOnly = true;
+            daysLeftDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
+            daysLeftDesign.Width = 75;
+            // 
+            // certStatusDesign
+            // 
+            certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            certStatusDesign.DataPropertyName = "Status";
+            dataGridViewCellStyle6.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle6;
+            certStatusDesign.FillWeight = 25F;
+            certStatusDesign.HeaderText = "Status";
+            certStatusDesign.Name = "certStatusDesign";
+            certStatusDesign.ReadOnly = true;
+            certStatusDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // certificateViewBindingSource
             // 
@@ -254,71 +319,6 @@
             remSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
             remSelectedBtn.UseVisualStyleBackColor = false;
             remSelectedBtn.Click += remSelectedBtn_Click;
-            // 
-            // WebsiteColumn
-            // 
-            WebsiteColumn.DataPropertyName = "HostName";
-            dataGridViewCellStyle2.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle2.NullValue = null;
-            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            WebsiteColumn.FillWeight = 32F;
-            WebsiteColumn.HeaderText = "Website";
-            WebsiteColumn.Name = "WebsiteColumn";
-            WebsiteColumn.ReadOnly = true;
-            WebsiteColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // certIssuerDesign
-            // 
-            certIssuerDesign.DataPropertyName = "LastIssuer";
-            dataGridViewCellStyle3.Font = new Font("Arial", 10F);
-            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle3;
-            certIssuerDesign.FillWeight = 32F;
-            certIssuerDesign.HeaderText = "Issuer";
-            certIssuerDesign.Name = "certIssuerDesign";
-            certIssuerDesign.ReadOnly = true;
-            certIssuerDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // expiryDateCol
-            // 
-            expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            expiryDateCol.DataPropertyName = "LastExpiryUtc";
-            dataGridViewCellStyle4.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle4.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle4.NullValue = null;
-            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle4;
-            expiryDateCol.FillWeight = 11F;
-            expiryDateCol.HeaderText = "Expiry Date";
-            expiryDateCol.Name = "expiryDateCol";
-            expiryDateCol.ReadOnly = true;
-            expiryDateCol.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // daysLeftDesign
-            // 
-            daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
-            daysLeftDesign.DataPropertyName = "daysLeft";
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.Font = new Font("Arial", 10F);
-            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle5;
-            daysLeftDesign.FillWeight = 20.58242F;
-            daysLeftDesign.HeaderText = "Days Left";
-            daysLeftDesign.MinimumWidth = 63;
-            daysLeftDesign.Name = "daysLeftDesign";
-            daysLeftDesign.ReadOnly = true;
-            daysLeftDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
-            daysLeftDesign.Width = 75;
-            // 
-            // certStatusDesign
-            // 
-            certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            certStatusDesign.DataPropertyName = "Status";
-            dataGridViewCellStyle6.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle6;
-            certStatusDesign.FillWeight = 25F;
-            certStatusDesign.HeaderText = "Status";
-            certStatusDesign.Name = "certStatusDesign";
-            certStatusDesign.ReadOnly = true;
-            certStatusDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // MainForm
             // 

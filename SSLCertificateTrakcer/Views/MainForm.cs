@@ -8,6 +8,9 @@ namespace SSLCertificateTracker
     {
 
         private readonly Font StatusColumnFont = new Font("Segoe UI Emoji", 10F, FontStyle.Bold);
+        private readonly Font DeafultRowFontBold = new Font("Arial", 10F, FontStyle.Bold);
+        private readonly Font DeafultRowFont = new Font("Arial", 10F, FontStyle.Regular);
+
         private readonly Color StatusRedColor = Color.Red;
         private readonly Color StatusGreenColor = Color.Green;
         private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
@@ -149,11 +152,11 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if(e.ColumnIndex  == certStatusDesign.Index)
+            if (e.ColumnIndex == certStatusDesign.Index)
             {
                 e.CellStyle.Font = StatusColumnFont;
             }
-            if (e.ColumnIndex == daysLeftDesign.Index)
+            else if (e.ColumnIndex == daysLeftDesign.Index)
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -235,22 +238,22 @@ namespace SSLCertificateTracker
                 StatusCell.Style.SelectionForeColor = StatusRedColor;
 
                 ExpiryDateCell.Style.ForeColor = StatusRedColor;
-                ExpiryDateCell.Style.Font = StatusColumnFont;
+                ExpiryDateCell.Style.Font = DeafultRowFontBold;
                 ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
 
                 DaysLeftCell.Style.ForeColor = StatusRedColor;
-                DaysLeftCell.Style.Font = StatusColumnFont;
+                DaysLeftCell.Style.Font = DeafultRowFontBold;
                 DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
             }
             else if (StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
                      || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
             {
-                StatusCell.Style.Font = StatusColumnFont;
+                StatusCell.Style.Font = DeafultRowFont;
                 StatusCell.Style.ForeColor = StatusGreenColor;
                 StatusCell.Style.SelectionForeColor = StatusGreenColor;
 
-                Row.DefaultCellStyle.BackColor = DefaultBackColor;
-                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+                //Row.DefaultCellStyle.BackColor = DefaultBackColor;
+                //Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
             }
             else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
             {
