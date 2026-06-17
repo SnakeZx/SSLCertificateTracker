@@ -224,7 +224,7 @@ namespace SSLCertificateTracker
             var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, e.RowIndex];
             var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, e.RowIndex];
 
-            if (Row.DataBoundItem
+            if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
                 || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
                 )
             {
