@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Security.Cryptography;
 
 namespace SSLCertificateTracker.Subclass
 {
@@ -49,7 +50,7 @@ namespace SSLCertificateTracker.Subclass
 
             IEnumerable<CertiificateModel> query = base.Items;
 
-            query = query.OrderBy(i => sortPropertyValue.GetValue(i));
+            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName));
 
             int newIndex = 0;
 

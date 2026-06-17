@@ -1,6 +1,7 @@
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace SSLCertificateTracker
 {
@@ -15,8 +16,6 @@ namespace SSLCertificateTracker
         private readonly Color StatusGreenColor = Color.Green;
         private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
         private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
-
-        private readonly Color DefaultRowColor = Color.FromArgb(0, 0, 0);
 
         public event Action? OnMainFormLoad;
         public event Action? OnMainFormClose;
@@ -55,8 +54,6 @@ namespace SSLCertificateTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             OnMainFormLoad?.Invoke();
-
-
         }
 
         private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
@@ -162,54 +159,6 @@ namespace SSLCertificateTracker
             }
         }
 
-        //internal void FormatRows(int RowIndex)
-        //{
-
-        //    var Row = sslDataGrid.Rows[RowIndex];
-        //    var StatusCell = sslDataGrid[certStatusDesign.Index, RowIndex];
-        //    var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, RowIndex];
-        //    var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, RowIndex];
-
-        //    int.TryParse(DaysLeftCell.ToString(), out int result);
-
-        //    if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
-        //        || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-        //        )
-        //    {
-        //        Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
-        //        Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
-
-        //        StatusCell.Style.ForeColor = Color.Red;
-        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-        //        StatusCell.Style.SelectionForeColor = Color.Red;
-
-        //        ExpiryDateCell.Style.ForeColor = Color.Red;
-        //        ExpiryDateCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
-        //        ExpiryDateCell.Style.SelectionForeColor = Color.Red;
-
-        //        DaysLeftCell.Style.ForeColor = Color.Red;
-        //        DaysLeftCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
-        //        DaysLeftCell.Style.SelectionForeColor = Color.Red;
-        //    }
-        //    else if (StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
-        //             || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-        //        StatusCell.Style.ForeColor = Color.Green;
-        //        StatusCell.Style.SelectionForeColor = Color.Green;
-        //    }
-        //    else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        StatusCell.Style.ForeColor = Color.Red;
-        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-        //        StatusCell.Style.SelectionForeColor = Color.Red;
-
-        //        Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
-        //        Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
-        //    }
-
-        //}
-
         internal void SetErrorToolTip(int index, string message)
         {
             var cell = sslDataGrid.Rows[index].Cells[certStatusDesign.Index];
@@ -217,6 +166,7 @@ namespace SSLCertificateTracker
             if (cell.Value.ToString().Contains("error", StringComparison.OrdinalIgnoreCase))
             {
                 cell.ToolTipText = message;
+                Debug.WriteLine(index + " : " + message);
             }
         }
 
@@ -251,9 +201,6 @@ namespace SSLCertificateTracker
                 StatusCell.Style.Font = DeafultRowFont;
                 StatusCell.Style.ForeColor = StatusGreenColor;
                 StatusCell.Style.SelectionForeColor = StatusGreenColor;
-
-                //Row.DefaultCellStyle.BackColor = DefaultBackColor;
-                //Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
             }
             else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
             {

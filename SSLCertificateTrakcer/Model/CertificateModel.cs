@@ -26,7 +26,6 @@ namespace SSLCertificateTracker.Model
         [JsonConstructor]
         public CertificateModel()
         {
-
         }
 
 
@@ -62,7 +61,7 @@ namespace SSLCertificateTracker.Model
             }
         }
 
-
+        //replaces all quotes in the string with a space. looks for the organization column
         public string ExtractIssuer(string Issuer)
             {
                 Issuer = Issuer.Replace('"', ' ');

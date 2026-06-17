@@ -1,9 +1,7 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using SSLCertificateTracker.Subclass;
-using System.Collections.Immutable;
-using System.ComponentModel;
-using System.Diagnostics;
+
 
 namespace SSLCertificateTracker.Controllers
 {
@@ -77,7 +75,6 @@ namespace SSLCertificateTracker.Controllers
                     newResource.LastExpiryUtc = _RawCertData.NotAfter;
                     newResource.Status = newResource.GetStatus();
                     _list.Add(newResource);
-                    //_view.FormatRows(_list.IndexOf(newResource));
                     SaveListToJson();
 
                     _view.UpdateRowcount(_list.Count);
@@ -86,7 +83,7 @@ namespace SSLCertificateTracker.Controllers
                 else
                 {
                     //prompt user for a choice to add another site. If yes a new add site form box appears.
-                    var result = MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    var result = MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                     if (result == DialogResult.Yes) 
                         { ShowAddNewSite(); }
@@ -103,7 +100,6 @@ namespace SSLCertificateTracker.Controllers
 
                 _list.Add(newResource);
 
-                //_view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
                 _view.UpdateRowcount(_list.Count);
             }
@@ -142,9 +138,6 @@ namespace SSLCertificateTracker.Controllers
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
                 
-                
-                
-                //_view.FormatRows(_list.IndexOf(newResource));
                 _view.UpdateRowcount(_list.Count);
                 _view.UpdateLastRefresh(newResource.LastCheckedUtc);
             }
@@ -152,16 +145,14 @@ namespace SSLCertificateTracker.Controllers
             {
                 //checks for deletion during an update request.
                 //TODO: Show Notify User that a row may was deleted while updating.
-                if (index < 0) { return; }
-                //Debug.WriteLine($"{ex.Message}");
+                if (index < 0) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
                 newResource.HostName = savedHost;
                 newResource.Status = newResource.SetErrorStatus();
                 newResource.LastErrorMessage = ex.Message;
 
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
-                //_view.FormatRows(_list.IndexOf(newResource));
-                _view.SetErrorToolTip(index, ex.Message);
+                _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
             }
         }
 

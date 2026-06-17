@@ -101,7 +101,7 @@
             sslDataGrid.Columns.AddRange(new DataGridViewColumn[] { WebsiteColumn, certIssuerDesign, expiryDateCol, daysLeftDesign, certStatusDesign });
             dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle7.BackColor = Color.White;
-            dataGridViewCellStyle7.Font = new Font("Calibri", 10F);
+            dataGridViewCellStyle7.Font = new Font("Arial", 10F);
             dataGridViewCellStyle7.ForeColor = SystemColors.ControlText;
             dataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText;
@@ -115,7 +115,7 @@
             sslDataGrid.RowHeadersVisible = false;
             dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle8.BackColor = Color.White;
-            dataGridViewCellStyle8.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle8.Font = new Font("Arial", 10F);
             dataGridViewCellStyle8.ForeColor = Color.Black;
             dataGridViewCellStyle8.SelectionBackColor = Color.FromArgb(218, 237, 254);
             dataGridViewCellStyle8.SelectionForeColor = Color.Black;
