@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace SSLCertificateTracker
+namespace SSLCertificateTracker.Subclass
 {
     public class SortableBindingList<CertiificateModel> : BindingList<CertiificateModel>
     {

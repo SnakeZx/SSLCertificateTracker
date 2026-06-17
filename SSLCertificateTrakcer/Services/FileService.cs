@@ -1,4 +1,5 @@
 ﻿using SSLCertificateTracker.Model;
+using SSLCertificateTracker.Subclass;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;

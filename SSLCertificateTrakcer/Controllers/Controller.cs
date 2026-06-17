@@ -1,5 +1,6 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
+using SSLCertificateTracker.Subclass;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -41,7 +42,7 @@ namespace SSLCertificateTracker.Controllers
             _view.OnRefreshAllClick += UpdateAllData;
 
         }
-
+        //Creates addSiteForm to take in user input and return the user input for the Get.
         private void ShowAddNewSite()
         {
             using AddSiteForm _UserInputView = new ();
@@ -70,13 +71,13 @@ namespace SSLCertificateTracker.Controllers
                 {
                     var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
 
-
+                    //Creates new certificate model for the view to display 
                     newResource.HostName = newResource.ComputedUri.Host;
                     newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
                     newResource.LastExpiryUtc = _RawCertData.NotAfter;
                     newResource.Status = newResource.GetStatus();
                     _list.Add(newResource);
-                    _view.FormatRows(_list.IndexOf(newResource));
+                    //_view.FormatRows(_list.IndexOf(newResource));
                     SaveListToJson();
 
                     _view.UpdateRowcount(_list.Count);
@@ -84,21 +85,25 @@ namespace SSLCertificateTracker.Controllers
                 }
                 else
                 {
-                    MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.", "Already Tracked", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    ShowAddNewSite();
+                    //prompt user for a choice to add another site. If yes a new add site form box appears.
+                    var result = MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+
+                    if (result == DialogResult.Yes) 
+                        { ShowAddNewSite(); }
                     return;
                 }
 
             }
             catch (Exception ex)
             {
+                //If there is an error a new row is still made with a tooltip in the status column for what the error is.
                 newResource.HostName = userInput;
                 newResource.Status = newResource.SetErrorStatus();
                 newResource.LastErrorMessage = ex.Message;
 
                 _list.Add(newResource);
 
-                _view.FormatRows(_list.IndexOf(newResource));
+                //_view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
                 _view.UpdateRowcount(_list.Count);
             }
@@ -117,7 +122,7 @@ namespace SSLCertificateTracker.Controllers
         //Updates certificate and skips the check for duplicate since we need to skip as we are removing and updating with new information.
         private async void UpdateCertificateData(int index)
         {
-            if(index == null || index < 0) {  return; }
+            if(index < 0) {  return; }
             string savedHost = _list[index].HostName;
 
             CertificateModel newResource = new CertificateModel();
@@ -137,23 +142,25 @@ namespace SSLCertificateTracker.Controllers
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
                 
-                SaveListToJson();
                 
-                _view.FormatRows(_list.IndexOf(newResource));
+                
+                //_view.FormatRows(_list.IndexOf(newResource));
                 _view.UpdateRowcount(_list.Count);
                 _view.UpdateLastRefresh(newResource.LastCheckedUtc);
             }
             catch (Exception ex)
             {
+                //checks for deletion during an update request.
+                //TODO: Show Notify User that a row may was deleted while updating.
                 if (index < 0) { return; }
-                Debug.WriteLine($"{ex.Message}");
+                //Debug.WriteLine($"{ex.Message}");
                 newResource.HostName = savedHost;
                 newResource.Status = newResource.SetErrorStatus();
                 newResource.LastErrorMessage = ex.Message;
 
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
-                _view.FormatRows(_list.IndexOf(newResource));
+                //_view.FormatRows(_list.IndexOf(newResource));
                 _view.SetErrorToolTip(index, ex.Message);
             }
         }
@@ -206,7 +213,7 @@ namespace SSLCertificateTracker.Controllers
                 UpdateCertificateData(_list.IndexOf(item));
             }
             _view.UpdateRowcount(_list.Count);
-
+            SaveListToJson();
         }
 
     }

@@ -1,10 +1,20 @@
 using SSLCertificateTracker.Model;
+using SSLCertificateTracker.Subclass;
 using System.ComponentModel;
 
 namespace SSLCertificateTracker
 {
     public partial class MainForm : Form
     {
+
+        private readonly Font StatusColumnFont = new Font("Segoe UI Emoji", 10F, FontStyle.Bold);
+        private readonly Color StatusRedColor = Color.Red;
+        private readonly Color StatusGreenColor = Color.Green;
+        private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
+        private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
+
+        private readonly Color DefaultRowColor = Color.FromArgb(0, 0, 0);
+
         public event Action? OnMainFormLoad;
         public event Action? OnMainFormClose;
 
@@ -43,7 +53,7 @@ namespace SSLCertificateTracker
         {
             OnMainFormLoad?.Invoke();
 
-            
+
         }
 
         private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
@@ -122,53 +132,80 @@ namespace SSLCertificateTracker
         }
 
 
-        internal void FormatRows(int RowIndex)
+
+        private void rfshAllBtn_Click(object sender, EventArgs e)
         {
-
-            var Row = sslDataGrid.Rows[RowIndex];
-            var StatusCell = sslDataGrid[certStatusDesign.Index, RowIndex];
-            var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, RowIndex];
-            var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, RowIndex];
-
-            int.TryParse(DaysLeftCell.ToString(), out int result);
-
-            if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase) 
-                || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-                )
+            if (sslDataGrid.RowCount > 0)
             {
-                Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
-                Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
-
-                StatusCell.Style.ForeColor = Color.Red;
-                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-                StatusCell.Style.SelectionForeColor = Color.Red;
-
-                ExpiryDateCell.Style.ForeColor = Color.Red;
-                ExpiryDateCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
-                ExpiryDateCell.Style.SelectionForeColor = Color.Red;
-
-                DaysLeftCell.Style.ForeColor = Color.Red;
-                DaysLeftCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
-                DaysLeftCell.Style.SelectionForeColor = Color.Red;
+                OnRefreshAllClick?.Invoke();
             }
-            else if(StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase) 
-                     || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
-            {
-                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-                StatusCell.Style.ForeColor = Color.Green;
-                StatusCell.Style.SelectionForeColor = Color.Green;
-            }else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            {
-                StatusCell.Style.ForeColor = Color.Red;
-                StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
-                StatusCell.Style.SelectionForeColor = Color.Red;
-
-                Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
-                Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
-            }
-
         }
 
+        public void UpdateLastRefresh(DateTime dt)
+        {
+
+            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
+        }
+
+        private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if(e.ColumnIndex  == certStatusDesign.Index)
+            {
+                e.CellStyle.Font = StatusColumnFont;
+            }
+            if (e.ColumnIndex == daysLeftDesign.Index)
+            {
+                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+        }
+
+        //internal void FormatRows(int RowIndex)
+        //{
+
+        //    var Row = sslDataGrid.Rows[RowIndex];
+        //    var StatusCell = sslDataGrid[certStatusDesign.Index, RowIndex];
+        //    var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, RowIndex];
+        //    var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, RowIndex];
+
+        //    int.TryParse(DaysLeftCell.ToString(), out int result);
+
+        //    if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
+        //        || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
+        //        )
+        //    {
+        //        Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
+        //        Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
+
+        //        StatusCell.Style.ForeColor = Color.Red;
+        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+        //        StatusCell.Style.SelectionForeColor = Color.Red;
+
+        //        ExpiryDateCell.Style.ForeColor = Color.Red;
+        //        ExpiryDateCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
+        //        ExpiryDateCell.Style.SelectionForeColor = Color.Red;
+
+        //        DaysLeftCell.Style.ForeColor = Color.Red;
+        //        DaysLeftCell.Style.Font = new Font("Calibri", 12F, FontStyle.Bold);
+        //        DaysLeftCell.Style.SelectionForeColor = Color.Red;
+        //    }
+        //    else if (StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
+        //             || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+        //        StatusCell.Style.ForeColor = Color.Green;
+        //        StatusCell.Style.SelectionForeColor = Color.Green;
+        //    }
+        //    else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        StatusCell.Style.ForeColor = Color.Red;
+        //        StatusCell.Style.Font = new Font("Segoe UI Emoji", 12F, FontStyle.Bold);
+        //        StatusCell.Style.SelectionForeColor = Color.Red;
+
+        //        Row.DefaultCellStyle.BackColor = Color.FromArgb(245, 211, 211);
+        //        Row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 237, 254);
+        //    }
+
+        //}
 
         internal void SetErrorToolTip(int index, string message)
         {
@@ -180,18 +217,50 @@ namespace SSLCertificateTracker
             }
         }
 
-        private void rfshAllBtn_Click(object sender, EventArgs e)
+        private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
-            if (sslDataGrid.RowCount > 0)
-            {
-                OnRefreshAllClick?.Invoke();
-            }
-        }
+            var Row = sslDataGrid.Rows[e.RowIndex];
+            var StatusCell = sslDataGrid[certStatusDesign.Index, e.RowIndex];
+            var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, e.RowIndex];
+            var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, e.RowIndex];
 
-        public void UpdateLastRefresh(DateTime dt) 
-        {
-            
-            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
+            if (Row.DataBoundItem
+                || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
+                )
+            {
+                Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+
+                StatusCell.Style.ForeColor = StatusRedColor;
+                StatusCell.Style.SelectionForeColor = StatusRedColor;
+
+                ExpiryDateCell.Style.ForeColor = StatusRedColor;
+                ExpiryDateCell.Style.Font = StatusColumnFont;
+                ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
+
+                DaysLeftCell.Style.ForeColor = StatusRedColor;
+                DaysLeftCell.Style.Font = StatusColumnFont;
+                DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
+            }
+            else if (StatusCell.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
+                     || StatusCell.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusCell.Style.Font = StatusColumnFont;
+                StatusCell.Style.ForeColor = StatusGreenColor;
+                StatusCell.Style.SelectionForeColor = StatusGreenColor;
+
+                Row.DefaultCellStyle.BackColor = DefaultBackColor;
+                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+            }
+            else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusCell.Style.ForeColor = StatusRedColor;
+                StatusCell.Style.Font = StatusColumnFont;
+                StatusCell.Style.SelectionForeColor = StatusRedColor;
+
+                Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+            }
         }
     }
 }
