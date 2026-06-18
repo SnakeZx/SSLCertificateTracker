@@ -24,6 +24,7 @@ namespace SSLCertificateTracker
         public event Action? OnRefreshAllClick;
         public event Action<int>? OnRefreshSelectedClick;
         public event Action<int>? OnRemoveClick;
+        public event Action<int>? OnCellDoubleClick;
 
         private BindingSource bs = new();
 
@@ -210,6 +211,19 @@ namespace SSLCertificateTracker
 
                 Row.DefaultCellStyle.BackColor = RowRedBackColor;
                 Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+            }
+        }
+
+        private void sslDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void sslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(e.ColumnIndex == WebsiteColumn.Index)
+            {
+                OnCellDoubleClick?.Invoke(e.RowIndex);
             }
         }
     }
