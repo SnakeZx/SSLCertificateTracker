@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 namespace SSLCertificateTracker.Model
 {
@@ -20,13 +21,14 @@ namespace SSLCertificateTracker.Model
         public DateTime LastCheckedUtc = DateTime.Now;
         [JsonInclude]
         public string? LastErrorMessage { get; set; } = null;
+        [JsonIgnore]
+        public X509Certificate2 rawCertificate { get; set; }
 
         private string _rawInput = string.Empty;
 
         [JsonConstructor]
         public CertificateModel()
         {
-
         }
 
 
@@ -62,7 +64,7 @@ namespace SSLCertificateTracker.Model
             }
         }
 
-
+        //replaces all quotes in the string with a space. looks for the organization column
         public string ExtractIssuer(string Issuer)
             {
                 Issuer = Issuer.Replace('"', ' ');

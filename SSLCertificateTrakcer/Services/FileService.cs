@@ -1,4 +1,5 @@
 ﻿using SSLCertificateTracker.Model;
+using SSLCertificateTracker.Subclass;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;
@@ -37,9 +38,9 @@ namespace SSLCertificateTracker.Services
 
                 Debug.WriteLine($"JSON File Created/Updated in directory\nFile Path: {_expandedFilePath}");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Debug.WriteLine($"Gonna Throw in the File Service\n{ex.Message}");
             }
         }
 

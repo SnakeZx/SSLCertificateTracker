@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
-namespace SSLCertificateTracker
+namespace SSLCertificateTracker.Subclass
 {
     public class SortableBindingList<CertiificateModel> : BindingList<CertiificateModel>
     {
@@ -49,7 +51,7 @@ namespace SSLCertificateTracker
 
             IEnumerable<CertiificateModel> query = base.Items;
 
-            query = query.OrderBy(i => sortPropertyValue.GetValue(i));
+            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName));
 
             int newIndex = 0;
 
@@ -66,6 +68,7 @@ namespace SSLCertificateTracker
 
         protected override void RemoveSortCore()
         {
+            Debug.WriteLine("Gonna Throw on the List");
             throw new NotSupportedException();
         }
 
