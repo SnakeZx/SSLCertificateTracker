@@ -21,7 +21,7 @@ namespace SSLCertificateTracker.Model
         public DateTime LastCheckedUtc = DateTime.Now;
         [JsonInclude]
         public string? LastErrorMessage { get; set; } = null;
-
+        [JsonIgnore]
         public X509Certificate2 rawCertificate { get; set; }
 
         private string _rawInput = string.Empty;

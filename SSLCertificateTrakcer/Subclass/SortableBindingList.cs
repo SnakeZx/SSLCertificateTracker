@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace SSLCertificateTracker.Subclass
@@ -67,6 +68,7 @@ namespace SSLCertificateTracker.Subclass
 
         protected override void RemoveSortCore()
         {
+            Debug.WriteLine("Gonna Throw on the List");
             throw new NotSupportedException();
         }
 

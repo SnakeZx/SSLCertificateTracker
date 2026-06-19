@@ -157,7 +157,7 @@ namespace SSLCertificateTracker.Controllers
 
                 _list.RemoveAt(index);
                 _list.Insert(index, newResource);
-                _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
+                //_view.SetErrorToolTip(_list.IndexOf(newResource), _list[index].LastErrorMessage);
             }
         }
 
@@ -214,24 +214,13 @@ namespace SSLCertificateTracker.Controllers
 
         private void ShowCertificateData(int index)
         {
-            bool isOpen = false;
-
             if(_list[index].rawCertificate == null)
             {
                 MessageBox.Show("The Selected row does not have a valid certificate to view. Please select another row or refresh the list if you think this is a mistake.","Certificate Not Found",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            if (isOpen == false)
-            {
-                X509Certificate2UI.DisplayCertificate(_list[index].rawCertificate);
-
-            }
-            else
-            {
-                MessageBox.Show("Only one certificate can be viewed at a time.", "Too many requested", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
+            
+            X509Certificate2UI.DisplayCertificate(_list[index].rawCertificate, _view.Handle);
         }
 
     }
