@@ -22,11 +22,14 @@ namespace SSLCertificateTracker
 
         public event Action? OnAddNewSiteClick;
         public event Action? OnRefreshAllClick;
-        public event Action<int>? OnRefreshSelectedClick;
+        //public event Action<int>? OnRefreshSelectedClick;
         public event Action<int>? OnRemoveClick;
         public event Action<int>? OnCellDoubleClick;
+        public event Func<int, string>? ErrorMesssageTooltip;
 
         private BindingSource bs = new();
+
+        private string _errorToolTip = string.Empty;
 
 
         public MainForm()
@@ -116,7 +119,7 @@ namespace SSLCertificateTracker
         {
             if (sslDataGrid.SelectedRows.Count > 0)
             {
-                OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+                //OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
             }
         }
 
@@ -165,7 +168,7 @@ namespace SSLCertificateTracker
                 e.CellStyle.ForeColor = StatusRedColor;
                 e.CellStyle.SelectionForeColor = StatusRedColor;
             }
-            else if (e.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+            else if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
             {
                 e.CellStyle.ForeColor = StatusRedColor;
                 e.CellStyle.Font = StatusColumnFont;
@@ -177,17 +180,17 @@ namespace SSLCertificateTracker
             }
         }
 
-        internal void SetErrorToolTip(int index, string message)
-        {
-            var cell = sslDataGrid.Rows[index].Cells[certStatusDesign.Index];
+        //internal void SetErrorToolTip(int index, string message)
+        //{
+        //    var cell = sslDataGrid.Rows[index].Cells[certStatusDesign.Index];
 
 
-            if (cell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            {
-                cell.ToolTipText = message;
-                Debug.WriteLine(index + " : " + message);
-            }
-        }
+        //    if (cell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        cell.ToolTipText = message;
+        //        Debug.WriteLine(index + " : " + message);
+        //    }
+        //}
 
         private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
@@ -215,7 +218,7 @@ namespace SSLCertificateTracker
             {
                 Row.DefaultCellStyle.BackColor = RowRedBackColor;
                 Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
-                
+
             }
         }
 
@@ -226,9 +229,19 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == WebsiteColumn.Index)
+            if (e.ColumnIndex == WebsiteColumn.Index)
             {
                 OnCellDoubleClick?.Invoke(e.RowIndex);
+            }
+        }
+
+        private void sslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if(e.ColumnIndex == certStatusDesign.Index)
+            {
+                var res = ErrorMesssageTooltip?.Invoke(e.RowIndex);
+                if(res == null || res == string.Empty) { return; }
+                e.ToolTipText = ErrorMesssageTooltip?.Invoke(e.RowIndex);
             }
         }
     }

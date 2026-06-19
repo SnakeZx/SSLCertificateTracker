@@ -127,6 +127,7 @@
             sslDataGrid.CellClick += sslDataGrid_CellClick;
             sslDataGrid.CellDoubleClick += sslDataGrid_CellDoubleClick;
             sslDataGrid.CellFormatting += sslDataGrid_CellFormatting;
+            sslDataGrid.CellToolTipTextNeeded += sslDataGrid_CellToolTipTextNeeded;
             sslDataGrid.RowPrePaint += sslDataGrid_RowPrePaint;
             sslDataGrid.RowsAdded += sslDataGrid_RowsAdded;
             sslDataGrid.RowsRemoved += sslDataGrid_RowsRemoved;

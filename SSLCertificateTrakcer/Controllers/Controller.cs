@@ -1,6 +1,7 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using SSLCertificateTracker.Subclass;
+using System.Drawing.Text;
 using System.Security.Cryptography.X509Certificates;
 
 
@@ -20,6 +21,8 @@ namespace SSLCertificateTracker.Controllers
 
         private readonly int port = 443;
 
+        private bool _isFetching = false;
+
 
         public Controller(MainForm view, CertificateModel model)
         {
@@ -37,10 +40,12 @@ namespace SSLCertificateTracker.Controllers
             _view.OnAddNewSiteClick += ShowAddNewSite;
             _view.OnRemoveClick += RemoveSelectedItem;
 
-            _view.OnRefreshSelectedClick += UpdateCertificateData;
+            //_view.OnRefreshSelectedClick += UpdateCertificateData;
             _view.OnRefreshAllClick += UpdateAllData;
 
             _view.OnCellDoubleClick += ShowCertificateData;
+
+            _view.ErrorMesssageTooltip += SetErrorToolTip;
 
         }
         //Creates addSiteForm to take in user input and return the user input for the Get.
@@ -104,7 +109,7 @@ namespace SSLCertificateTracker.Controllers
 
                 _list.Add(newResource);
 
-                _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
+                //_view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
                 _view.UpdateRowcount(_list.Count);
             }
         }
@@ -114,49 +119,45 @@ namespace SSLCertificateTracker.Controllers
         {
             foreach (var item in _list)
             {
-                UpdateCertificateData(_list.IndexOf(item));
+                UpdateCertificateData(item);
             }
             _view.UpdateRowcount(_list.Count);
         }
 
         //Updates certificate and skips the check for duplicate since we need to skip as we are removing and updating with new information.
-        private async void UpdateCertificateData(int index)
+        private async void UpdateCertificateData(CertificateModel model)
         {
-            if(index < 0) {  return; }
-            string savedHost = _list[index].HostName;
+            if(model == null) {  return; }
+            string savedHost = model.HostName;
 
             CertificateModel newResource = new CertificateModel();
-
             try
             {
-                _list[index].Status = "Fetching....";
+                model.LastErrorMessage = null;
+                model.Status = "Fetching....";
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
 
-                newResource.rawCertificate = _RawCertData;
-                newResource.HostName = savedHost;
-                newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
-                newResource.LastExpiryUtc = _RawCertData.NotAfter;
-                newResource.Status = newResource.GetStatus();
-
-                if (index < 0) { return; }
-                _list.RemoveAt(index);
-                _list.Insert(index, newResource);
+                model.rawCertificate = _RawCertData;
+                model.HostName = savedHost;
+                model.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
+                model.LastExpiryUtc = _RawCertData.NotAfter;
+                model.Status = newResource.GetStatus();
                 
                 _view.UpdateRowcount(_list.Count);
                 _view.UpdateLastRefresh(newResource.LastCheckedUtc);
+                _isFetching = false;
             }
             catch (Exception ex)
             {
                 //checks for deletion during an update request.
                 //TODO: Show Notify User that a row may was deleted while updating.
-                if (index < 0) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-                newResource.HostName = savedHost;
-                newResource.Status = newResource.SetErrorStatus();
-                newResource.LastErrorMessage = ex.Message;
+                if (model == null) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                model.HostName = savedHost;
+                model.Status = newResource.SetErrorStatus();
+                model.LastErrorMessage = ex.Message;
 
-                _list.RemoveAt(index);
-                _list.Insert(index, newResource);
+                _isFetching = false;
                 //_view.SetErrorToolTip(_list.IndexOf(newResource), _list[index].LastErrorMessage);
             }
         }
@@ -181,6 +182,11 @@ namespace SSLCertificateTracker.Controllers
         //Removes Selected Row from the list.
         private async void RemoveSelectedItem(int index)
         {
+            if(_isFetching) 
+            { 
+                MessageBox.Show($"Cannot Remove at the moment Data is still being fetched from: {_list[index].HostName}", "Fetching Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); 
+                return; 
+            }
             var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.No) return;
@@ -204,9 +210,10 @@ namespace SSLCertificateTracker.Controllers
 
             foreach(var item in temp) 
             {
+                item.LastErrorMessage = null;
                 item.Status = "Fetching....";
                 _list.Add(item);
-                UpdateCertificateData(_list.IndexOf(item));
+                UpdateCertificateData(item);
             }
             _view.UpdateRowcount(_list.Count);
             SaveListToJson();
@@ -221,6 +228,19 @@ namespace SSLCertificateTracker.Controllers
             }
             
             X509Certificate2UI.DisplayCertificate(_list[index].rawCertificate, _view.Handle);
+        }
+
+        private string SetErrorToolTip(int index)
+        {
+            if (index < 0) { return string.Empty; }
+
+            if (_list[index].LastErrorMessage == null)
+            {
+                return string.Empty;
+            }
+
+            return _list[index].LastErrorMessage;
+
         }
 
     }
