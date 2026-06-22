@@ -1,7 +1,6 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Services;
 using SSLCertificateTracker.Subclass;
-using System.Drawing.Text;
 using System.Security.Cryptography.X509Certificates;
 
 
@@ -20,8 +19,6 @@ namespace SSLCertificateTracker.Controllers
         private readonly SortableBindingList<CertificateModel> _list;
 
         private readonly int port = 443;
-
-        private bool _isFetching = false;
 
         private string _rawInput;
         private Uri ComputedUri;

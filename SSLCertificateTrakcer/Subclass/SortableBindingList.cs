@@ -69,7 +69,6 @@ namespace SSLCertificateTracker.Subclass
 
         protected override void RemoveSortCore()
         {
-            Debug.WriteLine("Gonna Throw on the List");
             throw new NotSupportedException();
         }
 

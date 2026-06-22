@@ -1,9 +1,6 @@
 using SSLCertificateTracker.Enums;
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
-using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics;
 
 namespace SSLCertificateTracker
 {
@@ -184,7 +181,7 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-
+            //checks if the cell is under the status column, makes sure the cell value is not null and is a valid enum in my StatusEnums Class.
             if(e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnums status)
             {
                 switch (e.Value)
@@ -221,19 +218,28 @@ namespace SSLCertificateTracker
                         break;
                 }
             }
+
+            if(e.ColumnIndex == daysLeftDesign.Index)
+            {
+                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
         }
 
         private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
+            //saves the row, and cell data into variables to made the code easier to read.
             var Row = sslDataGrid.Rows[e.RowIndex];
             var StatusCell = sslDataGrid[certStatusDesign.Index, e.RowIndex];
             var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, e.RowIndex];
             var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, e.RowIndex];
 
+
+            //checks to make sure the value in the statuscell is an enum that is in my StatusEnums class.
             if(StatusCell.Value is StatusEnums status)
             {
                 switch (StatusCell.Value)
                 {
+                    //Paints the row accordingly and the expiry, days left cells based on the enum in status.
                     case StatusEnums.Expired:
                     case StatusEnums.ExpiringSoon:
                         Row.DefaultCellStyle.BackColor = RowRedBackColor;
