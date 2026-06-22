@@ -9,16 +9,22 @@ namespace SSLCertificateTracker
 {
     public partial class MainForm : Form
     {
-
+        //Default Fonts fro the status column and default for the row when bolding is needed.
         private readonly Font StatusColumnFont = new Font("Segoe UI Emoji", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFontBold = new Font("Arial", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFont = new Font("Arial", 10F, FontStyle.Regular);
 
+        //Colors for status column
         private readonly Color StatusRedColor = Color.Red;
         private readonly Color StatusGreenColor = Color.Green;
+        private readonly Color DefaultStatusFontColor = Color.Black;
+
+        //Colors for entire row used based off the status column
+        private readonly Color DefaultRowBackColor = Color.FromArgb(255, 252, 255, 255);
         private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
         private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
 
+        //All events that the MainForm Raises
         public event Action? OnMainFormLoad;
         public event Action? OnMainFormClose;
 
@@ -107,9 +113,34 @@ namespace SSLCertificateTracker
 
         }
 
-        public void UpdateRowcount(int count)
+        public void UpdateStausBar()
         {
-            sitesTrackedLbl.Text = count + " sites tracked";
+            int count = 0;
+            int ExpiredCount = 0;
+            int ExpiringSoon = 0;
+
+            foreach(DataGridViewRow row in sslDataGrid.Rows)
+            {
+                var cellValue = row.Cells[certStatusDesign.Index].Value;
+                if (cellValue is StatusEnums status)
+                {
+                    if(status == StatusEnums.Expired)
+                    {
+                        ExpiredCount++;
+                    }else if(status == StatusEnums.ExpiringSoon)
+                    {
+                        ExpiringSoon++;
+                    }
+
+                    count++;
+                }
+            }
+
+            expiredLbl.Text = $"{ExpiredCount} expired";
+
+            expiringSoonLbl.Text = $"{ExpiringSoon} expiring soon";
+
+            sitesTrackedLbl.Text = $"{count} sites tracked";
         }
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
@@ -121,7 +152,7 @@ namespace SSLCertificateTracker
         {
             if (sslDataGrid.SelectedRows.Count > 0)
             {
-                //OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+                OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
             }
         }
 
@@ -136,8 +167,6 @@ namespace SSLCertificateTracker
             bs.DataSource = list;
             sslDataGrid.DataSource = bs;
         }
-
-
 
         private void rfshAllBtn_Click(object sender, EventArgs e)
         {
@@ -184,35 +213,14 @@ namespace SSLCertificateTracker
                         e.CellStyle.ForeColor = StatusRedColor;
                         e.CellStyle.SelectionForeColor = StatusRedColor;
                         break;
+                    case StatusEnums.Error:
+                        e.Value = "\U0000274C Error";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusRedColor;
+                        e.CellStyle.SelectionForeColor = StatusRedColor;
+                        break;
                 }
             }
-
-
-            //if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
-            //         || e.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    e.CellStyle.Font = StatusColumnFont;
-            //    e.CellStyle.ForeColor = StatusGreenColor;
-            //    e.CellStyle.SelectionForeColor = StatusGreenColor;
-            //}
-            //else if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
-            //    || e.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-            //    )
-            //{
-            //    e.CellStyle.Font = StatusColumnFont;
-            //    e.CellStyle.ForeColor = StatusRedColor;
-            //    e.CellStyle.SelectionForeColor = StatusRedColor;
-            //}
-            //else if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    e.CellStyle.ForeColor = StatusRedColor;
-            //    e.CellStyle.Font = StatusColumnFont;
-            //    e.CellStyle.SelectionForeColor = StatusRedColor;
-            //}
-            //else if (e.ColumnIndex == daysLeftDesign.Index)
-            //{
-            //    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            //}
         }
 
         private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
@@ -243,32 +251,22 @@ namespace SSLCertificateTracker
                         Row.DefaultCellStyle.BackColor = RowRedBackColor;
                         Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
                         break;
-                        
+                    case StatusEnums.Okay:
+                    case StatusEnums.Fetching:
+                        Row.DefaultCellStyle.BackColor = DefaultRowBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+
+                        ExpiryDateCell.Style.ForeColor = DefaultStatusFontColor;
+                        ExpiryDateCell.Style.Font = DeafultRowFont;
+                        ExpiryDateCell.Style.SelectionForeColor = DefaultStatusFontColor;
+
+                        DaysLeftCell.Style.ForeColor = DefaultStatusFontColor;
+                        DaysLeftCell.Style.Font = DeafultRowFont;
+                        DaysLeftCell.Style.SelectionForeColor = DefaultStatusFontColor;
+                        break;
+
                 }
             }
-
-
-            //if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
-            //    || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-            //    )
-            //{
-            //    Row.DefaultCellStyle.BackColor = RowRedBackColor;
-            //    Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
-
-            //    ExpiryDateCell.Style.ForeColor = StatusRedColor;
-            //    ExpiryDateCell.Style.Font = DeafultRowFontBold;
-            //    ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
-
-            //    DaysLeftCell.Style.ForeColor = StatusRedColor;
-            //    DaysLeftCell.Style.Font = DeafultRowFontBold;
-            //    DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
-            //}
-            //else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    Row.DefaultCellStyle.BackColor = RowRedBackColor;
-            //    Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
-
-            //}
         }
 
         private void sslDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -289,7 +287,11 @@ namespace SSLCertificateTracker
             if(e.ColumnIndex == certStatusDesign.Index)
             {
                 var res = ErrorMesssageTooltip?.Invoke(e.RowIndex);
-                if(res == null || res == string.Empty) { return; }
+
+                if(res == null || res == string.Empty || e.ToolTipText == res) 
+                { 
+                    return; 
+                }
                 e.ToolTipText = ErrorMesssageTooltip?.Invoke(e.RowIndex);
             }
         }

@@ -8,7 +8,7 @@ namespace SSLCertificateTracker.Model
 {
     public class CertificateModel : INotifyPropertyChanged
     {
-        private DateTime _lastExpiryUtc;
+        private DateTime _lastExpiryUtc = DateTime.Now;
         private string _lastIssuer;
         private string _hostName;
 
@@ -50,15 +50,15 @@ namespace SSLCertificateTracker.Model
              } 
         }
         [JsonInclude]
-        public DateTime LastExpiryUtc 
+        public DateTime LastExpiryUtc
         {
-            get 
+            get
             {
                 return _lastExpiryUtc;
             }
             set
             {
-                if(_lastExpiryUtc != value)
+                if (_lastExpiryUtc != value)
                 {
                     _lastExpiryUtc = value;
                     NotifyPropertyChanged();
@@ -115,6 +115,8 @@ namespace SSLCertificateTracker.Model
         [JsonIgnore]
         public X509Certificate2 rawCertificate { get; set; }
         
+        [JsonConstructor]
+        public CertificateModel() { }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -129,10 +131,6 @@ namespace SSLCertificateTracker.Model
 
 
 
-        [JsonConstructor]
-        public CertificateModel()
-        {
-        }
 
         public void CalculateStatus()
         {

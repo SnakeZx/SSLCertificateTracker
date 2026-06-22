@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle15 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle16 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle11 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle12 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle13 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle14 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             addSiteBtn = new Button();
             sslDataGrid = new DataGridView();
@@ -49,7 +49,7 @@
             statusBar = new StatusStrip();
             sitesTrackedLbl = new ToolStripStatusLabel();
             lblSep1 = new ToolStripStatusLabel();
-            expSoonLbl = new ToolStripStatusLabel();
+            expiringSoonLbl = new ToolStripStatusLabel();
             lblSep2 = new ToolStripStatusLabel();
             expiredLbl = new ToolStripStatusLabel();
             lblSep3 = new ToolStripStatusLabel();
@@ -89,37 +89,37 @@
             sslDataGrid.BackgroundColor = Color.White;
             sslDataGrid.BorderStyle = BorderStyle.None;
             sslDataGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle1.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle9.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle9.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle9.SelectionForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle9.WrapMode = DataGridViewTriState.True;
+            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             sslDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             sslDataGrid.Columns.AddRange(new DataGridViewColumn[] { WebsiteColumn, certIssuerDesign, expiryDateCol, daysLeftDesign, certStatusDesign });
-            dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = Color.White;
-            dataGridViewCellStyle7.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle7.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = DataGridViewTriState.False;
-            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle15.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = Color.White;
+            dataGridViewCellStyle15.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle15.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle15.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = DataGridViewTriState.False;
+            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle15;
             sslDataGrid.EnableHeadersVisualStyles = false;
             sslDataGrid.GridColor = Color.DarkGray;
             sslDataGrid.Location = new Point(12, 57);
             sslDataGrid.Name = "sslDataGrid";
             sslDataGrid.ReadOnly = true;
             sslDataGrid.RowHeadersVisible = false;
-            dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = Color.White;
-            dataGridViewCellStyle8.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle8.ForeColor = Color.Black;
-            dataGridViewCellStyle8.SelectionBackColor = Color.FromArgb(218, 237, 254);
-            dataGridViewCellStyle8.SelectionForeColor = Color.Black;
-            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle16.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle16.BackColor = Color.White;
+            dataGridViewCellStyle16.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle16.ForeColor = Color.Black;
+            dataGridViewCellStyle16.SelectionBackColor = Color.FromArgb(218, 237, 254);
+            dataGridViewCellStyle16.SelectionForeColor = Color.Black;
+            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle16;
             sslDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             sslDataGrid.ShowEditingIcon = false;
             sslDataGrid.Size = new Size(1110, 576);
@@ -138,10 +138,10 @@
             // WebsiteColumn
             // 
             WebsiteColumn.DataPropertyName = "HostName";
-            dataGridViewCellStyle2.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle2.NullValue = null;
-            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle10.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle10.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle10.NullValue = null;
+            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle10;
             WebsiteColumn.FillWeight = 32F;
             WebsiteColumn.HeaderText = "Website";
             WebsiteColumn.Name = "WebsiteColumn";
@@ -151,8 +151,8 @@
             // certIssuerDesign
             // 
             certIssuerDesign.DataPropertyName = "LastIssuer";
-            dataGridViewCellStyle3.Font = new Font("Arial", 10F);
-            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle11.Font = new Font("Arial", 10F);
+            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle11;
             certIssuerDesign.FillWeight = 32F;
             certIssuerDesign.HeaderText = "Issuer";
             certIssuerDesign.Name = "certIssuerDesign";
@@ -163,10 +163,10 @@
             // 
             expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             expiryDateCol.DataPropertyName = "LastExpiryUtc";
-            dataGridViewCellStyle4.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle4.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle4.NullValue = null;
-            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle12.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle12.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle12.NullValue = null;
+            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle12;
             expiryDateCol.FillWeight = 11F;
             expiryDateCol.HeaderText = "Expiry Date";
             expiryDateCol.Name = "expiryDateCol";
@@ -177,9 +177,9 @@
             // 
             daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
             daysLeftDesign.DataPropertyName = "daysLeft";
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.Font = new Font("Arial", 10F);
-            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle13.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.Font = new Font("Arial", 10F);
+            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle13;
             daysLeftDesign.FillWeight = 20.58242F;
             daysLeftDesign.HeaderText = "Days Left";
             daysLeftDesign.MinimumWidth = 63;
@@ -192,8 +192,8 @@
             // 
             certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             certStatusDesign.DataPropertyName = "Status";
-            dataGridViewCellStyle6.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle14.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle14;
             certStatusDesign.FillWeight = 25F;
             certStatusDesign.HeaderText = "Status";
             certStatusDesign.Name = "certStatusDesign";
@@ -209,7 +209,7 @@
             statusBar.AllowMerge = false;
             statusBar.BackColor = Color.FromArgb(35, 122, 254);
             statusBar.Font = new Font("Calibri", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            statusBar.Items.AddRange(new ToolStripItem[] { sitesTrackedLbl, lblSep1, expSoonLbl, lblSep2, expiredLbl, lblSep3, lastRefreshLbl });
+            statusBar.Items.AddRange(new ToolStripItem[] { sitesTrackedLbl, lblSep1, expiringSoonLbl, lblSep2, expiredLbl, lblSep3, lastRefreshLbl });
             statusBar.Location = new Point(0, 639);
             statusBar.Name = "statusBar";
             statusBar.Size = new Size(1134, 22);
@@ -233,12 +233,12 @@
             lblSep1.Size = new Size(13, 17);
             lblSep1.Text = "|";
             // 
-            // expSoonLbl
+            // expiringSoonLbl
             // 
-            expSoonLbl.ForeColor = Color.White;
-            expSoonLbl.Name = "expSoonLbl";
-            expSoonLbl.Size = new Size(81, 17);
-            expSoonLbl.Text = "expiring soon";
+            expiringSoonLbl.ForeColor = Color.White;
+            expiringSoonLbl.Name = "expiringSoonLbl";
+            expiringSoonLbl.Size = new Size(81, 17);
+            expiringSoonLbl.Text = "expiring soon";
             // 
             // lblSep2
             // 
@@ -357,7 +357,7 @@
         private DataGridView sslDataGrid;
         private StatusStrip statusBar;
         private ToolStripStatusLabel sitesTrackedLbl;
-        private ToolStripStatusLabel expSoonLbl;
+        private ToolStripStatusLabel expiringSoonLbl;
         private ToolStripStatusLabel expiredLbl;
         private ToolStripStatusLabel lastRefreshLbl;
         private Button rfshAllBtn;

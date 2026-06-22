@@ -42,7 +42,7 @@ namespace SSLCertificateTracker.Controllers
             _view.OnAddNewSiteClick += ShowAddNewSite;
             _view.OnRemoveClick += RemoveSelectedItem;
 
-            //_view.OnRefreshSelectedClick += UpdateCertificateData;
+            _view.OnRefreshSelectedClick += UpdateSelectedRowData;
             _view.OnRefreshAllClick += UpdateAllData;
 
             _view.OnCellDoubleClick += ShowCertificateData;
@@ -90,7 +90,7 @@ namespace SSLCertificateTracker.Controllers
                     _list.Add(newResource);
                     SaveListToJson();
 
-                    _view.UpdateRowcount(_list.Count);
+                    _view.UpdateStausBar();
                     _view.UpdateLastRefresh(newResource.LastCheckedUtc);
                 }
                 else
@@ -99,7 +99,9 @@ namespace SSLCertificateTracker.Controllers
                     var result = MessageBox.Show($"This website: {ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                     if (result == DialogResult.Yes) 
-                        { ShowAddNewSite(); }
+                    { 
+                        ShowAddNewSite(); 
+                    }
                     return;
                 }
 
@@ -113,25 +115,15 @@ namespace SSLCertificateTracker.Controllers
 
                 _list.Add(newResource);
 
-                //_view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
-                _view.UpdateRowcount(_list.Count);
+                _view.UpdateStausBar();
             }
         }
 
 
-        private async void UpdateAllData()
-        {
-            foreach (var item in _list)
-            {
-                UpdateCertificateData(item);
-            }
-            _view.UpdateRowcount(_list.Count);
-        }
 
-        //Updates certificate and skips the check for duplicate since we need to skip as we are removing and updating with new information.
+        //Updates certificate the model directly with new information if there is any.
         private async void UpdateCertificateData(CertificateModel model)
         {
-            if(model == null) {  return; }
             string savedHost = model.HostName;
 
             CertificateModel newResource = new CertificateModel();
@@ -146,23 +138,50 @@ namespace SSLCertificateTracker.Controllers
                 model.HostName = savedHost;
                 model.LastIssuer = ExtractIssuer(_RawCertData.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
+                model.CalculateStatus();
                 
-                _view.UpdateRowcount(_list.Count);
+                _view.UpdateStausBar();
                 _view.UpdateLastRefresh(model.LastCheckedUtc);
-                _isFetching = false;
             }
             catch (Exception ex)
             {
                 //checks for deletion during an update request.
                 //TODO: Show Notify User that a row may was deleted while updating.
-                if (model == null) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                //{ MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
                 model.HostName = savedHost;
-                //model.Status = newResource.SetErrorStatus();
+                model.SetErrorStatus();
                 model.LastErrorMessage = ex.Message;
-
-                _isFetching = false;
-                //_view.SetErrorToolTip(_list.IndexOf(newResource), _list[index].LastErrorMessage);
             }
+        }
+
+        private async void UpdateAllData()
+        {
+            foreach (CertificateModel item in _list)
+            {
+                UpdateCertificateData(item);
+            }
+        }
+
+        private void UpdateSelectedRowData(int index)
+        {
+            UpdateCertificateData(_list[index]);
+        }
+
+        //Removes Selected Row from the list.
+        private async void RemoveSelectedItem(int index)
+        {
+            //if(_isFetching) 
+            //{ 
+            //    MessageBox.Show($"Cannot Remove at the moment Data is still being fetched from: {_list[index].HostName}", "Fetching Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); 
+            //    return; 
+            //}
+            var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.No) return;
+
+            _list.RemoveAt(index);
+            _view.UpdateStausBar();
+            SaveListToJson();
         }
 
         //Checks if the userinput hostname is already in the list. returns true if its found in the list;
@@ -182,24 +201,6 @@ namespace SSLCertificateTracker.Controllers
             return exists;
         }
 
-        //Removes Selected Row from the list.
-        private async void RemoveSelectedItem(int index)
-        {
-            if(_isFetching) 
-            { 
-                MessageBox.Show($"Cannot Remove at the moment Data is still being fetched from: {_list[index].HostName}", "Fetching Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); 
-                return; 
-            }
-            var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.No) return;
-
-            _list.RemoveAt(index);
-            _view.UpdateRowcount(_list.Count);
-            SaveListToJson();
-        }
-
-
         private async void SaveListToJson()
         {
             await _fileService.SaveAsync(_list);
@@ -217,15 +218,13 @@ namespace SSLCertificateTracker.Controllers
                 _list.Add(item);
                 UpdateCertificateData(item);
             }
-            _view.UpdateRowcount(_list.Count);
-            SaveListToJson();
         }
 
         private void ShowCertificateData(int index)
         {
             if(_list[index].rawCertificate == null)
             {
-                MessageBox.Show("The Selected row does not have a valid certificate to view. Please select another row or refresh the list if you think this is a mistake.","Certificate Not Found",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The selected row does not have a valid certificate to view. Please select another row or refresh the list if this is a mistake.","Certificate Not Found",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             
