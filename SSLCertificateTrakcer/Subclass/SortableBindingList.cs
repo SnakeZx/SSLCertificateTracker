@@ -17,6 +17,7 @@ namespace SSLCertificateTracker.Subclass
             properties = TypeDescriptor.GetProperties(typeof(CertiificateModel));
             sortDirectionValue = ListSortDirection.Ascending;
             sortPropertyValue = properties.Find("HostName", true);
+            RaiseListChangedEvents = true;
         }
 
         #region ListProperties
@@ -68,7 +69,6 @@ namespace SSLCertificateTracker.Subclass
 
         protected override void RemoveSortCore()
         {
-            Debug.WriteLine("Gonna Throw on the List");
             throw new NotSupportedException();
         }
 

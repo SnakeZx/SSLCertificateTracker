@@ -1,6 +1,5 @@
 ﻿using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -22,7 +21,7 @@ namespace SSLCertificateTracker.Services
         public async Task SaveAsync(SortableBindingList<CertificateModel> list)
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
-           
+            if(list.Count <= 0) return;
             try
             {
                 if (!Directory.Exists(Environment.ExpandEnvironmentVariables(_expandedFolderPath)))
@@ -38,9 +37,9 @@ namespace SSLCertificateTracker.Services
 
                 Debug.WriteLine($"JSON File Created/Updated in directory\nFile Path: {_expandedFilePath}");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine($"Gonna Throw in the File Service\n{ex.Message}");
+                throw;
             }
         }
 
@@ -71,7 +70,8 @@ namespace SSLCertificateTracker.Services
             }
             catch (JsonException) 
             {
-                MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list and JSON file were created.","File Unreadable!",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created.","File Unreadable!",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.Delete(_expandedFilePath);
                 return new SortableBindingList<CertificateModel>();
             }
         }

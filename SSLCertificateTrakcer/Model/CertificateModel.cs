@@ -1,106 +1,167 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
+using SSLCertificateTracker.Enums;
 
 namespace SSLCertificateTracker.Model
 {
-    public class CertificateModel
+    public class CertificateModel : INotifyPropertyChanged
     {
+        private DateTime _lastExpiryUtc = DateTime.Now;
+        private string _lastIssuer;
+        private string _hostName;
+
+        private int _daysLeft;
+        private StatusEnums _status;
+        private DateTime _lastCheckedUtc;
+
+
+        #region Json Properties
         [JsonInclude]
-        public string HostName { get; set; } = string.Empty;
+        public string HostName
+        { get 
+            {
+                return _hostName;
+            }
+          set 
+            {
+                if (_hostName != value)
+                {
+                    _hostName = value;
+                    NotifyPropertyChanged();
+                }
+            } 
+        }
         [JsonInclude]
-        public string LastIssuer { get; set; } = string.Empty;
+        public string LastIssuer 
+        {
+            get 
+            {  
+                return _lastIssuer; 
+            }
+            set 
+            { 
+                if(_lastIssuer != value) 
+                {  
+                    _lastIssuer = value; 
+                    NotifyPropertyChanged(); 
+                } 
+             } 
+        }
         [JsonInclude]
-        public DateTime LastExpiryUtc { get; set; } = DateTime.Today;
+        public DateTime LastExpiryUtc
+        {
+            get
+            {
+                return _lastExpiryUtc;
+            }
+            set
+            {
+                if (_lastExpiryUtc != value)
+                {
+                    _lastExpiryUtc = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
         [JsonIgnore]
-        public Uri? ComputedUri { get; set; }
+        public int DaysLeft
+        {
+            get
+            {
+                if (_daysLeft != (LastExpiryUtc.Date - DateTime.Today).Days)
+                {
+                    _daysLeft = (LastExpiryUtc.Date - DateTime.Today).Days;
+                    NotifyPropertyChanged();
+                }
+                return _daysLeft;
+            }
+        }
         [JsonIgnore]
-        public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
-        [JsonIgnore]
-        public string Status { get; set; } = string.Empty;
+        public StatusEnums Status 
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                if(Enum.IsDefined(typeof(StatusEnums), value))
+                {
+                    _status = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
         [JsonInclude]
-        public DateTime LastCheckedUtc = DateTime.Now;
+        public DateTime LastCheckedUtc 
+        { 
+            get 
+            {
+                if (_lastCheckedUtc != DateTime.Now)
+                {
+                    _lastCheckedUtc = DateTime.Now;
+                }
+
+                return _lastCheckedUtc;
+            } 
+        }
+
         [JsonInclude]
         public string? LastErrorMessage { get; set; } = null;
+        #endregion
+           
         [JsonIgnore]
         public X509Certificate2 rawCertificate { get; set; }
-
-        private string _rawInput = string.Empty;
-
+        
         [JsonConstructor]
-        public CertificateModel()
+        public CertificateModel() { }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
+            if(PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
 
-        public bool TryBuildUri(string rawinput)
+
+
+        public void CalculateStatus()
         {
-            _rawInput = rawinput.Trim();
-
-            if (string.IsNullOrWhiteSpace(rawinput))
+            if (DaysLeft >= 30 && _status != StatusEnums.Okay)
             {
-                return false;
+                _status = StatusEnums.Okay;
+                NotifyPropertyChanged();
             }
-
-            if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
-                !_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            else if (DaysLeft < 30 && DaysLeft > 0 && _status != StatusEnums.ExpiringSoon)
             {
-                _rawInput = "https://" + _rawInput;
+                _status = StatusEnums.ExpiringSoon;
+                NotifyPropertyChanged();
             }
-            else if (_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            else if (DaysLeft < 0 && _status != StatusEnums.Expired)
             {
-                _rawInput = _rawInput.Substring(7);
-                _rawInput = "https://" + _rawInput;
-
-            }
-
-            if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri))
-            {
-                ComputedUri = validuri;
-                return true;
-            }
-            else
-            {
-                return false;
+                _status = StatusEnums.Expired;
+                NotifyPropertyChanged();
             }
         }
 
-        //replaces all quotes in the string with a space. looks for the organization column
-        public string ExtractIssuer(string Issuer)
-            {
-                Issuer = Issuer.Replace('"', ' ');
-                string[] ExtractedNames = Issuer.Split(',');
-
-                for (int i = 0; i < ExtractedNames.Length; i++)
-                {
-                    if (ExtractedNames[i].Contains("O="))
-                    {
-                        return ExtractedNames[i].Split('=', StringSplitOptions.TrimEntries)[1];
-                    }
-                }
-            return string.Empty;
-        }
-
-        public string GetStatus()
+        public void SetErrorStatus()
         {
-            if(DaysLeft >= 30)
-            {
-                return "\U0001F7E2 OK";
-            }
-            else if (DaysLeft < 30 && DaysLeft > 0)
-            {
-                return "\U000026A0\U0000FE0F Expiring Soon";
-            }
-            else
-            {
-                return "\U0001F6AB Expired";
-            }
+            _status = StatusEnums.Error;
+            NotifyPropertyChanged();
         }
 
-        public string SetErrorStatus()
+        public void SetFetchingStatus()
         {
-            return $"\u274C Error";
+            _status = StatusEnums.Fetching;
+            NotifyPropertyChanged();
         }
-
 
     }
         

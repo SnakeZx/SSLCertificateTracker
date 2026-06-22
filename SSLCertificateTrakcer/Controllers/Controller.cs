@@ -20,6 +20,8 @@ namespace SSLCertificateTracker.Controllers
 
         private readonly int port = 443;
 
+        private string _rawInput;
+        private Uri ComputedUri;
 
         public Controller(MainForm view, CertificateModel model)
         {
@@ -37,10 +39,12 @@ namespace SSLCertificateTracker.Controllers
             _view.OnAddNewSiteClick += ShowAddNewSite;
             _view.OnRemoveClick += RemoveSelectedItem;
 
-            _view.OnRefreshSelectedClick += UpdateCertificateData;
+            _view.OnRefreshSelectedClick += UpdateSelectedRowData;
             _view.OnRefreshAllClick += UpdateAllData;
 
             _view.OnCellDoubleClick += ShowCertificateData;
+
+            _view.ErrorMesssageTooltip += SetErrorToolTip;
 
         }
         //Creates addSiteForm to take in user input and return the user input for the Get.
@@ -60,37 +64,41 @@ namespace SSLCertificateTracker.Controllers
 
         private async void GetCertificateData(string userInput)
         {
-            CertificateModel newResource = new CertificateModel ();
+            CertificateModel newResource = new CertificateModel();
 
             try
             {
-                bool success = newResource.TryBuildUri(userInput);
+                bool success = TryBuildUri(userInput);
 
-                bool exists = HostNameCheck(newResource.ComputedUri.Host);
+                bool exists = HostNameCheck(ComputedUri.Host);
 
                 if (success && !exists)
                 {
-                    var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
+
+                    var _RawData = await _certificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    newResource.rawCertificate = _RawCertData;
-                    newResource.HostName = newResource.ComputedUri.Host;
-                    newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
-                    newResource.LastExpiryUtc = _RawCertData.NotAfter;
-                    newResource.Status = newResource.GetStatus();
+                    newResource.rawCertificate = _RawData;
+                    newResource.HostName = ComputedUri.Host;
+                    newResource.LastIssuer = ExtractIssuer(_RawData.Issuer);
+                    newResource.LastExpiryUtc = _RawData.NotAfter;
+                    newResource.CalculateStatus();
+
                     _list.Add(newResource);
                     SaveListToJson();
 
-                    _view.UpdateRowcount(_list.Count);
+                    _view.UpdateStausBar();
                     _view.UpdateLastRefresh(newResource.LastCheckedUtc);
                 }
                 else
                 {
                     //prompt user for a choice to add another site. If yes a new add site form box appears.
-                    var result = MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    var result = MessageBox.Show($"This website: {ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                     if (result == DialogResult.Yes) 
-                        { ShowAddNewSite(); }
+                    { 
+                        ShowAddNewSite(); 
+                    }
                     return;
                 }
 
@@ -99,66 +107,78 @@ namespace SSLCertificateTracker.Controllers
             {
                 //If there is an error a new row is still made with a tooltip in the status column for what the error is.
                 newResource.HostName = userInput;
-                newResource.Status = newResource.SetErrorStatus();
                 newResource.LastErrorMessage = ex.Message;
+                newResource.SetErrorStatus();
 
                 _list.Add(newResource);
 
-                _view.SetErrorToolTip(_list.IndexOf(newResource), ex.Message);
-                _view.UpdateRowcount(_list.Count);
+                _view.UpdateStausBar();
             }
         }
 
 
-        private async void UpdateAllData()
-        {
-            foreach (var item in _list)
-            {
-                UpdateCertificateData(_list.IndexOf(item));
-            }
-            _view.UpdateRowcount(_list.Count);
-        }
 
-        //Updates certificate and skips the check for duplicate since we need to skip as we are removing and updating with new information.
-        private async void UpdateCertificateData(int index)
+        //Updates certificate the model directly with new information if there is any.
+        private async void UpdateCertificateData(CertificateModel model)
         {
-            if(index < 0) {  return; }
-            string savedHost = _list[index].HostName;
+            string savedHost = model.HostName;
 
             CertificateModel newResource = new CertificateModel();
-
             try
             {
-                _list[index].Status = "Fetching....";
+                model.LastErrorMessage = null;
+                model.SetFetchingStatus();
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
 
-                newResource.rawCertificate = _RawCertData;
-                newResource.HostName = savedHost;
-                newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
-                newResource.LastExpiryUtc = _RawCertData.NotAfter;
-                newResource.Status = newResource.GetStatus();
-
-                if (index < 0) { return; }
-                _list.RemoveAt(index);
-                _list.Insert(index, newResource);
+                model.rawCertificate = _RawCertData;
+                model.HostName = savedHost;
+                model.LastIssuer = ExtractIssuer(_RawCertData.Issuer);
+                model.LastExpiryUtc = _RawCertData.NotAfter;
+                model.CalculateStatus();
                 
-                _view.UpdateRowcount(_list.Count);
-                _view.UpdateLastRefresh(newResource.LastCheckedUtc);
+                _view.UpdateStausBar();
+                _view.UpdateLastRefresh(model.LastCheckedUtc);
             }
             catch (Exception ex)
             {
                 //checks for deletion during an update request.
                 //TODO: Show Notify User that a row may was deleted while updating.
-                if (index < 0) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-                newResource.HostName = savedHost;
-                newResource.Status = newResource.SetErrorStatus();
-                newResource.LastErrorMessage = ex.Message;
-
-                _list.RemoveAt(index);
-                _list.Insert(index, newResource);
-                //_view.SetErrorToolTip(_list.IndexOf(newResource), _list[index].LastErrorMessage);
+                //{ MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                model.HostName = savedHost;
+                model.SetErrorStatus();
+                model.LastErrorMessage = ex.Message;
             }
+        }
+
+        private async void UpdateAllData()
+        {
+            foreach (CertificateModel item in _list)
+            {
+                UpdateCertificateData(item);
+            }
+        }
+
+        private void UpdateSelectedRowData(int index)
+        {
+            UpdateCertificateData(_list[index]);
+        }
+
+        //Removes Selected Row from the list.
+        private async void RemoveSelectedItem(int index)
+        {
+            //if(_isFetching) 
+            //{ 
+            //    MessageBox.Show($"Cannot Remove at the moment Data is still being fetched from: {_list[index].HostName}", "Fetching Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); 
+            //    return; 
+            //}
+            var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.No) return;
+
+            _list.RemoveAt(index);
+            _view.UpdateStausBar();
+            SaveListToJson();
         }
 
         //Checks if the userinput hostname is already in the list. returns true if its found in the list;
@@ -178,19 +198,6 @@ namespace SSLCertificateTracker.Controllers
             return exists;
         }
 
-        //Removes Selected Row from the list.
-        private async void RemoveSelectedItem(int index)
-        {
-            var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.No) return;
-
-            _list.RemoveAt(index);
-            _view.UpdateRowcount(_list.Count);
-            SaveListToJson();
-        }
-
-
         private async void SaveListToJson()
         {
             await _fileService.SaveAsync(_list);
@@ -202,26 +209,87 @@ namespace SSLCertificateTracker.Controllers
 
             _list.Clear();
 
-            foreach(var item in temp) 
+            foreach(CertificateModel item in temp) 
             {
-                item.Status = "Fetching....";
+                item.LastErrorMessage = null;
                 _list.Add(item);
-                UpdateCertificateData(_list.IndexOf(item));
+                UpdateCertificateData(item);
             }
-            _view.UpdateRowcount(_list.Count);
-            SaveListToJson();
         }
 
         private void ShowCertificateData(int index)
         {
             if(_list[index].rawCertificate == null)
             {
-                MessageBox.Show("The Selected row does not have a valid certificate to view. Please select another row or refresh the list if you think this is a mistake.","Certificate Not Found",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The selected row does not have a valid certificate to view. Please select another row or refresh the list if this is a mistake.","Certificate Not Found",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             
             X509Certificate2UI.DisplayCertificate(_list[index].rawCertificate, _view.Handle);
         }
+
+        private string SetErrorToolTip(int index)
+        {
+            if (index < 0) { return string.Empty; }
+
+            if (_list[index].LastErrorMessage == null)
+            {
+                return string.Empty;
+            }
+
+            return _list[index].LastErrorMessage;
+
+        }
+
+        public bool TryBuildUri(string rawinput)
+        {
+            _rawInput = rawinput.Trim();
+
+            if (string.IsNullOrWhiteSpace(rawinput))
+            {
+                return false;
+            }
+
+            if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            {
+                _rawInput = "https://" + _rawInput;
+            }
+            else if (_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            {
+                _rawInput = _rawInput.Substring(7);
+                _rawInput = "https://" + _rawInput;
+
+            }
+
+            if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri))
+            {
+                ComputedUri = validuri;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //replaces all quotes in the string with a space. looks for the organization column
+        public string ExtractIssuer(string Issuer)
+        {
+            Issuer = Issuer.Replace('"', ' ');
+            string[] ExtractedNames = Issuer.Split(',');
+
+            for (int i = 0; i < ExtractedNames.Length; i++)
+            {
+                if (ExtractedNames[i].Contains("O="))
+                {
+                    return ExtractedNames[i].Split('=', StringSplitOptions.TrimEntries)[1];
+                }
+            }
+            return string.Empty;
+        }
+
+
 
     }
 }

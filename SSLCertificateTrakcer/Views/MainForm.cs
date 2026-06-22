@@ -1,22 +1,27 @@
+using SSLCertificateTracker.Enums;
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
-using System.ComponentModel;
-using System.Diagnostics;
 
 namespace SSLCertificateTracker
 {
     public partial class MainForm : Form
     {
-
+        //Default Fonts fro the status column and default for the row when bolding is needed.
         private readonly Font StatusColumnFont = new Font("Segoe UI Emoji", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFontBold = new Font("Arial", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFont = new Font("Arial", 10F, FontStyle.Regular);
 
+        //Colors for status column
         private readonly Color StatusRedColor = Color.Red;
         private readonly Color StatusGreenColor = Color.Green;
+        private readonly Color DefaultStatusFontColor = Color.Black;
+
+        //Colors for entire row used based off the status column
+        private readonly Color DefaultRowBackColor = Color.FromArgb(255, 252, 255, 255);
         private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
         private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
 
+        //All events that the MainForm Raises
         public event Action? OnMainFormLoad;
         public event Action? OnMainFormClose;
 
@@ -25,8 +30,11 @@ namespace SSLCertificateTracker
         public event Action<int>? OnRefreshSelectedClick;
         public event Action<int>? OnRemoveClick;
         public event Action<int>? OnCellDoubleClick;
+        public event Func<int, string>? ErrorMesssageTooltip;
 
         private BindingSource bs = new();
+
+        private string _errorToolTip = string.Empty;
 
 
         public MainForm()
@@ -102,9 +110,34 @@ namespace SSLCertificateTracker
 
         }
 
-        public void UpdateRowcount(int count)
+        public void UpdateStausBar()
         {
-            sitesTrackedLbl.Text = count + " sites tracked";
+            int count = 0;
+            int ExpiredCount = 0;
+            int ExpiringSoon = 0;
+
+            foreach(DataGridViewRow row in sslDataGrid.Rows)
+            {
+                var cellValue = row.Cells[certStatusDesign.Index].Value;
+                if (cellValue is StatusEnums status)
+                {
+                    if(status == StatusEnums.Expired)
+                    {
+                        ExpiredCount++;
+                    }else if(status == StatusEnums.ExpiringSoon)
+                    {
+                        ExpiringSoon++;
+                    }
+
+                    count++;
+                }
+            }
+
+            expiredLbl.Text = $"{ExpiredCount} expired";
+
+            expiringSoonLbl.Text = $"{ExpiringSoon} expiring soon";
+
+            sitesTrackedLbl.Text = $"{count} sites tracked";
         }
 
         private void remSelectedBtn_Click(object sender, EventArgs e)
@@ -132,8 +165,6 @@ namespace SSLCertificateTracker
             sslDataGrid.DataSource = bs;
         }
 
-
-
         private void rfshAllBtn_Click(object sender, EventArgs e)
         {
             if (sslDataGrid.RowCount > 0)
@@ -150,72 +181,97 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
-                     || e.Value.ToString()!.Contains("ok", StringComparison.OrdinalIgnoreCase))
+            //checks if the cell is under the status column, makes sure the cell value is not null and is a valid enum in my StatusEnums Class.
+            if(e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnums status)
             {
-                e.CellStyle.Font = StatusColumnFont;
-                e.CellStyle.ForeColor = StatusGreenColor;
-                e.CellStyle.SelectionForeColor = StatusGreenColor;
+                switch (e.Value)
+                {
+                    case StatusEnums.Fetching:
+                        e.Value = "Fetching ....";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusGreenColor;
+                        e.CellStyle.SelectionForeColor = StatusGreenColor;
+                        break;
+                    case StatusEnums.Okay:
+                        e.Value = "\U0001F7E2 OK";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusGreenColor;
+                        e.CellStyle.SelectionForeColor = StatusGreenColor;
+                        break;
+                    case StatusEnums.ExpiringSoon:
+                        e.Value = "\U000026A0\U0000FE0F Expiring Soon";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusRedColor;
+                        e.CellStyle.SelectionForeColor = StatusRedColor;
+                        break;
+                    case StatusEnums.Expired:
+                        e.Value = "\U0001F6AB Expired";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusRedColor;
+                        e.CellStyle.SelectionForeColor = StatusRedColor;
+                        break;
+                    case StatusEnums.Error:
+                        e.Value = "\U0000274C Error";
+                        e.CellStyle.Font = StatusColumnFont;
+                        e.CellStyle.ForeColor = StatusRedColor;
+                        e.CellStyle.SelectionForeColor = StatusRedColor;
+                        break;
+                }
             }
-            else if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
-                || e.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-                )
-            {
-                e.CellStyle.Font = StatusColumnFont;
-                e.CellStyle.ForeColor = StatusRedColor;
-                e.CellStyle.SelectionForeColor = StatusRedColor;
-            }
-            else if (e.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            {
-                e.CellStyle.ForeColor = StatusRedColor;
-                e.CellStyle.Font = StatusColumnFont;
-                e.CellStyle.SelectionForeColor = StatusRedColor;
-            }
-            else if (e.ColumnIndex == daysLeftDesign.Index)
+
+            if(e.ColumnIndex == daysLeftDesign.Index)
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
         }
 
-        internal void SetErrorToolTip(int index, string message)
-        {
-            var cell = sslDataGrid.Rows[index].Cells[certStatusDesign.Index];
-
-
-            if (cell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
-            {
-                cell.ToolTipText = message;
-                Debug.WriteLine(index + " : " + message);
-            }
-        }
-
         private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
+            //saves the row, and cell data into variables to made the code easier to read.
             var Row = sslDataGrid.Rows[e.RowIndex];
             var StatusCell = sslDataGrid[certStatusDesign.Index, e.RowIndex];
             var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, e.RowIndex];
             var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, e.RowIndex];
 
-            if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
-                || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)
-                )
-            {
-                Row.DefaultCellStyle.BackColor = RowRedBackColor;
-                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
 
-                ExpiryDateCell.Style.ForeColor = StatusRedColor;
-                ExpiryDateCell.Style.Font = DeafultRowFontBold;
-                ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
-
-                DaysLeftCell.Style.ForeColor = StatusRedColor;
-                DaysLeftCell.Style.Font = DeafultRowFontBold;
-                DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
-            }
-            else if (StatusCell.Value.ToString()!.Contains("error", StringComparison.OrdinalIgnoreCase))
+            //checks to make sure the value in the statuscell is an enum that is in my StatusEnums class.
+            if(StatusCell.Value is StatusEnums status)
             {
-                Row.DefaultCellStyle.BackColor = RowRedBackColor;
-                Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
-                
+                switch (StatusCell.Value)
+                {
+                    //Paints the row accordingly and the expiry, days left cells based on the enum in status.
+                    case StatusEnums.Expired:
+                    case StatusEnums.ExpiringSoon:
+                        Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+
+                        ExpiryDateCell.Style.ForeColor = StatusRedColor;
+                        ExpiryDateCell.Style.Font = DeafultRowFontBold;
+                        ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
+
+                        DaysLeftCell.Style.ForeColor = StatusRedColor;
+                        DaysLeftCell.Style.Font = DeafultRowFontBold;
+                        DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
+                        break;
+                    case StatusEnums.Error:
+                        Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+                        break;
+                    case StatusEnums.Okay:
+                    case StatusEnums.Fetching:
+                        Row.DefaultCellStyle.BackColor = DefaultRowBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+
+                        ExpiryDateCell.Style.ForeColor = DefaultStatusFontColor;
+                        ExpiryDateCell.Style.Font = DeafultRowFont;
+                        ExpiryDateCell.Style.SelectionForeColor = DefaultStatusFontColor;
+
+                        DaysLeftCell.Style.ForeColor = DefaultStatusFontColor;
+                        DaysLeftCell.Style.Font = DeafultRowFont;
+                        DaysLeftCell.Style.SelectionForeColor = DefaultStatusFontColor;
+                        break;
+
+                }
             }
         }
 
@@ -226,10 +282,29 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == WebsiteColumn.Index)
+            if (e.ColumnIndex == WebsiteColumn.Index)
             {
                 OnCellDoubleClick?.Invoke(e.RowIndex);
             }
+        }
+
+        private void sslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if(e.ColumnIndex == certStatusDesign.Index)
+            {
+                var res = ErrorMesssageTooltip?.Invoke(e.RowIndex);
+
+                if(res == null || res == string.Empty || e.ToolTipText == res) 
+                { 
+                    return; 
+                }
+                e.ToolTipText = ErrorMesssageTooltip?.Invoke(e.RowIndex);
+            }
+        }
+
+        private void sslDataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
         }
     }
 }
