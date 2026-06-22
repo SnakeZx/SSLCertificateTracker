@@ -1,30 +1,49 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
+using SSLCertificateTracker.Enums;
 
 namespace SSLCertificateTracker.Model
 {
-    public class CertificateModel
+    public class CertificateModel : INotifyPropertyChanged
     {
+        #region Json Properties
         [JsonInclude]
         public string HostName { get; set; } = string.Empty;
         [JsonInclude]
         public string LastIssuer { get; set; } = string.Empty;
         [JsonInclude]
         public DateTime LastExpiryUtc { get; set; } = DateTime.Today;
+        [JsonInclude]
+        public DateTime LastCheckedUtc = DateTime.Now;
+        [JsonInclude]
+        public string? LastErrorMessage { get; set; } = null;
+        #endregion
+
         [JsonIgnore]
         public Uri? ComputedUri { get; set; }
         [JsonIgnore]
         public int DaysLeft => (LastExpiryUtc.Date - DateTime.Today).Days;
         [JsonIgnore]
-        public string Status { get; set; } = string.Empty;
-        [JsonInclude]
-        public DateTime LastCheckedUtc = DateTime.Now;
-        [JsonInclude]
-        public string? LastErrorMessage { get; set; } = null;
+        public Enum Status { get; set; } = StatusEnums.fetching;
         [JsonIgnore]
         public X509Certificate2 rawCertificate { get; set; }
-
+        
         private string _rawInput = string.Empty;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if(PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+
 
         [JsonConstructor]
         public CertificateModel()
@@ -80,26 +99,46 @@ namespace SSLCertificateTracker.Model
             return string.Empty;
         }
 
-        public string GetStatus()
+        public StatusEnums GetStatus()
         {
             if(DaysLeft >= 30)
             {
-                return "\U0001F7E2 OK";
+                return StatusEnums.Okay;
             }
             else if (DaysLeft < 30 && DaysLeft > 0)
             {
-                return "\U000026A0\U0000FE0F Expiring Soon";
+                return StatusEnums.ExpiringSoon;
             }
             else
             {
-                return "\U0001F6AB Expired";
+                return StatusEnums.Expired;
             }
         }
 
-        public string SetErrorStatus()
+        public StatusEnums SetErrorStatus()
         {
-            return $"\u274C Error";
+            return StatusEnums.Error;
         }
+
+        public StatusEnums SetFetchingStatus()
+        {
+            return StatusEnums.fetching;
+        }
+
+        //        if(DaysLeft >= 30)
+        //{
+        //    return "\U0001F7E2 OK";
+        //}
+        //else if (DaysLeft< 30 && DaysLeft> 0)
+        //{
+        //    return "\U000026A0\U0000FE0F Expiring Soon";
+        //}
+        //else
+        //{
+        //    return "\U0001F6AB Expired";
+        //}
+
+
 
 
     }

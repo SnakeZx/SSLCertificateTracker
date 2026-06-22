@@ -65,7 +65,7 @@ namespace SSLCertificateTracker.Controllers
 
         private async void GetCertificateData(string userInput)
         {
-            CertificateModel newResource = new CertificateModel ();
+            CertificateModel newResource = new CertificateModel();
 
             try
             {
@@ -134,7 +134,7 @@ namespace SSLCertificateTracker.Controllers
             try
             {
                 model.LastErrorMessage = null;
-                model.Status = "Fetching....";
+                model.Status = model.SetFetchingStatus();
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
 
@@ -208,10 +208,10 @@ namespace SSLCertificateTracker.Controllers
 
             _list.Clear();
 
-            foreach(var item in temp) 
+            foreach(CertificateModel item in temp) 
             {
                 item.LastErrorMessage = null;
-                item.Status = "Fetching....";
+                item.Status = item.SetFetchingStatus();
                 _list.Add(item);
                 UpdateCertificateData(item);
             }
