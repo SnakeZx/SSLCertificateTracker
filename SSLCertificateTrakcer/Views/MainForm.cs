@@ -1,6 +1,7 @@
 using SSLCertificateTracker.Enums;
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -178,13 +179,13 @@ namespace SSLCertificateTracker
                         e.CellStyle.SelectionForeColor = StatusRedColor;
                         break;
                     case StatusEnums.Expired:
+                        e.Value = "\U0001F6AB Expired";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusRedColor;
                         e.CellStyle.SelectionForeColor = StatusRedColor;
                         break;
                 }
             }
-
 
 
             //if (e.ColumnIndex == certStatusDesign.Index && e.Value.ToString()!.Contains("fetch", StringComparison.OrdinalIgnoreCase)
@@ -220,6 +221,32 @@ namespace SSLCertificateTracker
             var StatusCell = sslDataGrid[certStatusDesign.Index, e.RowIndex];
             var DaysLeftCell = sslDataGrid[daysLeftDesign.Index, e.RowIndex];
             var ExpiryDateCell = sslDataGrid[expiryDateCol.Index, e.RowIndex];
+
+            if(StatusCell.Value is StatusEnums status)
+            {
+                switch (StatusCell.Value)
+                {
+                    case StatusEnums.Expired:
+                    case StatusEnums.ExpiringSoon:
+                        Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+
+                        ExpiryDateCell.Style.ForeColor = StatusRedColor;
+                        ExpiryDateCell.Style.Font = DeafultRowFontBold;
+                        ExpiryDateCell.Style.SelectionForeColor = StatusRedColor;
+
+                        DaysLeftCell.Style.ForeColor = StatusRedColor;
+                        DaysLeftCell.Style.Font = DeafultRowFontBold;
+                        DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
+                        break;
+                    case StatusEnums.Error:
+                        Row.DefaultCellStyle.BackColor = RowRedBackColor;
+                        Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
+                        break;
+                        
+                }
+            }
+
 
             //if (StatusCell.Value.ToString()!.Contains("expired", StringComparison.OrdinalIgnoreCase)
             //    || StatusCell.Value.ToString()!.Contains("expiring", StringComparison.OrdinalIgnoreCase)

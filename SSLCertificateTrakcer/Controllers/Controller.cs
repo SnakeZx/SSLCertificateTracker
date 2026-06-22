@@ -23,6 +23,8 @@ namespace SSLCertificateTracker.Controllers
 
         private bool _isFetching = false;
 
+        private string _rawInput;
+        private Uri ComputedUri;
 
         public Controller(MainForm view, CertificateModel model)
         {
@@ -69,20 +71,22 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
-                bool success = newResource.TryBuildUri(userInput);
+                bool success = TryBuildUri(userInput);
 
-                bool exists = HostNameCheck(newResource.ComputedUri.Host);
+                bool exists = HostNameCheck(ComputedUri.Host);
 
                 if (success && !exists)
                 {
-                    var _RawCertData = await _certificateService.WebConnectAsync(newResource.ComputedUri.Host, port);
+
+                    var _RawData = await _certificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    newResource.rawCertificate = _RawCertData;
-                    newResource.HostName = newResource.ComputedUri.Host;
-                    newResource.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
-                    newResource.LastExpiryUtc = _RawCertData.NotAfter;
-                    newResource.Status = newResource.GetStatus();
+                    newResource.rawCertificate = _RawData;
+                    newResource.HostName = ComputedUri.Host;
+                    newResource.LastIssuer = ExtractIssuer(_RawData.Issuer);
+                    newResource.LastExpiryUtc = _RawData.NotAfter;
+                    newResource.CalculateStatus();
+
                     _list.Add(newResource);
                     SaveListToJson();
 
@@ -92,7 +96,7 @@ namespace SSLCertificateTracker.Controllers
                 else
                 {
                     //prompt user for a choice to add another site. If yes a new add site form box appears.
-                    var result = MessageBox.Show($"This website: {newResource.ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    var result = MessageBox.Show($"This website: {ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                     if (result == DialogResult.Yes) 
                         { ShowAddNewSite(); }
@@ -104,8 +108,8 @@ namespace SSLCertificateTracker.Controllers
             {
                 //If there is an error a new row is still made with a tooltip in the status column for what the error is.
                 newResource.HostName = userInput;
-                newResource.Status = newResource.SetErrorStatus();
                 newResource.LastErrorMessage = ex.Message;
+                newResource.SetErrorStatus();
 
                 _list.Add(newResource);
 
@@ -134,18 +138,17 @@ namespace SSLCertificateTracker.Controllers
             try
             {
                 model.LastErrorMessage = null;
-                model.Status = model.SetFetchingStatus();
+                model.SetFetchingStatus();
 
                 var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
 
                 model.rawCertificate = _RawCertData;
                 model.HostName = savedHost;
-                model.LastIssuer = newResource.ExtractIssuer(_RawCertData.Issuer);
+                model.LastIssuer = ExtractIssuer(_RawCertData.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
-                model.Status = newResource.GetStatus();
                 
                 _view.UpdateRowcount(_list.Count);
-                _view.UpdateLastRefresh(newResource.LastCheckedUtc);
+                _view.UpdateLastRefresh(model.LastCheckedUtc);
                 _isFetching = false;
             }
             catch (Exception ex)
@@ -154,7 +157,7 @@ namespace SSLCertificateTracker.Controllers
                 //TODO: Show Notify User that a row may was deleted while updating.
                 if (model == null) { MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
                 model.HostName = savedHost;
-                model.Status = newResource.SetErrorStatus();
+                //model.Status = newResource.SetErrorStatus();
                 model.LastErrorMessage = ex.Message;
 
                 _isFetching = false;
@@ -211,7 +214,6 @@ namespace SSLCertificateTracker.Controllers
             foreach(CertificateModel item in temp) 
             {
                 item.LastErrorMessage = null;
-                item.Status = item.SetFetchingStatus();
                 _list.Add(item);
                 UpdateCertificateData(item);
             }
@@ -242,6 +244,56 @@ namespace SSLCertificateTracker.Controllers
             return _list[index].LastErrorMessage;
 
         }
+
+        public bool TryBuildUri(string rawinput)
+        {
+            _rawInput = rawinput.Trim();
+
+            if (string.IsNullOrWhiteSpace(rawinput))
+            {
+                return false;
+            }
+
+            if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            {
+                _rawInput = "https://" + _rawInput;
+            }
+            else if (_rawInput.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+            {
+                _rawInput = _rawInput.Substring(7);
+                _rawInput = "https://" + _rawInput;
+
+            }
+
+            if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri))
+            {
+                ComputedUri = validuri;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //replaces all quotes in the string with a space. looks for the organization column
+        public string ExtractIssuer(string Issuer)
+        {
+            Issuer = Issuer.Replace('"', ' ');
+            string[] ExtractedNames = Issuer.Split(',');
+
+            for (int i = 0; i < ExtractedNames.Length; i++)
+            {
+                if (ExtractedNames[i].Contains("O="))
+                {
+                    return ExtractedNames[i].Split('=', StringSplitOptions.TrimEntries)[1];
+                }
+            }
+            return string.Empty;
+        }
+
+
 
     }
 }
