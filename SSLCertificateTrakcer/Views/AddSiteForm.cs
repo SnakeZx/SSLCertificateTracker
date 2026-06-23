@@ -2,8 +2,8 @@
 {
     public partial class AddSiteForm : Form
     {
-        public event Action<string>? OnUserInputConfirm;
 
+        public string userinput;
         public AddSiteForm()
         {
             InitializeComponent();
@@ -18,10 +18,12 @@
                 CharacterErrorLbl.Text = "Empty line or spaces are not valid.";
                 return;
             }
-
-            OnUserInputConfirm?.Invoke(WebAddressInput.Text);
-            DialogResult = DialogResult.OK;
-            Close();
+            else
+            {
+                DialogResult = DialogResult.OK;
+                userinput = WebAddressInput.Text;
+                Close();
+            }
         }
 
         private void label1_Click(object sender, EventArgs e)

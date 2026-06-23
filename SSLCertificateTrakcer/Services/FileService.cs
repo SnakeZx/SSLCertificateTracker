@@ -21,14 +21,13 @@ namespace SSLCertificateTracker.Services
         public async Task SaveAsync(SortableBindingList<CertificateModel> list)
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
-            if(list.Count <= 0) return;
             try
             {
-                if (!Directory.Exists(Environment.ExpandEnvironmentVariables(_expandedFolderPath)))
+                if (!Directory.Exists(_expandedFolderPath))
                 {
                     Directory.CreateDirectory(_expandedFolderPath);
                 }
-
+                
                 string _expandedFilePath = Path.Combine(_expandedFolderPath, "sites.json");
 
                 string JsonString = JsonSerializer.Serialize(list, _options);
@@ -71,7 +70,6 @@ namespace SSLCertificateTracker.Services
             catch (JsonException) 
             {
                 MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created.","File Unreadable!",MessageBoxButtons.OK, MessageBoxIcon.Error);
-                File.Delete(_expandedFilePath);
                 return new SortableBindingList<CertificateModel>();
             }
         }

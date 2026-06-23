@@ -13,15 +13,14 @@ namespace SSLCertificateTracker.Controllers
 
         private readonly CertificateModel _model;
 
-        private readonly CertificateService? _certificateService = new ();
         private readonly FileService _fileService = new ();
 
         private readonly SortableBindingList<CertificateModel> _list;
 
         private readonly int port = 443;
 
-        private string _rawInput;
-        private Uri ComputedUri;
+        private string? _rawInput;
+        private Uri? ComputedUri;
 
         public Controller(MainForm view, CertificateModel model)
         {
@@ -33,14 +32,81 @@ namespace SSLCertificateTracker.Controllers
 
             _view.SetDataSource(_list);
 
-            _view.OnMainFormLoad += LoadDataRequest;
-            _view.OnMainFormClose += SaveListToJson;
+            _view.OnMainFormLoad += async() => 
+            { try
+                {
+                    await LoadDataRequest();
 
-            _view.OnAddNewSiteClick += ShowAddNewSite;
-            _view.OnRemoveClick += RemoveSelectedItem;
+                }
+                catch(Exception)
+                {
+                    throw;
+                }
 
-            _view.OnRefreshSelectedClick += UpdateSelectedRowData;
-            _view.OnRefreshAllClick += UpdateAllData;
+            };
+            _view.OnMainFormClose += async () =>
+            {
+                try
+                {
+                    await SaveListToJson();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+            };
+
+            _view.OnAddNewSiteClick += async() =>
+            {
+                try
+                {
+                    await ShowAddNewSite();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+            };
+            _view.OnRemoveClick += async(int e) =>
+            {
+                try
+                {
+                    await RemoveSelectedItem(e);
+                }
+                catch (Exception) 
+                {
+                    throw;
+                }
+
+            };
+
+            _view.OnRefreshSelectedClick += async (int e) =>
+            {
+                try
+                {
+                    await UpdateSelectedRowData(e);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+            };
+            _view.OnRefreshAllClick += async () =>
+            {
+                try
+                {
+                    await UpdateAllData();
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+            };
 
             _view.OnCellDoubleClick += ShowCertificateData;
 
@@ -48,46 +114,42 @@ namespace SSLCertificateTracker.Controllers
 
         }
         //Creates addSiteForm to take in user input and return the user input for the Get.
-        private void ShowAddNewSite()
+        private async Task ShowAddNewSite()
         {
             using AddSiteForm _UserInputView = new ();
 
-            _UserInputView.OnUserInputConfirm += GetCertificateData;
-
-            if (_UserInputView.ShowDialog(_view) != DialogResult.OK)
+            if (_UserInputView.ShowDialog(_view) == DialogResult.OK)
             {
-                _UserInputView.OnUserInputConfirm -= GetCertificateData;
-                return;
+                await GetCertificateData(_UserInputView.userinput);
             }
-            _UserInputView.OnUserInputConfirm -= GetCertificateData;
         }
 
-        private async void GetCertificateData(string userInput)
+        private async Task GetCertificateData(string userInput)
         {
-            CertificateModel newResource = new CertificateModel();
+            CertificateModel newResource = new ();
 
             try
             {
                 bool success = TryBuildUri(userInput);
 
-                bool exists = HostNameCheck(ComputedUri.Host);
+                bool exists = HostNameCheck(ComputedUri!.Host);
 
                 if (success && !exists)
                 {
 
-                    var _RawData = await _certificateService.WebConnectAsync(ComputedUri.Host, port);
+                    var _RawData = await CertificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    newResource.rawCertificate = _RawData;
+                    newResource.rawCertificate = _RawData!;
                     newResource.HostName = ComputedUri.Host;
-                    newResource.LastIssuer = ExtractIssuer(_RawData.Issuer);
+                    newResource.LastIssuer = ExtractIssuer(_RawData!.Issuer);
                     newResource.LastExpiryUtc = _RawData.NotAfter;
                     newResource.CalculateStatus();
 
                     _list.Add(newResource);
-                    SaveListToJson();
+                    await SaveListToJson();
 
-                    _view.UpdateStausBar();
+                    _view.UpdateStatusBar();
                     _view.UpdateLastRefresh(newResource.LastCheckedUtc);
                 }
                 else
@@ -97,9 +159,8 @@ namespace SSLCertificateTracker.Controllers
 
                     if (result == DialogResult.Yes) 
                     { 
-                        ShowAddNewSite(); 
+                        await ShowAddNewSite();
                     }
-                    return;
                 }
 
             }
@@ -108,18 +169,19 @@ namespace SSLCertificateTracker.Controllers
                 //If there is an error a new row is still made with a tooltip in the status column for what the error is.
                 newResource.HostName = userInput;
                 newResource.LastErrorMessage = ex.Message;
+                newResource.LastExpiryUtc = DateTime.Now;
                 newResource.SetErrorStatus();
 
                 _list.Add(newResource);
 
-                _view.UpdateStausBar();
+                _view.UpdateStatusBar();
             }
         }
 
 
 
         //Updates certificate the model directly with new information if there is any.
-        private async void UpdateCertificateData(CertificateModel model)
+        private async Task UpdateCertificateData(CertificateModel model)
         {
             string savedHost = model.HostName;
 
@@ -129,56 +191,50 @@ namespace SSLCertificateTracker.Controllers
                 model.LastErrorMessage = null;
                 model.SetFetchingStatus();
 
-                var _RawCertData = await _certificateService.WebConnectAsync(savedHost, port);
+                var _RawCertData = await CertificateService.WebConnectAsync(savedHost, port);
 
-                model.rawCertificate = _RawCertData;
+                model.rawCertificate = _RawCertData!;
                 model.HostName = savedHost;
-                model.LastIssuer = ExtractIssuer(_RawCertData.Issuer);
+                model.LastIssuer = ExtractIssuer(_RawCertData!.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
                 model.CalculateStatus();
-                
-                _view.UpdateStausBar();
+
+                await SaveListToJson();
+
+                _view.UpdateStatusBar();
                 _view.UpdateLastRefresh(model.LastCheckedUtc);
             }
             catch (Exception ex)
             {
-                //checks for deletion during an update request.
-                //TODO: Show Notify User that a row may was deleted while updating.
-                //{ MessageBox.Show("A row was deleted while Feteching certificate information and will not be added to the list.","Row Deleted",MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-                model.HostName = savedHost;
+                model.LastExpiryUtc = DateTime.Now;
                 model.SetErrorStatus();
                 model.LastErrorMessage = ex.Message;
             }
         }
 
-        private async void UpdateAllData()
+        private async Task UpdateAllData()
         {
             foreach (CertificateModel item in _list)
             {
-                UpdateCertificateData(item);
+                await UpdateCertificateData(item);
             }
         }
 
-        private void UpdateSelectedRowData(int index)
+        private async Task UpdateSelectedRowData(int index)
         {
-            UpdateCertificateData(_list[index]);
+            await UpdateCertificateData(_list[index]);
         }
 
-        //Removes Selected Row from the list.
-        private async void RemoveSelectedItem(int index)
+        //Removes Selected Row from the list and saves a new Json file to remove it from the file..
+        private async Task RemoveSelectedItem(int index)
         {
-            //if(_isFetching) 
-            //{ 
-            //    MessageBox.Show($"Cannot Remove at the moment Data is still being fetched from: {_list[index].HostName}", "Fetching Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); 
-            //    return; 
-            //}
             var result = MessageBox.Show($"Would you like to stop tracking {_list[index].HostName}?", "Are You Sure?", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.No) return;
 
             _list.RemoveAt(index);
-            _view.UpdateStausBar();
-            SaveListToJson();
+            _view.UpdateStatusBar();
+            await SaveListToJson();
         }
 
         //Checks if the userinput hostname is already in the list. returns true if its found in the list;
@@ -198,12 +254,12 @@ namespace SSLCertificateTracker.Controllers
             return exists;
         }
 
-        private async void SaveListToJson()
+        private async Task SaveListToJson()
         {
             await _fileService.SaveAsync(_list);
         }
 
-        private async void LoadDataRequest()
+        private async Task LoadDataRequest()
         {
           var temp = await _fileService.GetAllAsync();
 
@@ -213,8 +269,13 @@ namespace SSLCertificateTracker.Controllers
             {
                 item.LastErrorMessage = null;
                 _list.Add(item);
-                UpdateCertificateData(item);
             }
+
+            foreach(var row in _list)
+            {
+                await UpdateCertificateData(row);
+            }
+
         }
 
         private void ShowCertificateData(int index)
@@ -237,7 +298,7 @@ namespace SSLCertificateTracker.Controllers
                 return string.Empty;
             }
 
-            return _list[index].LastErrorMessage;
+            return _list[index].LastErrorMessage!;
 
         }
 
@@ -288,8 +349,5 @@ namespace SSLCertificateTracker.Controllers
             }
             return string.Empty;
         }
-
-
-
     }
 }

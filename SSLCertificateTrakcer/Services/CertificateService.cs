@@ -6,38 +6,48 @@ namespace SSLCertificateTracker.Services
 {
     internal class CertificateService
     {
-        //Declare Objects that I am using to intatiate a connections to the server.
-
-        public async Task<X509Certificate2?> WebConnectAsync(string server, int Port)
+        public static async Task<X509Certificate2?> WebConnectAsync(string server, int Port)
         {
+            TimeSpan timeout = TimeSpan.FromSeconds(10);
+
+            RemoteCertificateValidationCallback certCallBack = (_, _, _, _) => true;
+
+            //creates the TCP connection to the given server and port.
+            using TcpClient _client = new TcpClient();
+
+            using CancellationTokenSource connectCts = new CancellationTokenSource(timeout);
             try
             {
-                RemoteCertificateValidationCallback certCallBack = (_, _, _, _) => true;
+                await _client.ConnectAsync(server, Port, connectCts.Token);
 
-                //creates the TCP connection to the given server and port.
-                using TcpClient _client = new TcpClient();
-                await _client.ConnectAsync(server, Port);
-                Debug.WriteLine("Connection Established");
+            }
+            catch(OperationCanceledException)
+            {
+                throw new TimeoutException("The Tcp Connection attempt timed out.");
+            }
 
-                //Opens a SslStream and gets the networkstream from the _client object.
-                using SslStream _stream = new SslStream(_client.GetStream(), false, certCallBack, null);
+            //Opens a SslStream and gets the networkstream from the _client object.
+            using SslStream _stream = new SslStream(_client.GetStream(), false, certCallBack);
 
-                _stream.ReadTimeout = 10000;
-                _stream.WriteTimeout = 10000;
+            using CancellationTokenSource handshakeCts = new CancellationTokenSource(timeout);
+            try
+            {
+                await _stream.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
+                {
+                    TargetHost = server
+                }, handshakeCts.Token);
 
-                await _stream.AuthenticateAsClientAsync(server);
-
-                Debug.WriteLine("Stream Established & Authenticated");
 
                 if (_stream.RemoteCertificate is X509Certificate2 remoteCert)
                 {
                     return new X509Certificate2(remoteCert);
                 }
             }
-            catch (Exception) 
-            {  
-                throw; 
+            catch (OperationCanceledException)
+            {
+                throw new TimeoutException("The TLS handshake timed out.");
             }
+
             return null;
         }
     }

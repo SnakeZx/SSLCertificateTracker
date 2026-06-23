@@ -39,6 +39,9 @@ namespace SSLCertificateTracker
 
         public MainForm()
         {
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnexpectedExHandler);
+
             InitializeComponent();
 
             //DataGrid Settings
@@ -110,7 +113,7 @@ namespace SSLCertificateTracker
 
         }
 
-        public void UpdateStausBar()
+        public void UpdateStatusBar()
         {
             int count = 0;
             int ExpiredCount = 0;
@@ -305,6 +308,11 @@ namespace SSLCertificateTracker
         private void sslDataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.ThrowException = false;
+        }
+
+        static void UnexpectedExHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
         }
     }
 }

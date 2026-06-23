@@ -8,7 +8,7 @@ namespace SSLCertificateTracker.Model
 {
     public class CertificateModel : INotifyPropertyChanged
     {
-        private DateTime _lastExpiryUtc = DateTime.Now;
+        private DateTime _lastExpiryUtc;
         private string _lastIssuer;
         private string _hostName;
 
@@ -139,7 +139,7 @@ namespace SSLCertificateTracker.Model
                 _status = StatusEnums.Okay;
                 NotifyPropertyChanged();
             }
-            else if (DaysLeft < 30 && DaysLeft > 0 && _status != StatusEnums.ExpiringSoon)
+            else if (DaysLeft < 30 && DaysLeft >= 0 && _status != StatusEnums.ExpiringSoon)
             {
                 _status = StatusEnums.ExpiringSoon;
                 NotifyPropertyChanged();

@@ -16,7 +16,7 @@ namespace SSLCertificateTracker.Subclass
         {
             properties = TypeDescriptor.GetProperties(typeof(CertiificateModel));
             sortDirectionValue = ListSortDirection.Ascending;
-            sortPropertyValue = properties.Find("HostName", true);
+            sortPropertyValue = properties.Find("HostName", true)!;
             RaiseListChangedEvents = true;
         }
 
@@ -52,10 +52,9 @@ namespace SSLCertificateTracker.Subclass
 
             IEnumerable<CertiificateModel> query = base.Items;
 
-            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName));
+            query = query.OrderBy<CertiificateModel, string>(HostName => (string)sortPropertyValue.GetValue(HostName), StringComparer.OrdinalIgnoreCase);
 
             int newIndex = 0;
-
             foreach (object item in query)
             {
                 this.Items[newIndex] = (CertiificateModel)item;
