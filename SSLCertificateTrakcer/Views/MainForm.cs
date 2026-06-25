@@ -1,6 +1,7 @@
 using SSLCertificateTracker.Enums;
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
+using System.Diagnostics;
 
 namespace SSLCertificateTracker
 {
@@ -22,19 +23,17 @@ namespace SSLCertificateTracker
         private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
 
         //All events that the MainForm Raises
-        public event Action? OnMainFormLoad;
-        public event Action? OnMainFormClose;
+        public event Func<Task>? OnMainFormLoad;
+        public event Func<Task>? OnMainFormClose;
 
-        public event Action? OnAddNewSiteClick;
-        public event Action? OnRefreshAllClick;
-        public event Action<int>? OnRefreshSelectedClick;
-        public event Action<int>? OnRemoveClick;
-        public event Action<int>? OnCellDoubleClick;
+        public event Func<Task>? OnAddNewSiteClick;
+        public event Func<Task>? OnRefreshAllClick;
+        public event Func<int, Task>? OnRefreshSelectedClick;
+        public event Func<int, Task>? OnRemoveClick;
+        public event Func<int, Task>? OnCellDoubleClick;
         public event Func<int, string>? ErrorMesssageTooltip;
 
         private BindingSource bs = new();
-
-        private string _errorToolTip = string.Empty;
 
 
         public MainForm()
@@ -63,9 +62,19 @@ namespace SSLCertificateTracker
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            OnMainFormLoad?.Invoke();
+            if (OnMainFormLoad != null)
+            {
+                try
+                {
+                    await OnMainFormLoad.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
         }
 
         private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
@@ -150,15 +159,35 @@ namespace SSLCertificateTracker
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-            if (sslDataGrid.SelectedRows.Count > 0)
+            if(OnRefreshSelectedClick != null)
             {
-                OnRefreshSelectedClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+                if (sslDataGrid.SelectedRows.Count > 0)
+                {
+                    try
+                    {
+                       await OnRefreshSelectedClick.Invoke(sslDataGrid.SelectedRows[0].Index);
+                    }
+                    catch(Exception ex)
+                    {
+                        ShowErrorToUser(ex);
+                    }
+                }
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            OnMainFormClose?.Invoke();
+            if (OnMainFormClose != null)
+            {
+                try
+                {
+                    await OnMainFormClose.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
 
         }
 
@@ -168,11 +197,21 @@ namespace SSLCertificateTracker
             sslDataGrid.DataSource = bs;
         }
 
-        private void rfshAllBtn_Click(object sender, EventArgs e)
+        private async void rfshAllBtn_Click(object sender, EventArgs e)
         {
-            if (sslDataGrid.RowCount > 0)
+            if (OnRefreshAllClick != null)
             {
-                OnRefreshAllClick?.Invoke();
+                if (sslDataGrid.RowCount > 0)
+                {
+                    try
+                    {
+                        await OnRefreshAllClick.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowErrorToUser(ex);
+                    }
+                }
             }
         }
 
@@ -301,13 +340,18 @@ namespace SSLCertificateTracker
                 { 
                     return; 
                 }
-                e.ToolTipText = ErrorMesssageTooltip?.Invoke(e.RowIndex);
+                e.ToolTipText = res;
             }
         }
 
         private void sslDataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.ThrowException = false;
+        }
+
+        private void ShowErrorToUser(Exception ex)
+        {
+            MessageBox.Show($"Error: {ex.Message}","Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         static void UnexpectedExHandler(object sender, UnhandledExceptionEventArgs args)
