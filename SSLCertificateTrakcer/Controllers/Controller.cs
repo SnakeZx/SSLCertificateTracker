@@ -19,9 +19,6 @@ namespace SSLCertificateTracker.Controllers
 
         private readonly int port = 443;
 
-        private string? _rawInput;
-        private Uri? ComputedUri;
-
         public Controller(MainForm view, CertificateModel model)
         {
             _view = view;
@@ -66,11 +63,11 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
-                bool success = TryBuildUri(userInput);
+                if(!TryBuildUri(userInput, out Uri ComputedUri);
 
                 bool exists = HostNameCheck(ComputedUri!.Host);
 
-                if (success && !exists)
+                if (!exists)
                 {
 
                     var _RawData = await CertificateService.WebConnectAsync(ComputedUri.Host, port);
@@ -83,6 +80,8 @@ namespace SSLCertificateTracker.Controllers
                     newResource.CalculateStatus();
 
                     _list.Add(newResource);
+
+                    await SaveListToJson();
 
                     _view.UpdateStatusBar();
                     _view.UpdateLastRefresh(newResource.LastCheckedUtc);
@@ -112,9 +111,6 @@ namespace SSLCertificateTracker.Controllers
 
                 _view.UpdateStatusBar();
             }
-            {
-                await SaveListToJson();
-            }
         }
 
 
@@ -138,6 +134,8 @@ namespace SSLCertificateTracker.Controllers
                 model.LastExpiryUtc = _RawCertData.NotAfter;
                 model.CalculateStatus();
 
+                await SaveListToJson();
+
                 _view.UpdateStatusBar();
                 _view.UpdateLastRefresh(model.LastCheckedUtc);
             }
@@ -147,10 +145,7 @@ namespace SSLCertificateTracker.Controllers
                 model.SetErrorStatus();
                 model.LastErrorMessage = ex.Message;
             }
-            finally
-            {
-                await SaveListToJson();
-            }
+
         }
 
         private async Task UpdateAllDataAsync()
@@ -243,13 +238,13 @@ namespace SSLCertificateTracker.Controllers
 
         }
 
-        public bool TryBuildUri(string rawinput)
+        public bool TryBuildUri(string rawinput, out Uri? computedUri)
         {
-            _rawInput = rawinput.Trim();
+            string _rawInput = rawinput.Trim();
 
             if (string.IsNullOrWhiteSpace(rawinput))
             {
-                return false;
+
             }
 
             if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
@@ -266,12 +261,7 @@ namespace SSLCertificateTracker.Controllers
 
             if (Uri.TryCreate(_rawInput, UriKind.Absolute, out Uri? validuri))
             {
-                ComputedUri = validuri;
-                return true;
-            }
-            else
-            {
-                return false;
+                Uri ComputedUri = validuri;
             }
         }
 
