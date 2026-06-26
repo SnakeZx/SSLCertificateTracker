@@ -355,7 +355,7 @@ namespace SSLCertificateTracker
             {
                 var res = ErrorMesssageTooltip?.Invoke(e.RowIndex);
 
-                if (res == null || res == string.Empty || e.ToolTipText == res)
+                if (res == null || res == string.Empty)
                 {
                     return;
                 }

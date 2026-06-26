@@ -56,13 +56,14 @@ namespace SSLCertificateTracker.Controllers
 
             if (_UserInputView.ShowDialog(_view) == DialogResult.OK)
             {
-                await GetCertificateDataAsync(_UserInputView.userinput);
+                await GetCertificateDataAsync(_UserInputView.Userinput);
             }
         }
 
+        //runs when a user clicks confirm on the addsite dialog, and displays the newly created model in the list for the user to view.
         private async Task GetCertificateDataAsync(string userInput)
         {
-            CertificateModel newResource = new ();
+            CertificateModel NewCertificateData = new ();
 
             try
             {
@@ -79,18 +80,19 @@ namespace SSLCertificateTracker.Controllers
                     var _RawData = await CertificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    newResource.rawCertificate = _RawData!;
-                    newResource.HostName = ComputedUri.Host;
-                    newResource.LastIssuer = ExtractIssuer(_RawData!.Issuer);
-                    newResource.LastExpiryUtc = _RawData.NotAfter;
-                    newResource.LastCheckedUtc = DateTime.Now;
-                    newResource.CalculateStatus();
+                    NewCertificateData.rawCertificate = _RawData!;
+                    NewCertificateData.HostName = ComputedUri.Host;
+                    NewCertificateData.LastIssuer = ExtractIssuer(_RawData!.Issuer);
+                    NewCertificateData.LastExpiryUtc = _RawData.NotAfter;
+                    NewCertificateData.LastCheckedUtc = DateTime.Now;
+                    NewCertificateData.CalculateStatus();
 
-                    _list.Add(newResource);
+                    _list.Add(NewCertificateData);
 
                     _view.UpdateStatusBarCounts();
-                    _view.UpdateStatusBarLastRefresh(newResource.LastCheckedUtc);
+                    _view.UpdateStatusBarLastRefresh(NewCertificateData.LastCheckedUtc);
 
+                    //saves the list on a successful path.
                     await SaveListToJsonAsync();
                 }
                 else
@@ -98,6 +100,7 @@ namespace SSLCertificateTracker.Controllers
                     //prompt user for a choice to add another site. If yes a new add site form box appears.
                     var result = MessageBox.Show($"This website: {ComputedUri.Host} is already being tracked.\nWould you like to track a different host?", "Already Tracked", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
+                    //recurcesl
                     if (result == DialogResult.Yes) 
                     { 
                         await ShowAddNewSite();
@@ -108,12 +111,12 @@ namespace SSLCertificateTracker.Controllers
             catch (Exception ex)
             {
                 //If there is an error a new row is still made with a tooltip in the status column for what the error is.
-                newResource.HostName = userInput;
-                newResource.LastErrorMessage = ex.Message;
-                newResource.LastExpiryUtc = DateTime.Now;
-                newResource.SetErrorStatus();
+                NewCertificateData.HostName = userInput;
+                NewCertificateData.LastErrorMessage = ex.Message;
+                NewCertificateData.LastExpiryUtc = DateTime.Now;
+                NewCertificateData.SetErrorStatus();
 
-                _list.Add(newResource);
+                _list.Add(NewCertificateData);
             }
         }
 
@@ -128,18 +131,19 @@ namespace SSLCertificateTracker.Controllers
             {
                 string savedHost = model.HostName;
 
-
                 model.LastErrorMessage = null;
                 model.SetFetchingStatus();
 
                 var _RawCertData = await CertificateService.WebConnectAsync(savedHost, port);
 
-                model.rawCertificate = _RawCertData!;
+                model.rawCertificate = _RawCertData;
                 model.HostName = savedHost;
                 model.LastIssuer = ExtractIssuer(_RawCertData!.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
                 model.LastCheckedUtc = DateTime.Now;
                 model.CalculateStatus();
+
+                _view.UpdateStatusBarCounts();
             }
             catch (Exception ex)
             {
@@ -168,7 +172,6 @@ namespace SSLCertificateTracker.Controllers
 
             await Task.WhenAll(task);
 
-            _view.UpdateStatusBarCounts();
             _view.UpdateStatusBarLastRefresh(DateTime.Now);
             await SaveListToJsonAsync();
             
@@ -222,6 +225,8 @@ namespace SSLCertificateTracker.Controllers
         private async Task LoadDataRequestAsync()
         {
           var temp = await _fileService.GetAllAsync();
+
+            if (temp.Count == 0) return;
             try
             {
                 foreach (CertificateModel item in temp)
@@ -238,8 +243,6 @@ namespace SSLCertificateTracker.Controllers
                 }
                 
                 await Task.WhenAll(task);
-                
-                _view.UpdateStatusBarCounts();
             }
             finally
             {

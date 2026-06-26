@@ -3,7 +3,7 @@
     public partial class AddSiteForm : Form
     {
 
-        public string userinput { get; private set; } = string.Empty;
+        public string Userinput { get; private set; } = string.Empty;
 
         public AddSiteForm()
         {
@@ -20,14 +20,15 @@
                 return;
             }
 
+            Userinput = WebAddressInput.Text;
             CharacterErrorLbl.Text = string.Empty;
             DialogResult = DialogResult.OK;
-            userinput = WebAddressInput.Text;
             Close();
         }
 
         private void cancelBtn_Form2_Click(object sender, EventArgs e)
         {
+            CharacterErrorLbl.Text = string.Empty;
             DialogResult = DialogResult.Cancel;
             Close();
         }
