@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using SSLCertificateTracker.Enums;
 
@@ -99,13 +100,15 @@ namespace SSLCertificateTracker.Model
         { 
             get 
             {
-                if (_lastCheckedUtc != DateTime.Now)
-                {
-                    _lastCheckedUtc = DateTime.Now;
-                }
-
                 return _lastCheckedUtc;
-            } 
+            }
+            set
+            {
+                if(_lastCheckedUtc != value)
+                {
+                    _lastCheckedUtc = value;
+                }
+            }
         }
 
         [JsonInclude]

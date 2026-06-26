@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle17 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle23 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle24 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle18 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle19 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle20 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle21 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle22 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle15 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle16 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle11 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle12 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle13 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle14 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             addSiteBtn = new Button();
             sslDataGrid = new DataGridView();
@@ -45,7 +45,7 @@
             expiryDateCol = new DataGridViewTextBoxColumn();
             daysLeftDesign = new DataGridViewTextBoxColumn();
             certStatusDesign = new DataGridViewTextBoxColumn();
-            certificateViewBindingSource = new BindingSource(components);
+            DataGridViewBindingSource = new BindingSource(components);
             statusBar = new StatusStrip();
             sitesTrackedLbl = new ToolStripStatusLabel();
             lblSep1 = new ToolStripStatusLabel();
@@ -58,7 +58,7 @@
             rfshSelectedBtn = new Button();
             remSelectedBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)certificateViewBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DataGridViewBindingSource).BeginInit();
             statusBar.SuspendLayout();
             SuspendLayout();
             // 
@@ -85,41 +85,43 @@
             sslDataGrid.AllowUserToResizeColumns = false;
             sslDataGrid.AllowUserToResizeRows = false;
             sslDataGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            sslDataGrid.AutoGenerateColumns = false;
             sslDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             sslDataGrid.BackgroundColor = Color.White;
             sslDataGrid.BorderStyle = BorderStyle.None;
             sslDataGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle17.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle17.BackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle17.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle17.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle17.SelectionBackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle17.SelectionForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle17.WrapMode = DataGridViewTriState.True;
-            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle9.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle9.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle9.SelectionForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle9.WrapMode = DataGridViewTriState.True;
+            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             sslDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             sslDataGrid.Columns.AddRange(new DataGridViewColumn[] { WebsiteColumn, certIssuerDesign, expiryDateCol, daysLeftDesign, certStatusDesign });
-            dataGridViewCellStyle23.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle23.BackColor = Color.White;
-            dataGridViewCellStyle23.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle23.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle23.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle23.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle23.WrapMode = DataGridViewTriState.False;
-            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle23;
+            sslDataGrid.DataSource = DataGridViewBindingSource;
+            dataGridViewCellStyle15.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = Color.White;
+            dataGridViewCellStyle15.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle15.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle15.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = DataGridViewTriState.False;
+            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle15;
             sslDataGrid.EnableHeadersVisualStyles = false;
             sslDataGrid.GridColor = Color.DarkGray;
             sslDataGrid.Location = new Point(12, 57);
             sslDataGrid.Name = "sslDataGrid";
             sslDataGrid.ReadOnly = true;
             sslDataGrid.RowHeadersVisible = false;
-            dataGridViewCellStyle24.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle24.BackColor = Color.White;
-            dataGridViewCellStyle24.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle24.ForeColor = Color.Black;
-            dataGridViewCellStyle24.SelectionBackColor = Color.FromArgb(218, 237, 254);
-            dataGridViewCellStyle24.SelectionForeColor = Color.Black;
-            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle24;
+            dataGridViewCellStyle16.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle16.BackColor = Color.White;
+            dataGridViewCellStyle16.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle16.ForeColor = Color.Black;
+            dataGridViewCellStyle16.SelectionBackColor = Color.FromArgb(218, 237, 254);
+            dataGridViewCellStyle16.SelectionForeColor = Color.Black;
+            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle16;
             sslDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             sslDataGrid.ShowEditingIcon = false;
             sslDataGrid.Size = new Size(1110, 576);
@@ -138,10 +140,10 @@
             // WebsiteColumn
             // 
             WebsiteColumn.DataPropertyName = "HostName";
-            dataGridViewCellStyle18.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle18.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle18.NullValue = null;
-            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle10.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle10.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle10.NullValue = null;
+            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle10;
             WebsiteColumn.FillWeight = 32F;
             WebsiteColumn.HeaderText = "Website";
             WebsiteColumn.Name = "WebsiteColumn";
@@ -151,8 +153,8 @@
             // certIssuerDesign
             // 
             certIssuerDesign.DataPropertyName = "LastIssuer";
-            dataGridViewCellStyle19.Font = new Font("Arial", 10F);
-            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle11.Font = new Font("Arial", 10F);
+            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle11;
             certIssuerDesign.FillWeight = 32F;
             certIssuerDesign.HeaderText = "Issuer";
             certIssuerDesign.Name = "certIssuerDesign";
@@ -163,10 +165,10 @@
             // 
             expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             expiryDateCol.DataPropertyName = "LastExpiryUtc";
-            dataGridViewCellStyle20.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle20.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle20.NullValue = null;
-            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle12.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle12.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle12.NullValue = null;
+            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle12;
             expiryDateCol.FillWeight = 11F;
             expiryDateCol.HeaderText = "Expiry Date";
             expiryDateCol.Name = "expiryDateCol";
@@ -177,9 +179,9 @@
             // 
             daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
             daysLeftDesign.DataPropertyName = "daysLeft";
-            dataGridViewCellStyle21.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle21.Font = new Font("Arial", 10F);
-            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle13.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.Font = new Font("Arial", 10F);
+            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle13;
             daysLeftDesign.FillWeight = 20.58242F;
             daysLeftDesign.HeaderText = "Days Left";
             daysLeftDesign.MinimumWidth = 63;
@@ -192,17 +194,17 @@
             // 
             certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             certStatusDesign.DataPropertyName = "Status";
-            dataGridViewCellStyle22.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle14.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle14;
             certStatusDesign.FillWeight = 25F;
             certStatusDesign.HeaderText = "Status";
             certStatusDesign.Name = "certStatusDesign";
             certStatusDesign.ReadOnly = true;
             certStatusDesign.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
-            // certificateViewBindingSource
+            // DataGridViewBindingSource
             // 
-            certificateViewBindingSource.DataSource = typeof(Model.CertificateModel);
+            DataGridViewBindingSource.DataSource = typeof(Model.CertificateModel);
             // 
             // statusBar
             // 
@@ -345,7 +347,7 @@
             Load += Form1_Load;
             MouseClick += MainForm_MouseClick;
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).EndInit();
-            ((System.ComponentModel.ISupportInitialize)certificateViewBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DataGridViewBindingSource).EndInit();
             statusBar.ResumeLayout(false);
             statusBar.PerformLayout();
             ResumeLayout(false);
@@ -367,7 +369,7 @@
         private ToolStripStatusLabel lblSep1;
         private ToolStripStatusLabel lblSep2;
         private ToolStripStatusLabel lblSep3;
-        private BindingSource certificateViewBindingSource;
+        private BindingSource DataGridViewBindingSource;
         private DataGridViewTextBoxColumn WebsiteColumn;
         private DataGridViewTextBoxColumn certIssuerDesign;
         private DataGridViewTextBoxColumn expiryDateCol;

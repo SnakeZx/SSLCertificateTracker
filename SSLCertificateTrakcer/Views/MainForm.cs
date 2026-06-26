@@ -33,13 +33,11 @@ namespace SSLCertificateTracker
         public event Func<int, Task>? OnCellDoubleClick;
         public event Func<int, string>? ErrorMesssageTooltip;
 
-        private BindingSource bs = new();
-
 
         public MainForm()
         {
             AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnexpectedExHandler);
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionsHandler);
 
             InitializeComponent();
 
@@ -51,9 +49,19 @@ namespace SSLCertificateTracker
             remSelectedBtn.Enabled = false;
         }
 
-        private void addSiteBtnClick(object? sender, EventArgs e)
+        private async void addSiteBtnClick(object? sender, EventArgs e)
         {
-            OnAddNewSiteClick?.Invoke();
+            if (OnAddNewSiteClick != null)
+            {
+                try
+                {
+                    await OnAddNewSiteClick.Invoke();
+                }
+                catch (Exception ex) 
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
         }
 
 
@@ -68,6 +76,7 @@ namespace SSLCertificateTracker
             {
                 try
                 {
+                    UpdateStatusBarCounts();
                     await OnMainFormLoad.Invoke();
                 }
                 catch (Exception ex)
@@ -122,21 +131,22 @@ namespace SSLCertificateTracker
 
         }
 
-        public void UpdateStatusBar()
+        public void UpdateStatusBarCounts()
         {
             int count = 0;
             int ExpiredCount = 0;
             int ExpiringSoon = 0;
 
-            foreach(DataGridViewRow row in sslDataGrid.Rows)
+            foreach (DataGridViewRow row in sslDataGrid.Rows)
             {
                 var cellValue = row.Cells[certStatusDesign.Index].Value;
                 if (cellValue is StatusEnum status)
                 {
-                    if(status == StatusEnum.Expired)
+                    if (status == StatusEnum.Expired)
                     {
                         ExpiredCount++;
-                    }else if(status == StatusEnum.ExpiringSoon)
+                    }
+                    else if (status == StatusEnum.ExpiringSoon)
                     {
                         ExpiringSoon++;
                     }
@@ -152,22 +162,32 @@ namespace SSLCertificateTracker
             sitesTrackedLbl.Text = $"{count} sites tracked";
         }
 
-        private void remSelectedBtn_Click(object sender, EventArgs e)
+        private async void remSelectedBtn_Click(object sender, EventArgs e)
         {
-            OnRemoveClick?.Invoke(sslDataGrid.SelectedRows[0].Index);
+            if(OnRemoveClick != null)
+            {
+                try
+                {
+                    await OnRemoveClick.Invoke(sslDataGrid.SelectedRows[0].Index);
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
         }
 
         private async void rfshSelectedBtn_Click(object sender, EventArgs e)
         {
-            if(OnRefreshSelectedClick != null)
+            if (OnRefreshSelectedClick != null)
             {
                 if (sslDataGrid.SelectedRows.Count > 0)
                 {
                     try
                     {
-                       await OnRefreshSelectedClick.Invoke(sslDataGrid.SelectedRows[0].Index);
+                        await OnRefreshSelectedClick.Invoke(sslDataGrid.SelectedRows[0].Index);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         ShowErrorToUser(ex);
                     }
@@ -193,8 +213,7 @@ namespace SSLCertificateTracker
 
         internal void SetDataSource(SortableBindingList<CertificateModel> list)
         {
-            bs.DataSource = list;
-            sslDataGrid.DataSource = bs;
+            DataGridViewBindingSource.DataSource = list;
         }
 
         private async void rfshAllBtn_Click(object sender, EventArgs e)
@@ -215,7 +234,7 @@ namespace SSLCertificateTracker
             }
         }
 
-        public void UpdateLastRefresh(DateTime dt)
+        public void UpdateStatusBarLastRefresh(DateTime dt)
         {
 
             lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -224,7 +243,7 @@ namespace SSLCertificateTracker
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             //checks if the cell is under the status column, makes sure the cell value is not null and is a valid enum in my StatusEnums Class.
-            if(e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnum status)
+            if (e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnum status)
             {
                 switch (e.Value)
                 {
@@ -261,7 +280,7 @@ namespace SSLCertificateTracker
                 }
             }
 
-            if(e.ColumnIndex == daysLeftDesign.Index)
+            if (e.ColumnIndex == daysLeftDesign.Index)
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -277,7 +296,7 @@ namespace SSLCertificateTracker
 
 
             //checks to make sure the value in the statuscell is an enum that is in my StatusEnums class.
-            if(StatusCell.Value is StatusEnum status)
+            if (StatusCell.Value is StatusEnum status)
             {
                 switch (StatusCell.Value)
                 {
@@ -332,13 +351,13 @@ namespace SSLCertificateTracker
 
         private void sslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
         {
-            if(e.ColumnIndex == certStatusDesign.Index)
+            if (e.ColumnIndex == certStatusDesign.Index)
             {
                 var res = ErrorMesssageTooltip?.Invoke(e.RowIndex);
 
-                if(res == null || res == string.Empty || e.ToolTipText == res) 
-                { 
-                    return; 
+                if (res == null || res == string.Empty || e.ToolTipText == res)
+                {
+                    return;
                 }
                 e.ToolTipText = res;
             }
@@ -351,12 +370,18 @@ namespace SSLCertificateTracker
 
         private void ShowErrorToUser(Exception ex)
         {
-            MessageBox.Show($"Error: {ex.Message}","Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error: {ex.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        static void UnexpectedExHandler(object sender, UnhandledExceptionEventArgs args)
+        static void UnhandledExceptionsHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
+            MessageBox.Show($"Error: {e.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void certificateViewBindingSource_CurrentChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

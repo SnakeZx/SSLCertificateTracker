@@ -27,9 +27,9 @@ namespace SSLCertificateTracker.Controllers
 
             _list = new SortableBindingList<CertificateModel> ();
 
-            #region Subcribed Events
             _view.SetDataSource(_list);
 
+            #region Subcribed Events
             _view.OnMainFormLoad += LoadDataRequestAsync;
 
             _view.OnMainFormClose += SaveListToJsonAsync;
@@ -64,10 +64,11 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
+                userInput = userInput.Trim();
                 if(!TryBuildUri(userInput, out Uri? ComputedUri))
                 {
                     //TODO:
-                    //Add way to handle null value
+                    MessageBox.Show($"The entered website: \"{userInput}\" is not vaild hostname please enter a vaild hostname.", "Value Entered Invaild!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
 
@@ -81,12 +82,13 @@ namespace SSLCertificateTracker.Controllers
                     newResource.HostName = ComputedUri.Host;
                     newResource.LastIssuer = ExtractIssuer(_RawData!.Issuer);
                     newResource.LastExpiryUtc = _RawData.NotAfter;
+                    newResource.LastCheckedUtc = DateTime.Now;
                     newResource.CalculateStatus();
 
                     _list.Add(newResource);
 
-                    _view.UpdateStatusBar();
-                    _view.UpdateLastRefresh(newResource.LastCheckedUtc);
+                    _view.UpdateStatusBarCounts();
+                    _view.UpdateStatusBarLastRefresh(newResource.LastCheckedUtc);
 
                 }
                 else
@@ -110,8 +112,6 @@ namespace SSLCertificateTracker.Controllers
                 newResource.SetErrorStatus();
 
                 _list.Add(newResource);
-
-                _view.UpdateStatusBar();
             }
         }
 
@@ -133,10 +133,8 @@ namespace SSLCertificateTracker.Controllers
                 model.HostName = savedHost;
                 model.LastIssuer = ExtractIssuer(_RawCertData!.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
+                model.LastCheckedUtc = DateTime.Now;
                 model.CalculateStatus();
-
-                _view.UpdateStatusBar();
-                _view.UpdateLastRefresh(model.LastCheckedUtc);
             }
             catch (Exception ex)
             {
@@ -152,18 +150,34 @@ namespace SSLCertificateTracker.Controllers
             //take a Snapshot of the list to safely handle the Async Update if a user adds or removes an Item from the list.
             var temp = _list.ToList();
 
-            foreach(CertificateModel item in temp)
+            var task = new List<Task>();
+            try
             {
-               await UpdateCertificateDataAsync(item);
+                foreach (CertificateModel item in temp)
+                {
+                    task.Add(UpdateCertificateDataAsync(item));
+                }
+
+                await Task.WhenAll(task);
             }
-            
-            await SaveListToJsonAsync();
+            finally
+            {}
+                _view.UpdateStatusBarCounts();
+                _view.UpdateStatusBarLastRefresh(DateTime.Now);
+                await SaveListToJsonAsync();
         }
 
         //Updates calls the update selected row Async function and passes the row the user has highlighted to pass the model over
         private async Task UpdateSelectedRowDataAsync(int index)
         {
-            await UpdateCertificateDataAsync(_list[index]);
+            try
+            {
+                await UpdateCertificateDataAsync(_list[index]);
+            }
+            finally
+            {}
+                _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+                await SaveListToJsonAsync();
         }
 
         //Removes Selected Row from the list and saves a new Json file to remove it from the file
@@ -174,7 +188,7 @@ namespace SSLCertificateTracker.Controllers
             if (result == DialogResult.No) return;
 
             _list.RemoveAt(index);
-            _view.UpdateStatusBar();
+            _view.UpdateStatusBarCounts();
             await SaveListToJsonAsync();
         }
 
@@ -198,24 +212,48 @@ namespace SSLCertificateTracker.Controllers
         //Calls the file service class to save the list in an Async manner.
         private async Task SaveListToJsonAsync()
         {
-            await _fileService.SaveAsync(_list);
+            try
+            {
+                await _fileService.SaveAsync(_list);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         //Async function that Loads the data from disk in an async manner and uses the snapshot of the list (temp) to update all the objects with new updated data.
         private async Task LoadDataRequestAsync()
         {
           var temp = await _fileService.GetAllAsync();
-
-            foreach(CertificateModel item in temp) 
+            try
             {
-                item.LastErrorMessage = null;
-                _list.Add(item);
-            }
+                foreach (CertificateModel item in temp)
+                {
+                    item.LastErrorMessage = null;
+                    _list.Add(item);
+                }
 
-            foreach(CertificateModel item in temp)
-            {
-                await UpdateCertificateDataAsync(item);
+
+                var task = new List<Task>();
+                foreach (CertificateModel item in temp)
+                {
+                    task.Add(UpdateCertificateDataAsync(item));
+                }
+                await Task.WhenAll(task);
+
             }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _view.OnMainFormLoad -= LoadDataRequestAsync;
+            }
+             _view.UpdateStatusBarCounts();
+             _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+
         }
 
         //Handles the event of a User double clicking on a Hostname cell and displaying the certificate using windows built in dialog for showing certificate information
@@ -250,7 +288,7 @@ namespace SSLCertificateTracker.Controllers
         public static bool TryBuildUri(string rawinput, out Uri? computedUri)
         {
             bool success = false;
-            string _rawInput = rawinput.Trim();
+            string _rawInput = rawinput;
             computedUri = null;
 
             if (!_rawInput.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
