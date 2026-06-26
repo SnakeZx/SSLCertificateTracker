@@ -13,7 +13,7 @@ namespace SSLCertificateTracker.Model
         private string _hostName = string.Empty;
 
         private int _daysLeft = 0;
-        private StatusEnums _status = StatusEnums.Fetching;
+        private StatusEnum _status = StatusEnum.Fetching;
         private DateTime _lastCheckedUtc;
 
 
@@ -79,7 +79,7 @@ namespace SSLCertificateTracker.Model
             }
         }
         [JsonIgnore]
-        public StatusEnums Status 
+        public StatusEnum Status 
         {
             get
             {
@@ -87,7 +87,7 @@ namespace SSLCertificateTracker.Model
             }
             set
             {
-                if(Enum.IsDefined(typeof(StatusEnums), value))
+                if(Enum.IsDefined(typeof(StatusEnum), value))
                 {
                     _status = value;
                     NotifyPropertyChanged();
@@ -134,32 +134,32 @@ namespace SSLCertificateTracker.Model
 
         public void CalculateStatus()
         {
-            if (DaysLeft >= 30 && _status != StatusEnums.Okay)
+            if (DaysLeft >= 30 && _status != StatusEnum.Okay)
             {
-                _status = StatusEnums.Okay;
+                _status = StatusEnum.Okay;
                 NotifyPropertyChanged();
             }
-            else if (DaysLeft < 30 && DaysLeft >= 0 && _status != StatusEnums.ExpiringSoon)
+            else if (DaysLeft < 30 && DaysLeft >= 0 && _status != StatusEnum.ExpiringSoon)
             {
-                _status = StatusEnums.ExpiringSoon;
+                _status = StatusEnum.ExpiringSoon;
                 NotifyPropertyChanged();
             }
-            else if (DaysLeft < 0 && _status != StatusEnums.Expired)
+            else if (DaysLeft < 0 && _status != StatusEnum.Expired)
             {
-                _status = StatusEnums.Expired;
+                _status = StatusEnum.Expired;
                 NotifyPropertyChanged();
             }
         }
 
         public void SetErrorStatus()
         {
-            _status = StatusEnums.Error;
+            _status = StatusEnum.Error;
             NotifyPropertyChanged();
         }
 
         public void SetFetchingStatus()
         {
-            _status = StatusEnums.Fetching;
+            _status = StatusEnum.Fetching;
             NotifyPropertyChanged();
         }
 

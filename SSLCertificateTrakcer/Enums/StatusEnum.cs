@@ -1,6 +1,6 @@
 ﻿namespace SSLCertificateTracker.Enums
 {
-    public enum StatusEnums
+    public enum StatusEnum
     {
         Fetching,
         Okay,

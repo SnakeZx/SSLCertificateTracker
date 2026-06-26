@@ -131,12 +131,12 @@ namespace SSLCertificateTracker
             foreach(DataGridViewRow row in sslDataGrid.Rows)
             {
                 var cellValue = row.Cells[certStatusDesign.Index].Value;
-                if (cellValue is StatusEnums status)
+                if (cellValue is StatusEnum status)
                 {
-                    if(status == StatusEnums.Expired)
+                    if(status == StatusEnum.Expired)
                     {
                         ExpiredCount++;
-                    }else if(status == StatusEnums.ExpiringSoon)
+                    }else if(status == StatusEnum.ExpiringSoon)
                     {
                         ExpiringSoon++;
                     }
@@ -224,35 +224,35 @@ namespace SSLCertificateTracker
         private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             //checks if the cell is under the status column, makes sure the cell value is not null and is a valid enum in my StatusEnums Class.
-            if(e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnums status)
+            if(e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnum status)
             {
                 switch (e.Value)
                 {
-                    case StatusEnums.Fetching:
+                    case StatusEnum.Fetching:
                         e.Value = "Fetching ....";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusGreenColor;
                         e.CellStyle.SelectionForeColor = StatusGreenColor;
                         break;
-                    case StatusEnums.Okay:
+                    case StatusEnum.Okay:
                         e.Value = "\U0001F7E2 OK";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusGreenColor;
                         e.CellStyle.SelectionForeColor = StatusGreenColor;
                         break;
-                    case StatusEnums.ExpiringSoon:
+                    case StatusEnum.ExpiringSoon:
                         e.Value = "\U000026A0\U0000FE0F Expiring Soon";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusRedColor;
                         e.CellStyle.SelectionForeColor = StatusRedColor;
                         break;
-                    case StatusEnums.Expired:
+                    case StatusEnum.Expired:
                         e.Value = "\U0001F6AB Expired";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusRedColor;
                         e.CellStyle.SelectionForeColor = StatusRedColor;
                         break;
-                    case StatusEnums.Error:
+                    case StatusEnum.Error:
                         e.Value = "\U0000274C Error";
                         e.CellStyle.Font = StatusColumnFont;
                         e.CellStyle.ForeColor = StatusRedColor;
@@ -277,13 +277,13 @@ namespace SSLCertificateTracker
 
 
             //checks to make sure the value in the statuscell is an enum that is in my StatusEnums class.
-            if(StatusCell.Value is StatusEnums status)
+            if(StatusCell.Value is StatusEnum status)
             {
                 switch (StatusCell.Value)
                 {
                     //Paints the row accordingly and the expiry, days left cells based on the enum in status.
-                    case StatusEnums.Expired:
-                    case StatusEnums.ExpiringSoon:
+                    case StatusEnum.Expired:
+                    case StatusEnum.ExpiringSoon:
                         Row.DefaultCellStyle.BackColor = RowRedBackColor;
                         Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
 
@@ -295,12 +295,12 @@ namespace SSLCertificateTracker
                         DaysLeftCell.Style.Font = DeafultRowFontBold;
                         DaysLeftCell.Style.SelectionForeColor = StatusRedColor;
                         break;
-                    case StatusEnums.Error:
+                    case StatusEnum.Error:
                         Row.DefaultCellStyle.BackColor = RowRedBackColor;
                         Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
                         break;
-                    case StatusEnums.Okay:
-                    case StatusEnums.Fetching:
+                    case StatusEnum.Okay:
+                    case StatusEnum.Fetching:
                         Row.DefaultCellStyle.BackColor = DefaultRowBackColor;
                         Row.DefaultCellStyle.SelectionBackColor = RowSelectionBackColor;
 
