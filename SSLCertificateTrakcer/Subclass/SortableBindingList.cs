@@ -69,7 +69,7 @@ namespace SSLCertificateTracker.Subclass
 
         protected override void RemoveSortCore()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Removing the sort core is not supported");
         }
 
         protected override void OnListChanged(ListChangedEventArgs e)

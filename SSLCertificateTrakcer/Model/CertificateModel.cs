@@ -9,11 +9,11 @@ namespace SSLCertificateTracker.Model
     public class CertificateModel : INotifyPropertyChanged
     {
         private DateTime _lastExpiryUtc;
-        private string _lastIssuer;
-        private string _hostName;
+        private string _lastIssuer = string.Empty;
+        private string _hostName = string.Empty;
 
-        private int _daysLeft;
-        private StatusEnums _status;
+        private int _daysLeft = 0;
+        private StatusEnums _status = StatusEnums.Fetching;
         private DateTime _lastCheckedUtc;
 
 
