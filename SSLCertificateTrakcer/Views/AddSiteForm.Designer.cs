@@ -88,7 +88,6 @@
             EnterWebAddressLbl.Size = new Size(143, 19);
             EnterWebAddressLbl.TabIndex = 5;
             EnterWebAddressLbl.Text = "Enter Web Address:";
-            EnterWebAddressLbl.Click += label1_Click;
             // 
             // CharacterErrorLbl
             // 
@@ -101,7 +100,6 @@
             CharacterErrorLbl.Size = new Size(0, 15);
             CharacterErrorLbl.TabIndex = 6;
             CharacterErrorLbl.TextAlign = ContentAlignment.MiddleCenter;
-            CharacterErrorLbl.Click += label1_Click_1;
             // 
             // AddSiteForm
             // 

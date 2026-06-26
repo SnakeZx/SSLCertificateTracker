@@ -19,6 +19,8 @@ namespace SSLCertificateTracker.Controllers
 
         private readonly int port = 443;
 
+        private readonly SemaphoreSlim _semaphoreSlim = new (initialCount: 8, maxCount: 8);
+
         public Controller(MainForm view, CertificateModel model)
         {
             _view = view;
@@ -67,7 +69,6 @@ namespace SSLCertificateTracker.Controllers
                 userInput = userInput.Trim();
                 if(!TryBuildUri(userInput, out Uri? ComputedUri))
                 {
-                    //TODO:
                     MessageBox.Show($"The entered website: \"{userInput}\" is not vaild hostname please enter a vaild hostname.", "Value Entered Invaild!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
@@ -90,6 +91,7 @@ namespace SSLCertificateTracker.Controllers
                     _view.UpdateStatusBarCounts();
                     _view.UpdateStatusBarLastRefresh(newResource.LastCheckedUtc);
 
+                    await SaveListToJsonAsync();
                 }
                 else
                 {
@@ -120,10 +122,13 @@ namespace SSLCertificateTracker.Controllers
         //Updates certificate the model directly with new information if there is any.
         private async Task UpdateCertificateDataAsync(CertificateModel model)
         {
-            string savedHost = model.HostName;
-
+            await _semaphoreSlim.WaitAsync();
+            
             try
             {
+                string savedHost = model.HostName;
+
+
                 model.LastErrorMessage = null;
                 model.SetFetchingStatus();
 
@@ -142,6 +147,10 @@ namespace SSLCertificateTracker.Controllers
                 model.SetErrorStatus();
                 model.LastErrorMessage = ex.Message;
             }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
 
         }
 
@@ -151,33 +160,27 @@ namespace SSLCertificateTracker.Controllers
             var temp = _list.ToList();
 
             var task = new List<Task>();
-            try
-            {
-                foreach (CertificateModel item in temp)
-                {
-                    task.Add(UpdateCertificateDataAsync(item));
-                }
 
-                await Task.WhenAll(task);
+            foreach (CertificateModel item in temp)
+            {
+                task.Add(UpdateCertificateDataAsync(item));
             }
-            finally
-            {}
-                _view.UpdateStatusBarCounts();
-                _view.UpdateStatusBarLastRefresh(DateTime.Now);
-                await SaveListToJsonAsync();
+
+            await Task.WhenAll(task);
+
+            _view.UpdateStatusBarCounts();
+            _view.UpdateStatusBarLastRefresh(DateTime.Now);
+            await SaveListToJsonAsync();
+            
         }
 
         //Updates calls the update selected row Async function and passes the row the user has highlighted to pass the model over
         private async Task UpdateSelectedRowDataAsync(int index)
         {
-            try
-            {
-                await UpdateCertificateDataAsync(_list[index]);
-            }
-            finally
-            {}
-                _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
-                await SaveListToJsonAsync();
+            await UpdateCertificateDataAsync(_list[index]);
+            
+            _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+            await SaveListToJsonAsync();
         }
 
         //Removes Selected Row from the list and saves a new Json file to remove it from the file
@@ -212,14 +215,7 @@ namespace SSLCertificateTracker.Controllers
         //Calls the file service class to save the list in an Async manner.
         private async Task SaveListToJsonAsync()
         {
-            try
-            {
-                await _fileService.SaveAsync(_list);
-            }
-            catch(Exception)
-            {
-                throw;
-            }
+            await _fileService.SaveAsync(_list);
         }
 
         //Async function that Loads the data from disk in an async manner and uses the snapshot of the list (temp) to update all the objects with new updated data.
@@ -240,19 +236,17 @@ namespace SSLCertificateTracker.Controllers
                 {
                     task.Add(UpdateCertificateDataAsync(item));
                 }
+                
                 await Task.WhenAll(task);
-
-            }
-            catch (Exception)
-            {
-                throw;
+                
+                _view.UpdateStatusBarCounts();
             }
             finally
             {
                 _view.OnMainFormLoad -= LoadDataRequestAsync;
             }
-             _view.UpdateStatusBarCounts();
-             _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+
+            _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
 
         }
 

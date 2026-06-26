@@ -3,32 +3,27 @@
     public partial class AddSiteForm : Form
     {
 
-        public string userinput;
+        public string userinput { get; private set; } = string.Empty;
+
         public AddSiteForm()
         {
             InitializeComponent();
         }
 
 
-        public async void AddSiteConfirmClick(object? sender, EventArgs e)
+        public void AddSiteConfirmClick(object? sender, EventArgs e)
         {
-
+            //Ensures an empty string or white space is not passed to the controller
             if (string.IsNullOrWhiteSpace(WebAddressInput.Text))
             {
                 CharacterErrorLbl.Text = "Empty line or spaces are not valid.";
                 return;
             }
-            else
-            {
-                DialogResult = DialogResult.OK;
-                userinput = WebAddressInput.Text;
-                Close();
-            }
-        }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
+            CharacterErrorLbl.Text = string.Empty;
+            DialogResult = DialogResult.OK;
+            userinput = WebAddressInput.Text;
+            Close();
         }
 
         private void cancelBtn_Form2_Click(object sender, EventArgs e)
@@ -37,9 +32,5 @@
             Close();
         }
 
-        private void label1_Click_1(object sender, EventArgs e)
-        {
-
-        }
     }
 }

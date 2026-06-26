@@ -59,7 +59,14 @@ namespace SSLCertificateTracker.Services
                 {
                     using Stream ExistingJson = File.OpenRead(_expandedFilePath);
                     Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                    return await JsonSerializer.DeserializeAsync<SortableBindingList<CertificateModel>>(ExistingJson, _options);
+                    var res = await JsonSerializer.DeserializeAsync<SortableBindingList<CertificateModel>>(ExistingJson, _options);
+                    if(res != null)
+                    {
+                        return res;
+                    }
+
+                    MessageBox.Show("JsonSerializer returned a null when attempting to Deserialize data.\nA new list was created.", "JSON Desrialization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return new SortableBindingList<CertificateModel>();
                 }
                 else
                 {
