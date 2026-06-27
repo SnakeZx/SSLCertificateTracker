@@ -93,7 +93,7 @@ namespace SSLCertificateTracker
             lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
         }
 
-        private async void addSiteBtnClick(object? sender, EventArgs e)
+        private async void addSiteBtnClick(object sender, EventArgs e)
         {
             if (OnAddNewSiteClick != null)
             {
@@ -107,7 +107,6 @@ namespace SSLCertificateTracker
                 }
             }
         }
-
         private async void Form1_Load(object sender, EventArgs e)
         {
             if (OnMainFormLoad != null)
@@ -123,6 +122,7 @@ namespace SSLCertificateTracker
                 }
             }
         }
+
 
         //enables/disables the button and context menu item for refresh and remove actions
         private void SslDataGrid_SelectionChanged(object sender, EventArgs e)
@@ -353,9 +353,16 @@ namespace SSLCertificateTracker
 
         private void SslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (_isFetching)
+            {
+                ShowFetchingDataDialog();
+                return;
+            }
 
-            ViewCertificateData?.Invoke(e.RowIndex);
-
+            if (sslDataGrid.SelectedRows.Count > 0)
+            {
+                ViewCertificateData?.Invoke(e.RowIndex);
+            }
         }
 
         private void SslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
@@ -388,12 +395,19 @@ namespace SSLCertificateTracker
             switch (e.Button)
             {
                 case MouseButtons.Right:
+
                     var hit = sslDataGrid.HitTest(e.X, e.Y);
+
+                    if (hit.Type == DataGridViewHitTestType.ColumnHeader)
+                    {
+                        break;
+                    }
                     if (hit.Type == DataGridViewHitTestType.None)
                     {
                         sslDataGrid.ClearSelection();
                         break;
                     }
+
                     sslDataGrid.Rows[hit.RowIndex].Selected = true;
                     RightClickMenu.Show(sslDataGrid, new Point(e.X, e.Y));
                     break;
@@ -412,14 +426,12 @@ namespace SSLCertificateTracker
 
         static private void ShowErrorToUser(Exception ex)
         {
-            MessageBox.Show($"Error: {ex.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error: {ex.Message}", "ERROR: UI Thread", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        public void UnhandledExceptionsHandler(object sender, ThreadExceptionEventArgs args)
+        public void BackgroundThreadsUnhandledExceptionsHandler(object sender, ThreadExceptionEventArgs args)
         {
-            MessageBox.Show($"Error: {args.Exception.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"ERROR MESSAGE: {args.Exception.Message}\n\nStack Trace:\n{args.Exception.StackTrace}", "ERROR: Background Thread", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-
-
     }
 }
