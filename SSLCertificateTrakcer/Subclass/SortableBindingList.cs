@@ -16,7 +16,7 @@ namespace SSLCertificateTracker.Subclass
         {
             properties = TypeDescriptor.GetProperties(typeof(CertiificateModel));
             sortDirectionValue = ListSortDirection.Ascending;
-            sortPropertyValue = properties.Find("HostName", true);
+            sortPropertyValue = properties.Find("HostName", true) ?? throw new ArgumentNullException("Could not find specified property: HostName");
             RaiseListChangedEvents = true;
         }
 
@@ -52,13 +52,13 @@ namespace SSLCertificateTracker.Subclass
 
             IEnumerable<CertiificateModel> query = base.Items;
 
-            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName));
+            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName)?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase);
 
             int newIndex = 0;
 
-            foreach (object item in query)
+            foreach (CertiificateModel item in query)
             {
-                this.Items[newIndex] = (CertiificateModel)item;
+                this.Items[newIndex] = item;
                 newIndex++;
             }
 
@@ -69,7 +69,7 @@ namespace SSLCertificateTracker.Subclass
 
         protected override void RemoveSortCore()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Removing the sort core is not supported");
         }
 
         protected override void OnListChanged(ListChangedEventArgs e)

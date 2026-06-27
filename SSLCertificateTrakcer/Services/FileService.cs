@@ -21,14 +21,13 @@ namespace SSLCertificateTracker.Services
         public async Task SaveAsync(SortableBindingList<CertificateModel> list)
         {
             string _expandedFolderPath = Environment.ExpandEnvironmentVariables(_folderPath);
-            if(list.Count <= 0) return;
             try
             {
-                if (!Directory.Exists(Environment.ExpandEnvironmentVariables(_expandedFolderPath)))
+                if (!Directory.Exists(_expandedFolderPath))
                 {
                     Directory.CreateDirectory(_expandedFolderPath);
                 }
-
+                
                 string _expandedFilePath = Path.Combine(_expandedFolderPath, "sites.json");
 
                 string JsonString = JsonSerializer.Serialize(list, _options);
@@ -60,7 +59,14 @@ namespace SSLCertificateTracker.Services
                 {
                     using Stream ExistingJson = File.OpenRead(_expandedFilePath);
                     Debug.WriteLine($"Certificate Data Parsed From JSON.\nFile Path: {_expandedFilePath}");
-                    return await JsonSerializer.DeserializeAsync<SortableBindingList<CertificateModel>>(ExistingJson, _options);
+                    var res = await JsonSerializer.DeserializeAsync<SortableBindingList<CertificateModel>>(ExistingJson, _options);
+                    if(res != null)
+                    {
+                        return res;
+                    }
+
+                    MessageBox.Show("JsonSerializer returned a null when attempting to Deserialize data.\nA new list was created.", "JSON Desrialization Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return new SortableBindingList<CertificateModel>();
                 }
                 else
                 {
@@ -71,7 +77,6 @@ namespace SSLCertificateTracker.Services
             catch (JsonException) 
             {
                 MessageBox.Show("The data in JSON may be malformed or corrupted.\nA new list was created.","File Unreadable!",MessageBoxButtons.OK, MessageBoxIcon.Error);
-                File.Delete(_expandedFilePath);
                 return new SortableBindingList<CertificateModel>();
             }
         }
