@@ -36,9 +36,6 @@ namespace SSLCertificateTracker
 
         public MainForm()
         {
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionsHandler);
-
             InitializeComponent();
 
             //DataGrid Settings
@@ -373,15 +370,10 @@ namespace SSLCertificateTracker
             MessageBox.Show($"Error: {ex.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        static void UnhandledExceptionsHandler(object sender, UnhandledExceptionEventArgs args)
+        public void UnhandledExceptionsHandler(object sender, ThreadExceptionEventArgs args)
         {
-            Exception e = (Exception)args.ExceptionObject;
+            Exception e = args.Exception;
             MessageBox.Show($"Error: {e.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        private void certificateViewBindingSource_CurrentChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -144,6 +144,7 @@ namespace SSLCertificateTracker.Controllers
                 model.CalculateStatus();
 
                 _view.UpdateStatusBarCounts();
+                _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
             }
             catch (Exception ex)
             {
@@ -248,8 +249,6 @@ namespace SSLCertificateTracker.Controllers
             {
                 _view.OnMainFormLoad -= LoadDataRequestAsync;
             }
-
-            _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
 
         }
 
