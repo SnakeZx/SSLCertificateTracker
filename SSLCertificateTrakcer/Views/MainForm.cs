@@ -134,13 +134,16 @@ namespace SSLCertificateTracker
                 RemoveSelectedMenuItem.Enabled = true;
                 RefreshSelectedButton.Enabled = true;
                 RefreshSelectedMenuItem.Enabled = true;
+                ShowCertificateMenuItem.Enabled = true;
             }
             else
             {
                 RemoveSelectedButton.Enabled = false;
                 RemoveSelectedMenuItem.Enabled = false;
                 RefreshSelectedButton.Enabled = false;
-                RefreshSelectedMenuItem.Enabled = true;
+                RefreshSelectedMenuItem.Enabled = false;
+                ShowCertificateMenuItem.Enabled = false;
+                RightClickMenu.Hide();
             }
 
         }
