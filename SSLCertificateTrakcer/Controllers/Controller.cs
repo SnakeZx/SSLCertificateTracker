@@ -43,7 +43,7 @@ namespace SSLCertificateTracker.Controllers
 
             _view.OnRefreshAllClick += UpdateAllDataAsync;
 
-            _view.OnCellDoubleClick += ShowCertificateData;
+            _view.ViewCertificateData += ShowCertificateData;
 
             _view.ErrorMesssageTooltip += SetErrorToolTip;
             #endregion
@@ -67,6 +67,7 @@ namespace SSLCertificateTracker.Controllers
 
             try
             {
+                _view.IsFetchingFlag(true);
                 userInput = userInput.Trim();
                 if(!TryBuildUri(userInput, out Uri? ComputedUri))
                 {
@@ -80,7 +81,7 @@ namespace SSLCertificateTracker.Controllers
                     var _RawData = await CertificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    NewCertificateData.rawCertificate = _RawData!;
+                    NewCertificateData.RawCertificate = _RawData!;
                     NewCertificateData.HostName = ComputedUri.Host;
                     NewCertificateData.LastIssuer = ExtractIssuer(_RawData!.Issuer);
                     NewCertificateData.LastExpiryUtc = _RawData.NotAfter;
@@ -118,6 +119,10 @@ namespace SSLCertificateTracker.Controllers
 
                 _list.Add(NewCertificateData);
             }
+            finally
+            {
+                _view.IsFetchingFlag(false);
+            }
         }
 
 
@@ -136,7 +141,7 @@ namespace SSLCertificateTracker.Controllers
 
                 var _RawCertData = await CertificateService.WebConnectAsync(savedHost, port);
 
-                model.rawCertificate = _RawCertData;
+                model.RawCertificate = _RawCertData;
                 model.HostName = savedHost;
                 model.LastIssuer = ExtractIssuer(_RawCertData!.Issuer);
                 model.LastExpiryUtc = _RawCertData.NotAfter;
@@ -161,6 +166,7 @@ namespace SSLCertificateTracker.Controllers
 
         private async Task UpdateAllDataAsync()
         {
+            _view.IsFetchingFlag(true);
             //take a Snapshot of the list to safely handle the Async Update if a user adds or removes an Item from the list.
             var temp = _list.ToList();
 
@@ -173,7 +179,9 @@ namespace SSLCertificateTracker.Controllers
 
             await Task.WhenAll(task);
 
+            _view.IsFetchingFlag(false);
             _view.UpdateStatusBarLastRefresh(DateTime.Now);
+
             await SaveListToJsonAsync();
             
         }
@@ -181,8 +189,10 @@ namespace SSLCertificateTracker.Controllers
         //Updates calls the update selected row Async function and passes the row the user has highlighted to pass the model over
         private async Task UpdateSelectedRowDataAsync(int index)
         {
+            _view.IsFetchingFlag(true);
             await UpdateCertificateDataAsync(_list[index]);
-            
+
+            _view.IsFetchingFlag(false);
             _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
             await SaveListToJsonAsync();
         }
@@ -225,7 +235,8 @@ namespace SSLCertificateTracker.Controllers
         //Async function that Loads the data from disk in an async manner and uses the snapshot of the list (temp) to update all the objects with new updated data.
         private async Task LoadDataRequestAsync()
         {
-          var temp = await _fileService.GetAllAsync();
+            _view.IsFetchingFlag(true);
+            var temp = await _fileService.GetAllAsync();
 
             if (temp.Count == 0) return;
             try
@@ -248,6 +259,7 @@ namespace SSLCertificateTracker.Controllers
             finally
             {
                 _view.OnMainFormLoad -= LoadDataRequestAsync;
+                _view.IsFetchingFlag(false);
             }
 
         }
@@ -255,9 +267,9 @@ namespace SSLCertificateTracker.Controllers
         //Handles the event of a User double clicking on a Hostname cell and displaying the certificate using windows built in dialog for showing certificate information
         private async Task ShowCertificateData(int index)
         {
-            if(_list[index].rawCertificate != null)
+            if(_list[index].RawCertificate != null)
             {
-                X509Certificate2UI.DisplayCertificate(_list[index].rawCertificate!, _view.Handle);
+                X509Certificate2UI.DisplayCertificate(_list[index].RawCertificate!, _view.Handle);
             }
             else
             {

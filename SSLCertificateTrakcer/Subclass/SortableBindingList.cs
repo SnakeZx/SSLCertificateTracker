@@ -52,7 +52,7 @@ namespace SSLCertificateTracker.Subclass
 
             IEnumerable<CertiificateModel> query = base.Items;
 
-            query = query.OrderBy<CertiificateModel, string>(HostName => sortPropertyValue.GetValue(HostName)?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+            query = query.OrderBy(HostName => sortPropertyValue.GetValue(HostName)?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase);
 
             int newIndex = 0;
 

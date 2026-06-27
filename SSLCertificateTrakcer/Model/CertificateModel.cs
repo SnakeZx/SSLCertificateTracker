@@ -116,7 +116,7 @@ namespace SSLCertificateTracker.Model
         #endregion
            
         [JsonIgnore]
-        public X509Certificate2? rawCertificate { get; set; }
+        public X509Certificate2? RawCertificate { get; set; }
         
         [JsonConstructor]
         public CertificateModel() { }

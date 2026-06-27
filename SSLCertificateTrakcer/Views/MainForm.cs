@@ -7,7 +7,8 @@ namespace SSLCertificateTracker
 {
     public partial class MainForm : Form
     {
-        //Default Fonts fro the status column and default for the row when bolding is needed.
+        #region Readony Properties
+        //Default Fonts for the status column and default for the row when bolding is needed.
         private readonly Font StatusColumnFont = new Font("Segoe UI Emoji", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFontBold = new Font("Arial", 10F, FontStyle.Bold);
         private readonly Font DeafultRowFont = new Font("Arial", 10F, FontStyle.Regular);
@@ -21,8 +22,12 @@ namespace SSLCertificateTracker
         private readonly Color DefaultRowBackColor = Color.FromArgb(255, 252, 255, 255);
         private readonly Color RowRedBackColor = Color.FromArgb(245, 211, 211);
         private readonly Color RowSelectionBackColor = Color.FromArgb(218, 237, 254);
+        #endregion
 
-        //All events that the MainForm Raises
+        private bool _isFetching;
+
+        #region Public Events
+        //All events that the MainForm Raises and returns the task.
         public event Func<Task>? OnMainFormLoad;
         public event Func<Task>? OnMainFormClose;
 
@@ -30,9 +35,9 @@ namespace SSLCertificateTracker
         public event Func<Task>? OnRefreshAllClick;
         public event Func<int, Task>? OnRefreshSelectedClick;
         public event Func<int, Task>? OnRemoveClick;
-        public event Func<int, Task>? OnCellDoubleClick;
+        public event Func<int, Task>? ViewCertificateData;
         public event Func<int, string>? ErrorMesssageTooltip;
-
+        #endregion
 
         public MainForm()
         {
@@ -43,89 +48,13 @@ namespace SSLCertificateTracker
             sslDataGrid.AutoGenerateColumns = false;
             sslDataGrid.MultiSelect = false;
 
-            remSelectedBtn.Enabled = false;
+            RemoveSelectedButton.Enabled = false;
         }
 
-        private async void addSiteBtnClick(object? sender, EventArgs e)
+        public void IsFetchingFlag(bool isFetching)
         {
-            if (OnAddNewSiteClick != null)
-            {
-                try
-                {
-                    await OnAddNewSiteClick.Invoke();
-                }
-                catch (Exception ex) 
-                {
-                    ShowErrorToUser(ex);
-                }
-            }
-        }
-
-
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void Form1_Load(object sender, EventArgs e)
-        {
-            if (OnMainFormLoad != null)
-            {
-                try
-                {
-                    UpdateStatusBarCounts();
-                    await OnMainFormLoad.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    ShowErrorToUser(ex);
-                }
-            }
-        }
-
-        private void sslDataGrid_SelectionChanged(object sender, EventArgs e)
-        {
-
-            if (sslDataGrid.SelectedRows.Count > 0)
-            {
-                remSelectedBtn.Enabled = true;
-            }
-            else
-            {
-                remSelectedBtn.Enabled = false;
-            }
-
-        }
-
-
-        private void MainForm_MouseClick(object sender, MouseEventArgs e)
-        {
+            _isFetching = isFetching;
             sslDataGrid.ClearSelection();
-        }
-
-        private void sslDataGrid_MouseClick(object sender, MouseEventArgs e)
-        {
-            var hit = sslDataGrid.HitTest(e.X, e.Y);
-
-            if (hit.Type == DataGridViewHitTestType.None)
-            {
-                sslDataGrid.ClearSelection();
-            }
-        }
-
-        private void statusBar_MouseClick(object sender, MouseEventArgs e)
-        {
-            sslDataGrid.ClearSelection();
-        }
-
-        private void sslDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-
-        }
-
-        private void sslDataGrid_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-
         }
 
         public void UpdateStatusBarCounts()
@@ -158,11 +87,95 @@ namespace SSLCertificateTracker
 
             sitesTrackedLbl.Text = $"{count} sites tracked";
         }
-
-        private async void remSelectedBtn_Click(object sender, EventArgs e)
+        public void UpdateStatusBarLastRefresh(DateTime dt)
         {
-            if(OnRemoveClick != null)
+
+            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
+        }
+
+        private async void addSiteBtnClick(object? sender, EventArgs e)
+        {
+            if (OnAddNewSiteClick != null)
             {
+                try
+                {
+                    await OnAddNewSiteClick.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
+        }
+
+        private async void Form1_Load(object sender, EventArgs e)
+        {
+            if (OnMainFormLoad != null)
+            {
+                try
+                {
+                    UpdateStatusBarCounts();
+                    await OnMainFormLoad.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
+                }
+            }
+        }
+
+        //enables/disables the button and context menu item for refresh and remove actions
+        private void SslDataGrid_SelectionChanged(object sender, EventArgs e)
+        {
+
+            if (sslDataGrid.SelectedRows.Count > 0)
+            {
+                RemoveSelectedButton.Enabled = true;
+                RemoveSelectedMenuItem.Enabled = true;
+                RefreshSelectedButton.Enabled = true;
+                RefreshSelectedMenuItem.Enabled = true;
+            }
+            else
+            {
+                RemoveSelectedButton.Enabled = false;
+                RemoveSelectedMenuItem.Enabled = false;
+                RefreshSelectedButton.Enabled = false;
+                RefreshSelectedMenuItem.Enabled = true;
+            }
+
+        }
+
+        private void MainForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            sslDataGrid.ClearSelection(); //Deselects a row by clicking any where on the form.
+        }
+
+        //adds functionality to deselect a row by clicking on empty space on the datagridview
+        private void SslDataGrid_MouseClick(object sender, MouseEventArgs e)
+        {
+            var hit = sslDataGrid.HitTest(e.X, e.Y);
+
+            if (hit.Type == DataGridViewHitTestType.None)
+            {
+                sslDataGrid.ClearSelection();
+            }
+        }
+
+        private void StatusBar_MouseClick(object sender, MouseEventArgs e)
+        {
+            sslDataGrid.ClearSelection(); //Deselects a row by clicking status bar at the bottom
+        }
+
+
+        private async void RemoveSelectedButton_Click(object sender, EventArgs e)
+        {
+            if (OnRemoveClick != null)
+            {
+                if (_isFetching)
+                {
+                    ShowFetchingDataDialog();
+                    return;
+                }
                 try
                 {
                     await OnRemoveClick.Invoke(sslDataGrid.SelectedRows[0].Index);
@@ -174,20 +187,22 @@ namespace SSLCertificateTracker
             }
         }
 
-        private async void rfshSelectedBtn_Click(object sender, EventArgs e)
+        private async void RefreshSelectedButton_Click(object sender, EventArgs e)
         {
             if (OnRefreshSelectedClick != null)
             {
-                if (sslDataGrid.SelectedRows.Count > 0)
+                if (_isFetching)
                 {
-                    try
-                    {
-                        await OnRefreshSelectedClick.Invoke(sslDataGrid.SelectedRows[0].Index);
-                    }
-                    catch (Exception ex)
-                    {
-                        ShowErrorToUser(ex);
-                    }
+                    ShowFetchingDataDialog();
+                    return;
+                }
+                try
+                {
+                    await OnRefreshSelectedClick.Invoke(sslDataGrid.SelectedRows[0].Index);
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorToUser(ex);
                 }
             }
         }
@@ -213,12 +228,17 @@ namespace SSLCertificateTracker
             DataGridViewBindingSource.DataSource = list;
         }
 
-        private async void rfshAllBtn_Click(object sender, EventArgs e)
+        private async void RefreshAllBtton_Click(object sender, EventArgs e)
         {
             if (OnRefreshAllClick != null)
             {
                 if (sslDataGrid.RowCount > 0)
                 {
+                    if (_isFetching)
+                    {
+                        ShowFetchingDataDialog();
+                        return;
+                    }
                     try
                     {
                         await OnRefreshAllClick.Invoke();
@@ -231,13 +251,8 @@ namespace SSLCertificateTracker
             }
         }
 
-        public void UpdateStatusBarLastRefresh(DateTime dt)
-        {
 
-            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
-        }
-
-        private void sslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void SslDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             //checks if the cell is under the status column, makes sure the cell value is not null and is a valid enum in my StatusEnums Class.
             if (e.ColumnIndex == certStatusDesign.Index && e.Value != null && e.Value is StatusEnum status)
@@ -283,7 +298,7 @@ namespace SSLCertificateTracker
             }
         }
 
-        private void sslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        private void SslDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
             //saves the row, and cell data into variables to made the code easier to read.
             var Row = sslDataGrid.Rows[e.RowIndex];
@@ -293,7 +308,7 @@ namespace SSLCertificateTracker
 
 
             //checks to make sure the value in the statuscell is an enum that is in my StatusEnums class.
-            if (StatusCell.Value is StatusEnum status)
+            if (StatusCell.Value is StatusEnum)
             {
                 switch (StatusCell.Value)
                 {
@@ -333,20 +348,14 @@ namespace SSLCertificateTracker
             }
         }
 
-        private void sslDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void SslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+
+            ViewCertificateData?.Invoke(e.RowIndex);
 
         }
 
-        private void sslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == WebsiteColumn.Index)
-            {
-                OnCellDoubleClick?.Invoke(e.RowIndex);
-            }
-        }
-
-        private void sslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        private void SslDataGrid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
         {
             if (e.ColumnIndex == certStatusDesign.Index)
             {
@@ -359,21 +368,55 @@ namespace SSLCertificateTracker
                 e.ToolTipText = res;
             }
         }
+        private void ShowCertificateMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_isFetching)
+            {
+                ShowFetchingDataDialog();
+                return;
+            }
+            if (sslDataGrid.SelectedRows.Count > 0)
+            {
+                ViewCertificateData?.Invoke(sslDataGrid.SelectedRows[0].Index);
+            }
+        }
+        private void SslDataGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            switch (e.Button)
+            {
+                case MouseButtons.Right:
+                    var hit = sslDataGrid.HitTest(e.X, e.Y);
+                    if (hit.Type == DataGridViewHitTestType.None)
+                    {
+                        sslDataGrid.ClearSelection();
+                        break;
+                    }
+                    sslDataGrid.Rows[hit.RowIndex].Selected = true;
+                    RightClickMenu.Show(sslDataGrid, new Point(e.X, e.Y));
+                    break;
+            }
+        }
 
-        private void sslDataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void SslDataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.ThrowException = false;
         }
 
-        private void ShowErrorToUser(Exception ex)
+        static private void ShowFetchingDataDialog()
+        {
+            MessageBox.Show($"Cannot perform this action while a refresh is in progress. Please wait for items to finish refreshing and try again.", "Refresh In Progress", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        static private void ShowErrorToUser(Exception ex)
         {
             MessageBox.Show($"Error: {ex.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public void UnhandledExceptionsHandler(object sender, ThreadExceptionEventArgs args)
         {
-            Exception e = args.Exception;
-            MessageBox.Show($"Error: {e.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error: {args.Exception.Message}", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+
     }
 }

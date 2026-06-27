@@ -10,7 +10,7 @@ namespace SSLCertificateTracker.Services
         {
             TimeSpan timeout = TimeSpan.FromSeconds(10);
 
-            RemoteCertificateValidationCallback certCallBack = (_, _, _, _) => true;
+            RemoteCertificateValidationCallback certCallBack = (sender, cert, chain, sslPolicyErrors) => true;
 
             //creates the TCP connection to the given server and port.
             using TcpClient _client = new TcpClient();

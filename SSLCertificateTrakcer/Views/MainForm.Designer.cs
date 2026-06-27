@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle15 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle16 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle11 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle12 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle13 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle14 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            addSiteBtn = new Button();
+            AddSiteButton = new Button();
             sslDataGrid = new DataGridView();
             WebsiteColumn = new DataGridViewTextBoxColumn();
             certIssuerDesign = new DataGridViewTextBoxColumn();
@@ -54,29 +54,34 @@
             expiredLbl = new ToolStripStatusLabel();
             lblSep3 = new ToolStripStatusLabel();
             lastRefreshLbl = new ToolStripStatusLabel();
-            rfshAllBtn = new Button();
-            rfshSelectedBtn = new Button();
-            remSelectedBtn = new Button();
+            RefreshAllButton = new Button();
+            RefreshSelectedButton = new Button();
+            RemoveSelectedButton = new Button();
+            RightClickMenu = new ContextMenuStrip(components);
+            RefreshSelectedMenuItem = new ToolStripMenuItem();
+            RemoveSelectedMenuItem = new ToolStripMenuItem();
+            ShowCertificateMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)sslDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DataGridViewBindingSource).BeginInit();
             statusBar.SuspendLayout();
+            RightClickMenu.SuspendLayout();
             SuspendLayout();
             // 
-            // addSiteBtn
+            // AddSiteButton
             // 
-            addSiteBtn.AutoSize = true;
-            addSiteBtn.BackColor = Color.FromArgb(35, 122, 254);
-            addSiteBtn.FlatAppearance.BorderSize = 0;
-            addSiteBtn.FlatStyle = FlatStyle.Flat;
-            addSiteBtn.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            addSiteBtn.ForeColor = Color.White;
-            addSiteBtn.Location = new Point(12, 12);
-            addSiteBtn.Name = "addSiteBtn";
-            addSiteBtn.Size = new Size(115, 39);
-            addSiteBtn.TabIndex = 0;
-            addSiteBtn.Text = "+ Add Site";
-            addSiteBtn.UseVisualStyleBackColor = false;
-            addSiteBtn.Click += addSiteBtnClick;
+            AddSiteButton.AutoSize = true;
+            AddSiteButton.BackColor = Color.FromArgb(35, 122, 254);
+            AddSiteButton.FlatAppearance.BorderSize = 0;
+            AddSiteButton.FlatStyle = FlatStyle.Flat;
+            AddSiteButton.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            AddSiteButton.ForeColor = Color.White;
+            AddSiteButton.Location = new Point(12, 12);
+            AddSiteButton.Name = "AddSiteButton";
+            AddSiteButton.Size = new Size(115, 39);
+            AddSiteButton.TabIndex = 0;
+            AddSiteButton.Text = "+ Add Site";
+            AddSiteButton.UseVisualStyleBackColor = false;
+            AddSiteButton.Click += addSiteBtnClick;
             // 
             // sslDataGrid
             // 
@@ -90,60 +95,58 @@
             sslDataGrid.BackgroundColor = Color.White;
             sslDataGrid.BorderStyle = BorderStyle.None;
             sslDataGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle9.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle9.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle9.SelectionBackColor = Color.FromArgb(201, 201, 201);
-            dataGridViewCellStyle9.SelectionForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle9.WrapMode = DataGridViewTriState.True;
-            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle1.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(201, 201, 201);
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            sslDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             sslDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             sslDataGrid.Columns.AddRange(new DataGridViewColumn[] { WebsiteColumn, certIssuerDesign, expiryDateCol, daysLeftDesign, certStatusDesign });
             sslDataGrid.DataSource = DataGridViewBindingSource;
-            dataGridViewCellStyle15.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle15.BackColor = Color.White;
-            dataGridViewCellStyle15.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle15.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle15.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle15.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle15.WrapMode = DataGridViewTriState.False;
-            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = Color.White;
+            dataGridViewCellStyle7.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle7.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = DataGridViewTriState.False;
+            sslDataGrid.DefaultCellStyle = dataGridViewCellStyle7;
             sslDataGrid.EnableHeadersVisualStyles = false;
             sslDataGrid.GridColor = Color.DarkGray;
             sslDataGrid.Location = new Point(12, 57);
             sslDataGrid.Name = "sslDataGrid";
             sslDataGrid.ReadOnly = true;
             sslDataGrid.RowHeadersVisible = false;
-            dataGridViewCellStyle16.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle16.BackColor = Color.White;
-            dataGridViewCellStyle16.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle16.ForeColor = Color.Black;
-            dataGridViewCellStyle16.SelectionBackColor = Color.FromArgb(218, 237, 254);
-            dataGridViewCellStyle16.SelectionForeColor = Color.Black;
-            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = Color.White;
+            dataGridViewCellStyle8.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle8.ForeColor = Color.Black;
+            dataGridViewCellStyle8.SelectionBackColor = Color.FromArgb(218, 237, 254);
+            dataGridViewCellStyle8.SelectionForeColor = Color.Black;
+            sslDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle8;
             sslDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             sslDataGrid.ShowEditingIcon = false;
             sslDataGrid.Size = new Size(1110, 576);
             sslDataGrid.TabIndex = 1;
-            sslDataGrid.CellClick += sslDataGrid_CellClick;
-            sslDataGrid.CellDoubleClick += sslDataGrid_CellDoubleClick;
-            sslDataGrid.CellFormatting += sslDataGrid_CellFormatting;
-            sslDataGrid.CellToolTipTextNeeded += sslDataGrid_CellToolTipTextNeeded;
-            sslDataGrid.DataError += sslDataGrid_DataError;
-            sslDataGrid.RowPrePaint += sslDataGrid_RowPrePaint;
-            sslDataGrid.RowsAdded += sslDataGrid_RowsAdded;
-            sslDataGrid.RowsRemoved += sslDataGrid_RowsRemoved;
-            sslDataGrid.SelectionChanged += sslDataGrid_SelectionChanged;
-            sslDataGrid.MouseClick += sslDataGrid_MouseClick;
+            sslDataGrid.CellDoubleClick += SslDataGrid_CellDoubleClick;
+            sslDataGrid.CellFormatting += SslDataGrid_CellFormatting;
+            sslDataGrid.CellToolTipTextNeeded += SslDataGrid_CellToolTipTextNeeded;
+            sslDataGrid.DataError += SslDataGrid_DataError;
+            sslDataGrid.RowPrePaint += SslDataGrid_RowPrePaint;
+            sslDataGrid.SelectionChanged += SslDataGrid_SelectionChanged;
+            sslDataGrid.MouseClick += SslDataGrid_MouseClick;
+            sslDataGrid.MouseDown += SslDataGrid_MouseDown;
             // 
             // WebsiteColumn
             // 
             WebsiteColumn.DataPropertyName = "HostName";
-            dataGridViewCellStyle10.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle10.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle10.NullValue = null;
-            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle2.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle2.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle2.NullValue = null;
+            WebsiteColumn.DefaultCellStyle = dataGridViewCellStyle2;
             WebsiteColumn.FillWeight = 32F;
             WebsiteColumn.HeaderText = "Website";
             WebsiteColumn.Name = "WebsiteColumn";
@@ -153,8 +156,8 @@
             // certIssuerDesign
             // 
             certIssuerDesign.DataPropertyName = "LastIssuer";
-            dataGridViewCellStyle11.Font = new Font("Arial", 10F);
-            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle3.Font = new Font("Arial", 10F);
+            certIssuerDesign.DefaultCellStyle = dataGridViewCellStyle3;
             certIssuerDesign.FillWeight = 32F;
             certIssuerDesign.HeaderText = "Issuer";
             certIssuerDesign.Name = "certIssuerDesign";
@@ -165,10 +168,10 @@
             // 
             expiryDateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             expiryDateCol.DataPropertyName = "LastExpiryUtc";
-            dataGridViewCellStyle12.Font = new Font("Arial", 10F);
-            dataGridViewCellStyle12.Format = "yyyy-MM-dd";
-            dataGridViewCellStyle12.NullValue = null;
-            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle4.Font = new Font("Arial", 10F);
+            dataGridViewCellStyle4.Format = "yyyy-MM-dd";
+            dataGridViewCellStyle4.NullValue = null;
+            expiryDateCol.DefaultCellStyle = dataGridViewCellStyle4;
             expiryDateCol.FillWeight = 11F;
             expiryDateCol.HeaderText = "Expiry Date";
             expiryDateCol.Name = "expiryDateCol";
@@ -179,9 +182,9 @@
             // 
             daysLeftDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
             daysLeftDesign.DataPropertyName = "daysLeft";
-            dataGridViewCellStyle13.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle13.Font = new Font("Arial", 10F);
-            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.Font = new Font("Arial", 10F);
+            daysLeftDesign.DefaultCellStyle = dataGridViewCellStyle5;
             daysLeftDesign.FillWeight = 20.58242F;
             daysLeftDesign.HeaderText = "Days Left";
             daysLeftDesign.MinimumWidth = 63;
@@ -194,8 +197,8 @@
             // 
             certStatusDesign.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             certStatusDesign.DataPropertyName = "Status";
-            dataGridViewCellStyle14.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle6.Font = new Font("Segoe UI Emoji", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            certStatusDesign.DefaultCellStyle = dataGridViewCellStyle6;
             certStatusDesign.FillWeight = 25F;
             certStatusDesign.HeaderText = "Status";
             certStatusDesign.Name = "certStatusDesign";
@@ -217,7 +220,7 @@
             statusBar.Size = new Size(1134, 22);
             statusBar.SizingGrip = false;
             statusBar.TabIndex = 1;
-            statusBar.MouseClick += statusBar_MouseClick;
+            statusBar.MouseClick += StatusBar_MouseClick;
             // 
             // sitesTrackedLbl
             // 
@@ -225,7 +228,6 @@
             sitesTrackedLbl.Name = "sitesTrackedLbl";
             sitesTrackedLbl.Size = new Size(77, 17);
             sitesTrackedLbl.Text = "sites tracked";
-            sitesTrackedLbl.Click += toolStripStatusLabel1_Click;
             // 
             // lblSep1
             // 
@@ -272,59 +274,90 @@
             lastRefreshLbl.Size = new Size(80, 17);
             lastRefreshLbl.Text = "Last Refresh: ";
             // 
-            // rfshAllBtn
+            // RefreshAllButton
             // 
-            rfshAllBtn.AutoSize = true;
-            rfshAllBtn.BackColor = Color.White;
-            rfshAllBtn.FlatAppearance.BorderSize = 0;
-            rfshAllBtn.FlatStyle = FlatStyle.Flat;
-            rfshAllBtn.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rfshAllBtn.ForeColor = Color.Black;
-            rfshAllBtn.Image = (Image)resources.GetObject("rfshAllBtn.Image");
-            rfshAllBtn.Location = new Point(133, 12);
-            rfshAllBtn.Name = "rfshAllBtn";
-            rfshAllBtn.Size = new Size(115, 39);
-            rfshAllBtn.TabIndex = 2;
-            rfshAllBtn.Text = "Refresh All";
-            rfshAllBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
-            rfshAllBtn.UseVisualStyleBackColor = false;
-            rfshAllBtn.Click += rfshAllBtn_Click;
+            RefreshAllButton.AutoSize = true;
+            RefreshAllButton.BackColor = Color.White;
+            RefreshAllButton.FlatAppearance.BorderSize = 0;
+            RefreshAllButton.FlatStyle = FlatStyle.Flat;
+            RefreshAllButton.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            RefreshAllButton.ForeColor = Color.Black;
+            RefreshAllButton.Image = (Image)resources.GetObject("RefreshAllButton.Image");
+            RefreshAllButton.Location = new Point(133, 12);
+            RefreshAllButton.Name = "RefreshAllButton";
+            RefreshAllButton.Size = new Size(115, 39);
+            RefreshAllButton.TabIndex = 2;
+            RefreshAllButton.Text = "Refresh All";
+            RefreshAllButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            RefreshAllButton.UseVisualStyleBackColor = false;
+            RefreshAllButton.Click += RefreshAllBtton_Click;
             // 
-            // rfshSelectedBtn
+            // RefreshSelectedButton
             // 
-            rfshSelectedBtn.AutoSize = true;
-            rfshSelectedBtn.BackColor = Color.White;
-            rfshSelectedBtn.FlatAppearance.BorderSize = 0;
-            rfshSelectedBtn.FlatStyle = FlatStyle.Flat;
-            rfshSelectedBtn.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rfshSelectedBtn.ForeColor = Color.Black;
-            rfshSelectedBtn.Image = (Image)resources.GetObject("rfshSelectedBtn.Image");
-            rfshSelectedBtn.Location = new Point(254, 12);
-            rfshSelectedBtn.Name = "rfshSelectedBtn";
-            rfshSelectedBtn.Size = new Size(152, 39);
-            rfshSelectedBtn.TabIndex = 3;
-            rfshSelectedBtn.Text = "Refresh Selected";
-            rfshSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
-            rfshSelectedBtn.UseVisualStyleBackColor = false;
-            rfshSelectedBtn.Click += rfshSelectedBtn_Click;
+            RefreshSelectedButton.AutoSize = true;
+            RefreshSelectedButton.BackColor = Color.White;
+            RefreshSelectedButton.FlatAppearance.BorderSize = 0;
+            RefreshSelectedButton.FlatStyle = FlatStyle.Flat;
+            RefreshSelectedButton.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            RefreshSelectedButton.ForeColor = Color.Black;
+            RefreshSelectedButton.Image = (Image)resources.GetObject("RefreshSelectedButton.Image");
+            RefreshSelectedButton.Location = new Point(254, 12);
+            RefreshSelectedButton.Name = "RefreshSelectedButton";
+            RefreshSelectedButton.Size = new Size(152, 39);
+            RefreshSelectedButton.TabIndex = 3;
+            RefreshSelectedButton.Text = "Refresh Selected";
+            RefreshSelectedButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            RefreshSelectedButton.UseVisualStyleBackColor = false;
+            RefreshSelectedButton.Click += RefreshSelectedButton_Click;
             // 
-            // remSelectedBtn
+            // RemoveSelectedButton
             // 
-            remSelectedBtn.AutoSize = true;
-            remSelectedBtn.BackColor = Color.White;
-            remSelectedBtn.FlatAppearance.BorderSize = 0;
-            remSelectedBtn.FlatStyle = FlatStyle.Flat;
-            remSelectedBtn.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            remSelectedBtn.ForeColor = Color.Black;
-            remSelectedBtn.Image = (Image)resources.GetObject("remSelectedBtn.Image");
-            remSelectedBtn.Location = new Point(412, 12);
-            remSelectedBtn.Name = "remSelectedBtn";
-            remSelectedBtn.Size = new Size(154, 39);
-            remSelectedBtn.TabIndex = 4;
-            remSelectedBtn.Text = "Remove Selected";
-            remSelectedBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
-            remSelectedBtn.UseVisualStyleBackColor = false;
-            remSelectedBtn.Click += remSelectedBtn_Click;
+            RemoveSelectedButton.AutoSize = true;
+            RemoveSelectedButton.BackColor = Color.White;
+            RemoveSelectedButton.FlatAppearance.BorderSize = 0;
+            RemoveSelectedButton.FlatStyle = FlatStyle.Flat;
+            RemoveSelectedButton.Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            RemoveSelectedButton.ForeColor = Color.Black;
+            RemoveSelectedButton.Image = (Image)resources.GetObject("RemoveSelectedButton.Image");
+            RemoveSelectedButton.Location = new Point(412, 12);
+            RemoveSelectedButton.Name = "RemoveSelectedButton";
+            RemoveSelectedButton.Size = new Size(154, 39);
+            RemoveSelectedButton.TabIndex = 4;
+            RemoveSelectedButton.Text = "Remove Selected";
+            RemoveSelectedButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            RemoveSelectedButton.UseVisualStyleBackColor = false;
+            RemoveSelectedButton.Click += RemoveSelectedButton_Click;
+            // 
+            // RightClickMenu
+            // 
+            RightClickMenu.BackgroundImageLayout = ImageLayout.None;
+            RightClickMenu.Items.AddRange(new ToolStripItem[] { RefreshSelectedMenuItem, RemoveSelectedMenuItem, ShowCertificateMenuItem });
+            RightClickMenu.Name = "contextMenuStrip1";
+            RightClickMenu.ShowImageMargin = false;
+            RightClickMenu.Size = new Size(156, 92);
+            // 
+            // RefreshSelectedMenuItem
+            // 
+            RefreshSelectedMenuItem.CheckOnClick = true;
+            RefreshSelectedMenuItem.Name = "RefreshSelectedMenuItem";
+            RefreshSelectedMenuItem.Size = new Size(155, 22);
+            RefreshSelectedMenuItem.Text = "Refresh Selected";
+            RefreshSelectedMenuItem.Click += RefreshSelectedButton_Click;
+            // 
+            // RemoveSelectedMenuItem
+            // 
+            RemoveSelectedMenuItem.CheckOnClick = true;
+            RemoveSelectedMenuItem.Name = "RemoveSelectedMenuItem";
+            RemoveSelectedMenuItem.Size = new Size(155, 22);
+            RemoveSelectedMenuItem.Text = "Remove Selected";
+            RemoveSelectedMenuItem.Click += RemoveSelectedButton_Click;
+            // 
+            // ShowCertificateMenuItem
+            // 
+            ShowCertificateMenuItem.Name = "ShowCertificateMenuItem";
+            ShowCertificateMenuItem.Size = new Size(155, 22);
+            ShowCertificateMenuItem.Text = "Show Certificate";
+            ShowCertificateMenuItem.Click += ShowCertificateMenuItem_Click;
             // 
             // MainForm
             // 
@@ -332,12 +365,12 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(213, 213, 213);
             ClientSize = new Size(1134, 661);
-            Controls.Add(remSelectedBtn);
-            Controls.Add(rfshSelectedBtn);
-            Controls.Add(rfshAllBtn);
+            Controls.Add(RemoveSelectedButton);
+            Controls.Add(RefreshSelectedButton);
+            Controls.Add(RefreshAllButton);
             Controls.Add(statusBar);
             Controls.Add(sslDataGrid);
-            Controls.Add(addSiteBtn);
+            Controls.Add(AddSiteButton);
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1000, 700);
@@ -350,22 +383,23 @@
             ((System.ComponentModel.ISupportInitialize)DataGridViewBindingSource).EndInit();
             statusBar.ResumeLayout(false);
             statusBar.PerformLayout();
+            RightClickMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Button addSiteBtn;
+        private Button AddSiteButton;
         private DataGridView sslDataGrid;
         private StatusStrip statusBar;
         private ToolStripStatusLabel sitesTrackedLbl;
         private ToolStripStatusLabel expiringSoonLbl;
         private ToolStripStatusLabel expiredLbl;
         private ToolStripStatusLabel lastRefreshLbl;
-        private Button rfshAllBtn;
-        private Button rfshSelectedBtn;
-        private Button remSelectedBtn;
+        private Button RefreshAllButton;
+        private Button RefreshSelectedButton;
+        private Button RemoveSelectedButton;
         private ToolStripStatusLabel lblSep1;
         private ToolStripStatusLabel lblSep2;
         private ToolStripStatusLabel lblSep3;
@@ -375,5 +409,9 @@
         private DataGridViewTextBoxColumn expiryDateCol;
         private DataGridViewTextBoxColumn daysLeftDesign;
         private DataGridViewTextBoxColumn certStatusDesign;
+        private ContextMenuStrip RightClickMenu;
+        private ToolStripMenuItem RefreshSelectedMenuItem;
+        private ToolStripMenuItem RemoveSelectedMenuItem;
+        private ToolStripMenuItem ShowCertificateMenuItem;
     }
 }
