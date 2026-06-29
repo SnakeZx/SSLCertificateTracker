@@ -35,10 +35,10 @@ cd SSLCertificateTracker
 3. Extract the zip file to desired folder location.
 
 ### 2. Open CMD or Terminal
-Nagivate to the new extracted or cloned folder directory like so:
+Nagivate to the new extracted or cloned folder directory like so in Terminal or CMD:
 
 ```
-cd "C:\EXTRACTED FOLDER PATH HERE\"
+cd "C:\CLONED OR EXTRACTED FOLDER PATH HERE\"
 ```
 
 ### 3. Compile Into Standalone .EXE
@@ -49,6 +49,6 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 ```
 
 ### 4. Locate Compiled Files Folder
-1. Locate newly made "/publish" folder in the project directory.
+1. Locate newly made ".\publish" (should be located here: .\bin\Release\net10.0-windows\win-x64\publish\) folder in the project directory.
 2. Once inside locate the single executable (.EXE) file.
 3. Double-click on the .EXE to run the compiled application.
