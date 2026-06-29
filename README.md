@@ -47,7 +47,7 @@ cd "CLONED OR EXTRACTED FOLDER PATH HERE"
 Run this in CMD or Terminal command to bundle all code and dependencies into one single .exe file:
 
 ```
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
 ### 4. Locate Compiled Files Folder
