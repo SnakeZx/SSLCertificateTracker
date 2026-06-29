@@ -26,7 +26,7 @@ Follow these steps to download the source code and compile it to the Release bui
 ### 1. Clone the repository (With Git)
 Launch Git bash and enter in the following when in desired directory:
 ```
-git clone https://github.com/SnakeZx/SSLCertificateTrakcer.git
+git clone https://github.com/SnakeZx/SSLCertificateTracker.git
 ```
 ```
 cd SSLCertificateTracker
