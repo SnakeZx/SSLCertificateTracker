@@ -9,10 +9,10 @@ This is a SSL Certificate Tracker application made using .Net 10 and Winforms. I
 Before getting started make sure you meet the following:
 
 
-**Operating System:** Windows 10 or 11
+**Operating System:** **Windows 10** or 11
 
 
-**Software**: .Net Desktop Runtime 10.0 or higher
+**Software**: **.Net Desktop Runtime 10.0** or higher
 
 The official runtime can be downloaded from microsoft directly here: https://dotnet.microsoft.com/en-us/download/dotnet/10.0
 
