@@ -1,4 +1,4 @@
-# SSLCertificateTrakcer
+# SSLCertificateTracker
 ## Introduction
 <img width="1129" height="684" alt="image of SSL Certificate Application UI with different example hosts to show different states of the application" src="https://github.com/user-attachments/assets/ee2a14ee-d474-4b9f-982f-b5463ed323d1" />
 
