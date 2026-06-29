@@ -62,6 +62,7 @@ namespace SSLCertificateTracker.Model
                 if (_lastExpiryUtc != value)
                 {
                     _lastExpiryUtc = value;
+                    UpdateDaysLeft();
                     NotifyPropertyChanged();
                 }
             }
@@ -71,12 +72,15 @@ namespace SSLCertificateTracker.Model
         {
             get
             {
-                if (_daysLeft != (LastExpiryUtc.Date - DateTime.Today).Days)
+                return _daysLeft;
+            }
+            set
+            {
+                if(_daysLeft != value)
                 {
-                    _daysLeft = (LastExpiryUtc.Date - DateTime.Today).Days;
+                    _daysLeft = value;
                     NotifyPropertyChanged();
                 }
-                return _daysLeft;
             }
         }
         [JsonIgnore]
@@ -132,7 +136,10 @@ namespace SSLCertificateTracker.Model
             }
         }
 
-
+        public void UpdateDaysLeft()
+        {
+                _daysLeft = (LastExpiryUtc.Date - DateTime.Today).Days;
+        }
 
 
         public void CalculateStatus()
