@@ -31,7 +31,7 @@ git clone https://github.com/SnakeZx/SSLCertificateTracker.git
 ### 1. Clone the repository (No Git)
 1. Press the green **Code** buttton at the top of this page.
 2. Press the **Download Zip** at the bottom of menu.
-3. Extract the zip file to desired folder location.
+3. Extract the **.zip** file to desired folder location.
 
 ### 2. Open CMD or Terminal
 1. Locate newly extracted or cloned folder in windows explorer and copy the folder path from explorer.
