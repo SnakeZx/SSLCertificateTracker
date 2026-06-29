@@ -334,13 +334,13 @@
             RightClickMenu.Items.AddRange(new ToolStripItem[] { RefreshSelectedMenuItem, RemoveSelectedMenuItem, ShowCertificateMenuItem });
             RightClickMenu.Name = "contextMenuStrip1";
             RightClickMenu.ShowImageMargin = false;
-            RightClickMenu.Size = new Size(156, 92);
+            RightClickMenu.Size = new Size(140, 70);
             // 
             // RefreshSelectedMenuItem
             // 
             RefreshSelectedMenuItem.CheckOnClick = true;
             RefreshSelectedMenuItem.Name = "RefreshSelectedMenuItem";
-            RefreshSelectedMenuItem.Size = new Size(155, 22);
+            RefreshSelectedMenuItem.Size = new Size(139, 22);
             RefreshSelectedMenuItem.Text = "Refresh Selected";
             RefreshSelectedMenuItem.Click += RefreshSelectedButton_Click;
             // 
@@ -348,14 +348,14 @@
             // 
             RemoveSelectedMenuItem.CheckOnClick = true;
             RemoveSelectedMenuItem.Name = "RemoveSelectedMenuItem";
-            RemoveSelectedMenuItem.Size = new Size(155, 22);
+            RemoveSelectedMenuItem.Size = new Size(139, 22);
             RemoveSelectedMenuItem.Text = "Remove Selected";
             RemoveSelectedMenuItem.Click += RemoveSelectedButton_Click;
             // 
             // ShowCertificateMenuItem
             // 
             ShowCertificateMenuItem.Name = "ShowCertificateMenuItem";
-            ShowCertificateMenuItem.Size = new Size(155, 22);
+            ShowCertificateMenuItem.Size = new Size(139, 22);
             ShowCertificateMenuItem.Text = "Show Certificate";
             ShowCertificateMenuItem.Click += ShowCertificateMenuItem_Click;
             // 

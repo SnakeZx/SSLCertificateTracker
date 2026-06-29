@@ -60,6 +60,7 @@ namespace SSLCertificateTracker.Controllers
             }
         }
 
+
         //runs when a user clicks confirm on the addsite dialog, and displays the newly created model in the list for the user to view.
         private async Task GetCertificateDataAsync(string userInput)
         {
@@ -91,7 +92,7 @@ namespace SSLCertificateTracker.Controllers
                     _list.Add(NewCertificateData);
 
                     _view.UpdateStatusBarCounts();
-                    _view.UpdateStatusBarLastRefresh(NewCertificateData.LastCheckedUtc);
+                    _view.UpdateStatusBarLastRefresh(DateTime.Now);
 
                     //saves the list on a successful path.
                     await SaveListToJsonAsync();
@@ -149,7 +150,7 @@ namespace SSLCertificateTracker.Controllers
                 model.CalculateStatus();
 
                 _view.UpdateStatusBarCounts();
-                _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+                _view.UpdateStatusBarLastRefresh(DateTime.Now);
             }
             catch (Exception ex)
             {
@@ -179,6 +180,7 @@ namespace SSLCertificateTracker.Controllers
 
             await Task.WhenAll(task);
 
+
             _view.IsFetchingFlag(false);
             _view.UpdateStatusBarLastRefresh(DateTime.Now);
 
@@ -193,7 +195,7 @@ namespace SSLCertificateTracker.Controllers
             await UpdateCertificateDataAsync(_list[index]);
 
             _view.IsFetchingFlag(false);
-            _view.UpdateStatusBarLastRefresh(DateTime.UtcNow);
+            _view.UpdateStatusBarLastRefresh(DateTime.Now);
             await SaveListToJsonAsync();
         }
 
