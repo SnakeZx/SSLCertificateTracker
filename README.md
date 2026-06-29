@@ -27,7 +27,6 @@ Follow these steps to download the source code and compile it to the Release bui
 Launch Git bash and enter in the following when in desired directory:
 ```
 git clone https://github.com/SnakeZx/SSLCertificateTracker.git
-cd SSLCertificateTracker
 ```
 ### 1. Clone the repository (No Git)
 1. Press the green **Code** buttton at the top of this page.
@@ -35,14 +34,16 @@ cd SSLCertificateTracker
 3. Extract the zip file to desired folder location.
 
 ### 2. Open CMD or Terminal
-Nagivate to the new extracted or cloned folder directory like so in Terminal or CMD:
+1. Locate newly extracted or cloned folder in windows explorer and copy the folder path from explorer.
+2. Open Command Prompt (CMD) or Terminal.
+3. Replace the file path in the below command:
 
 ```
 cd "C:\CLONED OR EXTRACTED FOLDER PATH HERE\"
 ```
 
 ### 3. Compile Into Standalone .EXE
-Run this in CMD or Terminal command to bundle all code and dependencies into one single .exe file:
+Run this command in the CMD or Terminal window from the previous step. (This is a command to bundle all code and dependencies into one single .exe file):
 
 ```
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
