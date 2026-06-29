@@ -27,8 +27,6 @@ Follow these steps to download the source code and compile it to the Release bui
 Launch Git bash and enter in the following when in desired directory:
 ```
 git clone https://github.com/SnakeZx/SSLCertificateTracker.git
-```
-```
 cd SSLCertificateTracker
 ```
 ### 1. Clone the repository (No Git)
@@ -40,7 +38,7 @@ cd SSLCertificateTracker
 Nagivate to the new extracted or cloned folder directory like so:
 
 ```
-cd "EXTRACTED FOLDER PATH HERE"
+cd "C:\EXTRACTED FOLDER PATH HERE\"
 ```
 
 ### 3. Compile Into Standalone .EXE
