@@ -54,7 +54,6 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 2. Once inside locate the single executable (.EXE) file.
 3. Double-click on the .EXE to run the compiled application.
 
-## Data Storage
+## Stored Data
 ### JSON File Data
-This application saves the created list from memory to a JSON file saved on disk at this location: "%APPDATA%\SSLCertTracker"
-It will read from this file every time the application is launched and will create a new file if one does not exist.
+This application saves the created list from memory to a JSON file saved on disk at this location: "%APPDATA%\SSLCertTracker". It will read from this file every time the application is launched and will create a new file if one does not exist.
