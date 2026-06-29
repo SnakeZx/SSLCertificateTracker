@@ -50,7 +50,7 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 ```
 
 ### 4. Locate Compiled Files Folder
-1. Locate newly made ".\publish" folder (it may be located here: SSLCerti\bin\Release\net10.0-windows\win-x64\publish\) folder in the project directory.
+1. Locate newly made "publish" folder (it may be located here: SSLCertificateTrakcer\bin\Release\net10.0-windows\win-x64\publish\) folder in the project directory.
 2. Once inside locate the single executable (.EXE) file.
 3. Double-click on the .EXE to run the compiled application.
 
