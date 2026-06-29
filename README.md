@@ -23,4 +23,4 @@ cd SSLCertificateTracker
 ### 2. Compile into Standalone .EXE
 Run this command to bundle all code and dependencies into one single .exe file:
 
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o ./publish
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
