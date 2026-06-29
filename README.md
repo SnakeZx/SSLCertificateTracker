@@ -40,7 +40,7 @@ cd SSLCertificateTracker
 Nagivate to the new extracted or cloned folder directory like so:
 
 ```
-cd "CLONED OR EXTRACTED FOLDER PATH HERE"
+cd "EXTRACTED FOLDER PATH HERE"
 ```
 
 ### 3. Compile Into Standalone .EXE
