@@ -23,7 +23,7 @@ Git for Windows can be installed from here: https://git-scm.com/
 ## Build and Compile
 Follow these steps to download the source code and compile it to the Release build of the Application:
 
-### 1. Clone the repository (Optional Route)
+### 1. Clone the repository (With Git)
 Launch Git bash and enter in the following when in desired directory:
 ```
 git clone https://github.com/SnakeZx/SSLCertificateTrakcer.git
@@ -31,7 +31,7 @@ git clone https://github.com/SnakeZx/SSLCertificateTrakcer.git
 ```
 cd SSLCertificateTracker
 ```
-### 1. Clone the repository no Git
+### 1. Clone the repository (No Git)
 1. Press the green **Code** buttton at the top of this page.
 2. Press the **Download Zip** at the bottom of menu.
 3. Extract the zip file to desired folder location.
