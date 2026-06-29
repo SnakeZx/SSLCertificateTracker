@@ -12,7 +12,7 @@ Before getting started make sure you meet the following:
 The official runtime can be downloaded from microsoft directly here: https://dotnet.microsoft.com/en-us/download/dotnet/10.0
 
 ## Build and Compile
-Follow these steps to download the source code and compile it to the Release Application.
+Follow these steps to download the source code and compile it to the Release build of the Application:
 
 ### 1. Clone the repository
 Open Terminal or Command Prompt and enter in the following:
@@ -22,9 +22,14 @@ git clone https://github.com/SnakeZx/SSLCertificateTrakcer.git
 ```
 cd SSLCertificateTracker
 ```
-### 2. Compile into Standalone .EXE
+### 2. Compile Into Standalone .EXE
 Run this command to bundle all code and dependencies into one single .exe file:
 
 ```
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
 ```
+
+### 3. Locate Compiled Files Folder
+1. Locate newly made "/publish" folder in the project directory.
+2. Once inside locate the single executable (.EXE) file.
+3. Double-click on the .EXE to run the compiled application.
