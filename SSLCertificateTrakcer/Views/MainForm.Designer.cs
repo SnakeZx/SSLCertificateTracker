@@ -131,7 +131,6 @@
             sslDataGrid.ShowEditingIcon = false;
             sslDataGrid.Size = new Size(1110, 576);
             sslDataGrid.TabIndex = 1;
-            sslDataGrid.CellDoubleClick += SslDataGrid_CellDoubleClick;
             sslDataGrid.CellFormatting += SslDataGrid_CellFormatting;
             sslDataGrid.CellToolTipTextNeeded += SslDataGrid_CellToolTipTextNeeded;
             sslDataGrid.DataError += SslDataGrid_DataError;

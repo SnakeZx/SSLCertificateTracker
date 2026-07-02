@@ -49,6 +49,7 @@ namespace SSLCertificateTracker
             sslDataGrid.MultiSelect = false;
 
             RemoveSelectedButton.Enabled = false;
+            RefreshSelectedButton.Enabled = false;
         }
 
         public void IsFetchingFlag(bool isFetching)
@@ -86,11 +87,16 @@ namespace SSLCertificateTracker
             expiringSoonLbl.Text = $"{ExpiringSoon} expiring soon";
 
             sitesTrackedLbl.Text = $"{count} sites tracked";
+
+            if(count == 0)
+            {
+                lastRefreshLbl.Text = "Last Refresh: ";
+            }
         }
         public void UpdateStatusBarLastRefresh(DateTime dt)
         {
 
-            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
+            lastRefreshLbl.Text = $"Last Refresh: {dt:yyyy-MM-dd HH:mm:ss}";
         }
 
         private async void addSiteBtnClick(object sender, EventArgs e)
@@ -348,20 +354,6 @@ namespace SSLCertificateTracker
                         break;
 
                 }
-            }
-        }
-
-        private void SslDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (_isFetching)
-            {
-                ShowFetchingDataDialog();
-                return;
-            }
-
-            if (sslDataGrid.SelectedRows.Count > 0)
-            {
-                ViewCertificateData?.Invoke(e.RowIndex);
             }
         }
 

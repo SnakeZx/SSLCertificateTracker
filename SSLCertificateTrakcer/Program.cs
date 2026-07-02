@@ -1,6 +1,5 @@
 using SSLCertificateTracker.Controllers;
 using SSLCertificateTracker.Model;
-using System.Diagnostics;
 
 
 namespace SSLCertificateTracker
@@ -10,24 +9,33 @@ namespace SSLCertificateTracker
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
+        /// 
+
+        private static Mutex? mutex = null;
+
         [STAThread]
         static void Main()
         {
-            //AppDomain.CurrentDomain.UnhandledException += 
-            //    (sender, e) => 
-            //    { 
-            //        System.IO.File.WriteAllText("crash.txt", e.ToString());
-            //        MessageBox.Show($"An unexpected error occured:\n{e.ToString()}\nThe application will need to be restarted.\n", "Unexpected Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    };
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+
+            const string appName = "Global\\SSLCertTracker_e2ac32f9-9ccb-4d3f-b84c-f65fbca85cfb";
+
+            mutex = new Mutex(true, appName, out bool createdNew);
+            
+            if (!createdNew)
+            {
+                // Another instance is already running; warn the user and exit
+                MessageBox.Show("The application is already running.", "Instance Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // Set the unhandled exception mode to force all Windows Forms errors to go through our handler.
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
             // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            
+
             ApplicationConfiguration.Initialize();
 
             MainForm view = new ();
@@ -39,6 +47,9 @@ namespace SSLCertificateTracker
             Controller controller = new(view, model);
 
             Application.Run(view);
+
+            mutex.ReleaseMutex();
+            mutex.Dispose();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

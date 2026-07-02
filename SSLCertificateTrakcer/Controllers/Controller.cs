@@ -79,17 +79,18 @@ namespace SSLCertificateTracker.Controllers
                 if (!HostNameCheck(ComputedUri!.Host))
                 {
 
+                    NewCertificateData.HostName = ComputedUri.Host;
+                    _list.Add(NewCertificateData);
+
                     var _RawData = await CertificateService.WebConnectAsync(ComputedUri.Host, port);
 
                     //Creates new certificate model for the view to display 
-                    NewCertificateData.RawCertificate = _RawData!;
-                    NewCertificateData.HostName = ComputedUri.Host;
+                    NewCertificateData.RawCertificate = _RawData;
                     NewCertificateData.LastIssuer = ExtractIssuer(_RawData!.Issuer);
                     NewCertificateData.LastExpiryUtc = _RawData.NotAfter;
                     NewCertificateData.LastCheckedUtc = DateTime.Now;
                     NewCertificateData.CalculateStatus();
 
-                    _list.Add(NewCertificateData);
 
                     _view.UpdateStatusBarCounts();
                     _view.UpdateStatusBarLastRefresh(DateTime.Now);
@@ -112,13 +113,11 @@ namespace SSLCertificateTracker.Controllers
             }
             catch (Exception ex)
             {
-                //If there is an error a new row is still made with a tooltip in the status column for what the error is.
+                //If there is an error the row get passed the tooltip in the status column for what the error is.
                 NewCertificateData.HostName = userInput;
                 NewCertificateData.LastErrorMessage = ex.Message;
                 NewCertificateData.LastExpiryUtc = DateTime.Now;
                 NewCertificateData.SetErrorStatus();
-
-                _list.Add(NewCertificateData);
             }
             finally
             {
@@ -180,12 +179,10 @@ namespace SSLCertificateTracker.Controllers
 
             await Task.WhenAll(task);
 
-
             _view.IsFetchingFlag(false);
             _view.UpdateStatusBarLastRefresh(DateTime.Now);
 
             await SaveListToJsonAsync();
-            
         }
 
         //Updates calls the update selected row Async function and passes the row the user has highlighted to pass the model over
@@ -237,10 +234,10 @@ namespace SSLCertificateTracker.Controllers
         //Async function that Loads the data from disk in an async manner and uses the snapshot of the list (temp) to update all the objects with new updated data.
         private async Task LoadDataRequestAsync()
         {
-            _view.IsFetchingFlag(true);
             var temp = await _fileService.GetAllAsync();
 
             if (temp.Count == 0) return;
+            _view.IsFetchingFlag(true);
             try
             {
                 foreach (CertificateModel item in temp)
