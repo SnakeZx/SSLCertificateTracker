@@ -1,11 +1,11 @@
 using SSLCertificateTracker.Enums;
 using SSLCertificateTracker.Model;
 using SSLCertificateTracker.Subclass;
-using System.Diagnostics;
+using SSLCertificateTracker.Views.MainForm;
 
 namespace SSLCertificateTracker
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IMainView
     {
         #region Readony Properties
         //Default Fonts for the status column and default for the row when bolding is needed.
@@ -65,20 +65,18 @@ namespace SSLCertificateTracker
 
             foreach (DataGridViewRow row in sslDataGrid.Rows)
             {
-                var cellValue = row.Cells[certStatusDesign.Index].Value;
-                if (cellValue is StatusEnum status)
-                {
-                    if (status == StatusEnum.Expired)
-                    {
-                        ExpiredCount++;
-                    }
-                    else if (status == StatusEnum.ExpiringSoon)
-                    {
-                        ExpiringSoon++;
-                    }
+                StatusEnum cellValue = (StatusEnum)row.Cells[certStatusDesign.Index].Value!;
 
-                    count++;
+                if (cellValue == StatusEnum.Expired)
+                {
+                    ExpiredCount++;
                 }
+                else if (cellValue == StatusEnum.ExpiringSoon)
+                {
+                    ExpiringSoon++;
+                }
+
+                count++;
             }
 
             expiredLbl.Text = $"{ExpiredCount} expired";
@@ -89,8 +87,8 @@ namespace SSLCertificateTracker
         }
         public void UpdateStatusBarLastRefresh(DateTime dt)
         {
-
-            lastRefreshLbl.Text = $"Last Refresh: {dt.ToString("yyyy-MM-dd HH:mm:ss")}";
+            if (sslDataGrid.Rows.Count <= 0) { lastRefreshLbl.Text = string.Empty; }
+            lastRefreshLbl.Text = $"Last Refresh: {dt:yyyy-MM-dd HH:mm:ss}";
         }
 
         private async void addSiteBtnClick(object sender, EventArgs e)
@@ -226,7 +224,7 @@ namespace SSLCertificateTracker
 
         }
 
-        internal void SetDataSource(SortableBindingList<CertificateModel> list)
+        public void SetDataSource(SortableBindingList<CertificateModel> list)
         {
             DataGridViewBindingSource.DataSource = list;
         }

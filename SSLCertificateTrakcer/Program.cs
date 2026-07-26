@@ -1,6 +1,9 @@
 using SSLCertificateTracker.Controllers;
+using SSLCertificateTracker.Interfaces;
 using SSLCertificateTracker.Model;
-using System.Diagnostics;
+using SSLCertificateTracker.Services;
+using SSLCertificateTracker.Services.CertificateService;
+using SSLCertificateTracker.Views.MainForm;
 
 
 namespace SSLCertificateTracker
@@ -13,12 +16,6 @@ namespace SSLCertificateTracker
         [STAThread]
         static void Main()
         {
-            //AppDomain.CurrentDomain.UnhandledException += 
-            //    (sender, e) => 
-            //    { 
-            //        System.IO.File.WriteAllText("crash.txt", e.ToString());
-            //        MessageBox.Show($"An unexpected error occured:\n{e.ToString()}\nThe application will need to be restarted.\n", "Unexpected Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    };
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
 
@@ -36,7 +33,11 @@ namespace SSLCertificateTracker
 
             CertificateModel model = new ();
 
-            Controller controller = new(view, model);
+            IFileService fileService = new FileService();
+            ICertificateService certificateService = new CertificateService();
+            IMainView viewInterface = view;
+
+            Controller controller = new(viewInterface, model, fileService, certificateService);
 
             Application.Run(view);
         }
